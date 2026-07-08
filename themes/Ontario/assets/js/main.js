@@ -1,4 +1,5 @@
 (() => {
+  const osmConfig = window.ontarioSiteManager || {};
   const nav = document.getElementById('nav');
   const menuBtn = document.getElementById('menuBtn');
 
@@ -265,6 +266,36 @@
   const form = document.getElementById('caseForm');
   let currentStep = 0;
 
+  function setFormMessage(formElement, message, type = 'error') {
+    if (!formElement) return;
+
+    let status = formElement.querySelector('.form-status');
+
+    if (!status) {
+      status = document.createElement('div');
+      status.className = 'form-status';
+      formElement.appendChild(status);
+    }
+
+    status.textContent = message;
+    status.dataset.state = type;
+  }
+
+  async function submitLead(formData) {
+    const response = await fetch(osmConfig.restEndpoint, {
+      method: 'POST',
+      body: formData
+    });
+
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok || !payload.success) {
+      throw new Error(payload.message || 'Unable to submit the form right now.');
+    }
+
+    return payload;
+  }
+
   function updateForm() {
     steps.forEach((step, index) => step.classList.toggle('active', index === currentStep));
     stepLabel.textContent = `Step ${currentStep + 1} of ${steps.length}`;
@@ -301,19 +332,22 @@
     if (phone) {
       formData.set('phone', `+1 ${phone}`);
     }
+    formData.set('formType', 'caseForm');
 
-    /*
-      Connect this form to your backend, CRM, or WordPress form handler here.
-      Example:
-      fetch('/wp-json/ontario-refunds/v1/case-review', {
-        method: 'POST',
-        body: formData
-      });
-    */
-
-    nextBtn.textContent = 'Submitted';
     nextBtn.disabled = true;
-    showSuccessModal();
+    nextBtn.textContent = 'Submitting...';
+    setFormMessage(form, '');
+
+    submitLead(formData)
+      .then(() => {
+        nextBtn.textContent = 'Submitted';
+        showSuccessModal();
+      })
+      .catch((error) => {
+        nextBtn.disabled = false;
+        nextBtn.textContent = 'Submit Case Review';
+        setFormMessage(form, error.message || 'Unable to submit the form.', 'error');
+      });
   });
 
   document.getElementById('quickForm')?.addEventListener('submit', (event) => {
@@ -334,9 +368,21 @@
       formData.set('phone', `+1 ${phone}`);
     }
 
-    submitButton.textContent = 'Sent';
+    formData.set('formType', 'quickForm');
+    submitButton.textContent = 'Sending...';
     submitButton.disabled = true;
-    showSuccessModal();
+    setFormMessage(quickForm, '');
+
+    submitLead(formData)
+      .then(() => {
+        submitButton.textContent = 'Sent';
+        showSuccessModal();
+      })
+      .catch((error) => {
+        submitButton.textContent = 'Send Message';
+        submitButton.disabled = false;
+        setFormMessage(quickForm, error.message || 'Unable to send the form.', 'error');
+      });
   });
 
   prevBtn?.addEventListener('click', () => {

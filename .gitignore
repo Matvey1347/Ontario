@@ -1,0 +1,9 @@
+.DS_Store
+/.srv/*
+!/.srv/custom.ini
+/themes/twentytwentythree
+/themes/twentytwentyfour
+/themes/twentytwentyfive
+
+
+/front/node_modules
