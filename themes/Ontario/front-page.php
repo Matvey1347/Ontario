@@ -7,9 +7,9 @@ if (! defined('ABSPATH')) {
 
 $theme_uri = get_template_directory_uri();
 $brand_name = ontario_site_brand_name();
-$phone_number = ontario_site_field('phone_number', '+1 647 478 0877');
-$working_hours = ontario_site_field('working_hours', '11AM-7PM ET');
-$address = ontario_site_field('address', '10-40 WEST WILMOT ST., RICHMOND HILL ON L4B 1H8');
+$phone_number = ontario_site_field('phone_number');
+$working_hours = ontario_site_field('working_hours');
+$address = ontario_site_field('address');
 
 get_header();
 ?>
@@ -36,7 +36,9 @@ get_header();
           <span><b></b> Encrypted submission</span>
           <span><b></b> PIPEDA compliant</span>
           <span><b></b> SOC 2 Type II</span>
-          <span><b></b> <?php echo esc_html($working_hours); ?></span>
+          <?php if ($working_hours !== '') : ?>
+            <span><b></b> <?php echo esc_html($working_hours); ?></span>
+          <?php endif; ?>
         </div>
       </div>
 
@@ -62,10 +64,12 @@ get_header();
         <strong>Evidence-based reports</strong>
         <p>Structured documentation for victims, institutions, counsel, and reporting workflows.</p>
       </div>
-      <div class="strip-card">
-        <strong>Canadian support</strong>
-        <p><?php echo esc_html($address); ?></p>
-      </div>
+      <?php if ($address !== '') : ?>
+        <div class="strip-card">
+          <strong>Canadian support</strong>
+          <p><?php echo esc_html($address); ?></p>
+        </div>
+      <?php endif; ?>
     </div>
   </div>
 
@@ -126,7 +130,7 @@ get_header();
         </ul>
       </div>
 
-      <form class="form-card" id="caseForm">
+      <form class="form-card" id="caseForm" novalidate>
         <input type="hidden" name="formType" value="caseForm" />
         <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" />
         <div class="form-top">
@@ -140,7 +144,7 @@ get_header();
         <div class="form-step active" data-step="1">
           <div class="field">
             <label for="lossAmount">Approximate amount lost</label>
-            <select id="lossAmount" name="lossAmount" required>
+            <select id="lossAmount" name="lossAmount" required data-label="Approximate amount lost">
               <option value="">Select range</option>
               <option>$500-$1,999</option>
               <option>$2,000-$9,999</option>
@@ -154,7 +158,7 @@ get_header();
         <div class="form-step" data-step="2">
           <div class="field">
             <label for="transferMethod">How were funds transferred?</label>
-            <select id="transferMethod" name="transferMethod" required>
+            <select id="transferMethod" name="transferMethod" required data-label="Transfer method">
               <option value="">Select method</option>
               <option>Cryptocurrency transfer</option>
               <option>Bank wire / e-transfer</option>
@@ -166,24 +170,24 @@ get_header();
           </div>
           <div class="field">
             <label for="caseDetails">Brief case details</label>
-            <textarea id="caseDetails" name="caseDetails" placeholder="Describe what happened, the platform name, wallet addresses, links, or transaction details."></textarea>
+            <textarea id="caseDetails" name="caseDetails" placeholder="Describe what happened, the platform name, wallet addresses, links, or transaction details." data-label="Case details"></textarea>
           </div>
         </div>
 
         <div class="form-step" data-step="3">
           <div class="field">
             <label for="fullName">Full name</label>
-            <input id="fullName" name="fullName" type="text" placeholder="Your full name" required />
+            <input id="fullName" name="fullName" type="text" placeholder="Your full name" required data-label="Full name" />
           </div>
           <div class="field">
             <label for="email">Email address</label>
-            <input id="email" name="email" type="email" placeholder="you@example.com" required />
+            <input id="email" name="email" type="email" placeholder="you@example.com" required data-label="Email address" />
           </div>
           <div class="field">
             <label for="phone">Phone number</label>
             <div class="phone-input">
               <span class="phone-prefix" aria-hidden="true"><span class="phone-flag">🇨🇦</span> +1</span>
-              <input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="(647) 478-0877" maxlength="14" required />
+              <input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="(647) 478-0877" maxlength="14" required data-label="Phone number" />
             </div>
           </div>
         </div>
@@ -452,7 +456,7 @@ get_header();
 <div class="modal" id="quick-contact-modal" aria-hidden="true">
   <div class="modal-backdrop" data-modal-close></div>
   <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="quickContactTitle">
-    <form class="form-card short-form" id="quickForm">
+    <form class="form-card short-form" id="quickForm" novalidate>
       <input type="hidden" name="formType" value="quickForm" />
       <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" />
       <div class="form-top">
@@ -465,25 +469,25 @@ get_header();
 
       <div class="field">
         <label for="quickName">Name</label>
-        <input id="quickName" name="name" type="text" placeholder="Enter first name" required />
+        <input id="quickName" name="name" type="text" placeholder="Enter first name" required data-label="Name" />
       </div>
       <div class="field">
         <label for="quickPhone">Phone number</label>
         <div class="phone-input">
           <span class="phone-prefix" aria-hidden="true"><span class="phone-flag">🇨🇦</span> +1</span>
-          <input id="quickPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="(506) 234-5678" maxlength="14" required />
+          <input id="quickPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="(506) 234-5678" maxlength="14" required data-label="Phone number" />
         </div>
       </div>
       <div class="field">
         <label for="quickEmail">Email address</label>
-        <input id="quickEmail" name="email" type="email" placeholder="Enter your email" required />
+        <input id="quickEmail" name="email" type="email" placeholder="Enter your email" required data-label="Email address" />
       </div>
       <div class="field">
         <label for="quickMessage">Message</label>
-        <textarea id="quickMessage" name="message" placeholder="Message" required></textarea>
+        <textarea id="quickMessage" name="message" placeholder="Message" required data-label="Message"></textarea>
       </div>
       <label class="checkbox-field" for="lossConfirm">
-        <input id="lossConfirm" name="lossConfirm" type="checkbox" required />
+        <input id="lossConfirm" name="lossConfirm" type="checkbox" required data-label="Loss confirmation" />
         <span>I confirm my losses exceed $2,000</span>
       </label>
       <button class="btn btn-primary short-submit" type="submit">Send Message</button>
@@ -498,9 +502,11 @@ get_header();
       <div class="success-icon" aria-hidden="true">
         <span>✓</span>
       </div>
+      <div class="success-eyebrow">Submission received</div>
       <h2 id="successTitle"><?php echo esc_html($brand_name); ?></h2>
-      <p>You have successfully submitted your details.</p>
-      <p>Our case review team will contact you shortly.</p>
+      <div class="success-copy">
+        <p>Our case review team will contact you shortly.</p>
+      </div>
       <button class="btn btn-primary success-close" type="button" data-success-close>Close</button>
     </div>
   </div>

@@ -868,6 +868,22 @@ textarea:focus {
   box-shadow: 0 0 0 4px rgba(77, 227, 255, 0.08);
 }
 
+input.is-invalid,
+select.is-invalid,
+textarea.is-invalid,
+.field.has-error .choices__inner {
+  border-color: rgba(255, 107, 138, 0.72) !important;
+  box-shadow: 0 0 0 4px rgba(255, 107, 138, 0.12) !important;
+}
+
+.field-error {
+  color: #ff9fb5;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+  margin-top: 0;
+}
+
 .choices {
   margin-bottom: 0;
 }
@@ -1052,6 +1068,11 @@ textarea:focus {
   box-shadow: 0 0 0 4px rgba(77, 227, 255, 0.08);
 }
 
+.phone-input.has-error {
+  border-color: rgba(255, 107, 138, 0.72);
+  box-shadow: 0 0 0 4px rgba(255, 107, 138, 0.12);
+}
+
 .phone-prefix {
   flex: 0 0 auto;
   display: inline-flex;
@@ -1081,6 +1102,11 @@ textarea:focus {
   box-shadow: none;
 }
 
+.phone-input input.is-invalid {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
 .form-actions {
   display: flex;
   justify-content: space-between;
@@ -1106,7 +1132,8 @@ textarea:focus {
 }
 
 .checkbox-field {
-  display: flex;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
   align-items: flex-start;
   gap: 10px;
   margin-top: 4px;
@@ -1126,6 +1153,18 @@ textarea:focus {
   padding: 0;
   accent-color: var(--cyan);
   cursor: pointer;
+}
+
+.checkbox-field input.is-invalid {
+  border-color: rgba(255, 107, 138, 0.72) !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 138, 0.12) !important;
+}
+
+.checkbox-field .field-error {
+  grid-column: 2;
+  width: 100%;
+  margin-top: 2px;
+  margin-left: 0;
 }
 
 .short-submit {
@@ -1178,18 +1217,29 @@ textarea:focus {
 
 .modal-close {
   flex: 0 0 auto;
-  display: grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 38px;
   height: 38px;
+  padding: 0;
   border: 1px solid var(--line);
   border-radius: 12px;
   color: var(--text);
   background: rgba(255, 255, 255, 0.045);
-  font-size: 24px;
-  line-height: 1;
+  font-size: 0;
+  line-height: 0;
   cursor: pointer;
   transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+  position: relative;
+}
+
+.modal-close::before {
+  content: "×";
+  display: block;
+  font-size: 24px;
+  line-height: 1;
+  transform: translateY(-1px);
 }
 
 .modal-close:hover {
@@ -1205,7 +1255,7 @@ textarea:focus {
 .success-card {
   position: relative;
   overflow: hidden;
-  padding: 44px 40px 38px;
+  padding: 42px 40px 36px;
   border: 1px solid var(--line-strong);
   border-radius: 30px;
   color: var(--text);
@@ -1215,6 +1265,15 @@ textarea:focus {
     linear-gradient(180deg, rgba(12, 28, 46, 0.98), rgba(6, 15, 28, 0.98));
   text-align: center;
   box-shadow: 0 34px 120px rgba(0, 0, 0, 0.56);
+}
+
+.success-eyebrow {
+  margin-bottom: 14px;
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .success-card::before {
@@ -1263,24 +1322,33 @@ textarea:focus {
 .success-card h2 {
   color: var(--text);
   font-family: "Space Grotesk", Inter, sans-serif;
-  font-size: clamp(32px, 4.4vw, 48px);
-  line-height: 1.02;
+  font-size: clamp(32px, 4vw, 46px);
+  line-height: 1.04;
   letter-spacing: -0.03em;
-  margin-bottom: 18px;
+  margin: 0 auto 18px;
+  max-width: 420px;
+}
+
+.success-copy {
+  max-width: 420px;
+  margin: 0 auto;
 }
 
 .success-card p {
-  max-width: 500px;
-  margin: 0 auto 12px;
+  margin: 0;
   color: #c5d7e9;
-  font-size: clamp(18px, 2.2vw, 26px);
-  line-height: 1.35;
+  font-size: clamp(17px, 2vw, 22px);
+  line-height: 1.48;
+}
+
+.success-copy p + p {
+  margin-top: 10px;
 }
 
 .success-close {
   min-width: 190px;
   min-height: 58px;
-  margin-top: 22px;
+  margin-top: 24px;
   color: #03111f;
   background: linear-gradient(135deg, var(--cyan), var(--green));
   box-shadow: 0 18px 42px rgba(77, 227, 255, 0.24);

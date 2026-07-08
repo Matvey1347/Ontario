@@ -16,6 +16,14 @@ add_action('wp_enqueue_scripts', static function (): void {
     $version = $theme->get('Version') ?: '1.0.0';
     $theme_uri = get_template_directory_uri();
     $current_site = function_exists('ontario_current_site') ? ontario_current_site() : [];
+    $rest_endpoint = home_url('/wp-json/ontario-site-manager/v1/lead');
+
+    if (! empty($current_site['is_preview']) && ! empty($current_site['id'])) {
+        $rest_endpoint = add_query_arg([
+            'ontario_preview_site' => (int) $current_site['id'],
+            '_wpnonce' => wp_create_nonce('ontario_preview_site_' . (int) $current_site['id']),
+        ], $rest_endpoint);
+    }
 
     wp_enqueue_style(
         'ontario-google-fonts',
@@ -60,7 +68,7 @@ add_action('wp_enqueue_scripts', static function (): void {
     }
 
     wp_localize_script('ontario-theme', 'ontarioSiteManager', [
-        'restEndpoint' => esc_url_raw(home_url('/wp-json/ontario-site-manager/v1/lead')),
+        'restEndpoint' => esc_url_raw($rest_endpoint),
         'brandName' => function_exists('ontario_site_brand_name') ? ontario_site_brand_name() : get_bloginfo('name'),
         'siteId' => (int) ($current_site['id'] ?? 0),
         'siteHost' => (string) ($current_site['resolved_host'] ?? ''),

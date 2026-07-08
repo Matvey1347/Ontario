@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Site Manager
+ * Plugin Name: Ontario Plugin
  * Description: Multi-domain site profiles, dynamic branding, lead capture, CRM integration, logs.
  * Version: 2.0.1
  * Author: Codex

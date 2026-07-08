@@ -177,13 +177,22 @@ final class OSM_Current_Site
     {
         $site = $this->get_site();
         $favicon_id = (int) ($site['favicon_id'] ?? 0);
+        $favicon_url = '';
 
         if ($favicon_id > 0) {
             $favicon = wp_get_attachment_image_url($favicon_id, 'full');
 
             if (is_string($favicon) && $favicon !== '') {
-                echo '<link rel="icon" href="' . esc_url($favicon) . '" />' . "\n";
+                $favicon_url = $favicon;
             }
+        }
+
+        if ($favicon_url === '' && ! empty($site['favicon_url'])) {
+            $favicon_url = (string) $site['favicon_url'];
+        }
+
+        if ($favicon_url !== '') {
+            echo '<link rel="icon" href="' . esc_url($favicon_url) . '" />' . "\n";
         }
 
         $tracking = $this->render_tracking_code();
@@ -290,6 +299,7 @@ final class OSM_Current_Site
             'meta_title' => 'Ontario Refunds',
             'company_name' => 'Ontario Refunds',
             'logo_url' => 'https://ontariorefunds.info/wp-content/uploads/2026/02/Ontario-Refunds-logo-color.png',
+            'favicon_url' => content_url('themes/Ontario/assets/images/fav.png'),
             'public_email' => 'support@ontariorefunds.info',
             'phone_number' => '+1 647 478 0877',
             'phone_href' => '+16474780877',

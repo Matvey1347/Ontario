@@ -243,17 +243,6 @@
     phoneInputs.forEach((phoneInput) => {
       phoneInput.addEventListener('input', () => {
         phoneInput.value = formatCanadianPhone(phoneInput.value);
-        phoneInput.setCustomValidity('');
-      });
-
-      phoneInput.addEventListener('blur', () => {
-        const digits = getCanadianPhoneDigits(phoneInput.value);
-
-        if (digits.length > 0 && digits.length < 10) {
-          phoneInput.setCustomValidity('Enter a valid Canadian phone number.');
-        } else {
-          phoneInput.setCustomValidity('');
-        }
       });
     });
   }
@@ -304,20 +293,146 @@
     nextBtn.textContent = currentStep === steps.length - 1 ? 'Submit Case Review' : 'Next Step';
   }
 
-  function validateCurrentStep() {
-    const fields = [...steps[currentStep].querySelectorAll('input, select, textarea')];
+  function getFieldContainer(field) {
+    return field.closest('.field') || field.closest('.checkbox-field');
+  }
 
-    for (const field of fields) {
-      if (!field.checkValidity()) {
-        field.reportValidity();
-        return false;
+  function getPhoneWrapper(field) {
+    return field.type === 'tel' ? field.closest('.phone-input') : null;
+  }
+
+  function hasStartedValidation(formElement) {
+    return !!(formElement && formElement.dataset.validationStarted === '1');
+  }
+
+  function startValidation(formElement) {
+    if (!formElement) return;
+    formElement.dataset.validationStarted = '1';
+  }
+
+  function setFieldError(field, message) {
+    const container = getFieldContainer(field);
+    const phoneWrapper = getPhoneWrapper(field);
+
+    if (!container) return;
+
+    container.classList.add('has-error');
+    field.classList.add('is-invalid');
+    if (phoneWrapper) {
+      phoneWrapper.classList.add('has-error');
+    }
+
+    let error = container.querySelector('.field-error');
+
+    if (!error) {
+      error = document.createElement('div');
+      error.className = 'field-error';
+      container.appendChild(error);
+    }
+
+    error.textContent = message;
+  }
+
+  function clearFieldError(field) {
+    const container = getFieldContainer(field);
+    const phoneWrapper = getPhoneWrapper(field);
+
+    if (!container) return;
+
+    container.classList.remove('has-error');
+    field.classList.remove('is-invalid');
+    if (phoneWrapper) {
+      phoneWrapper.classList.remove('has-error');
+    }
+
+    const error = container.querySelector('.field-error');
+
+    if (error) {
+      error.remove();
+    }
+  }
+
+  function getFieldErrorMessage(field) {
+    const value = field.type === 'checkbox' ? field.checked : String(field.value || '').trim();
+
+    if (field.hasAttribute('required') && !value) {
+      return 'This field is required.';
+    }
+
+    if (field.type === 'email' && value) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailPattern.test(String(field.value).trim())) {
+        return 'Enter a valid email address.';
       }
     }
 
-    return true;
+    if (field.type === 'tel' && value) {
+      const digits = getCanadianPhoneDigits(String(field.value));
+
+      if (digits.length < 10) {
+        return 'Enter a valid Canadian phone number.';
+      }
+    }
+
+    return '';
+  }
+
+  function attachFieldValidation(formElement) {
+    if (!formElement) return;
+
+    formElement.querySelectorAll('input, select, textarea').forEach((field) => {
+      const eventName = field.type === 'checkbox' || field.tagName === 'SELECT' ? 'change' : 'input';
+
+      field.addEventListener(eventName, () => {
+        if (!hasStartedValidation(formElement)) {
+          return;
+        }
+
+        const message = getFieldErrorMessage(field);
+
+        if (message) {
+          setFieldError(field, message);
+        } else {
+          clearFieldError(field);
+        }
+      });
+    });
+  }
+
+  function validateFields(fields) {
+    let firstInvalidField = null;
+    let isValid = true;
+
+    fields.forEach((field) => {
+      const message = getFieldErrorMessage(field);
+
+      if (message) {
+        setFieldError(field, message);
+        isValid = false;
+
+        if (!firstInvalidField) {
+          firstInvalidField = field;
+        }
+      } else {
+        clearFieldError(field);
+      }
+    });
+
+    if (firstInvalidField) {
+      firstInvalidField.focus();
+    }
+
+    return isValid;
+  }
+
+  function validateCurrentStep() {
+    const fields = [...steps[currentStep].querySelectorAll('input, select, textarea')];
+    return validateFields(fields);
   }
 
   nextBtn?.addEventListener('click', () => {
+    startValidation(form);
     if (!validateCurrentStep()) return;
 
     if (currentStep < steps.length - 1) {
@@ -355,9 +470,11 @@
 
     const quickForm = event.currentTarget;
     const submitButton = quickForm.querySelector('button[type="submit"]');
+    startValidation(quickForm);
 
-    if (!quickForm.checkValidity()) {
-      quickForm.reportValidity();
+    const quickFields = [...quickForm.querySelectorAll('input, select, textarea')];
+
+    if (!validateFields(quickFields)) {
       return;
     }
 
@@ -411,6 +528,8 @@
 
   initCustomSelects();
   initPhoneMask();
+  attachFieldValidation(form);
+  attachFieldValidation(document.getElementById('quickForm'));
   initScrollReveal();
   initPointerGlow();
   initHeroField();

@@ -17,10 +17,24 @@ final class OSM_Zoho_CRM
     public function create_lead(array $site, string $form_key, array $payload): array
     {
         if (($site['zoho_enabled'] ?? '0') !== '1') {
+            $this->logger->log('Zoho lead sync skipped', [
+                'reason' => 'Zoho disabled',
+                'form_key' => $form_key,
+                'site_id' => $site['id'] ?? 0,
+                'site_name' => $site['company_name'] ?? '',
+                'site_domain' => $site['resolved_host'] ?? $site['primary_domain'] ?? '',
+            ], $this->build_log_meta('info', $site));
             return ['success' => false, 'message' => 'Zoho disabled'];
         }
 
         if (empty($site['zoho_client_id']) || empty($site['zoho_client_secret']) || empty($site['zoho_refresh_token'])) {
+            $this->logger->log('Zoho lead sync skipped', [
+                'reason' => 'Zoho credentials incomplete',
+                'form_key' => $form_key,
+                'site_id' => $site['id'] ?? 0,
+                'site_name' => $site['company_name'] ?? '',
+                'site_domain' => $site['resolved_host'] ?? $site['primary_domain'] ?? '',
+            ], $this->build_log_meta('info', $site));
             return ['success' => false, 'message' => 'Zoho credentials incomplete'];
         }
 
@@ -43,7 +57,13 @@ final class OSM_Zoho_CRM
         ]);
 
         if (is_wp_error($response)) {
-            $this->logger->log('Zoho create lead failed', ['error' => $response->get_error_message()]);
+            $this->logger->log('Zoho create lead failed', [
+                'error' => $response->get_error_message(),
+                'form_key' => $form_key,
+                'site_id' => $site['id'] ?? 0,
+                'site_name' => $site['company_name'] ?? '',
+                'site_domain' => $site['resolved_host'] ?? $site['primary_domain'] ?? '',
+            ], $this->build_log_meta('error', $site));
             return ['success' => false, 'message' => $response->get_error_message()];
         }
 
@@ -58,10 +78,25 @@ final class OSM_Zoho_CRM
                 $reference = (string) $decoded['data'][0]['details']['id'];
             }
 
+            $this->logger->log('Zoho lead created', [
+                'form_key' => $form_key,
+                'site_id' => $site['id'] ?? 0,
+                'site_name' => $site['company_name'] ?? '',
+                'site_domain' => $site['resolved_host'] ?? $site['primary_domain'] ?? '',
+                'reference' => $reference,
+            ], $this->build_log_meta('success', $site));
+
             return ['success' => true, 'message' => 'Lead created', 'data' => $decoded, 'reference' => $reference];
         }
 
-        $this->logger->log('Zoho create lead non-success response', ['status_code' => $code, 'body' => $body]);
+        $this->logger->log('Zoho create lead non-success response', [
+            'status_code' => $code,
+            'body' => $body,
+            'form_key' => $form_key,
+            'site_id' => $site['id'] ?? 0,
+            'site_name' => $site['company_name'] ?? '',
+            'site_domain' => $site['resolved_host'] ?? $site['primary_domain'] ?? '',
+        ], $this->build_log_meta('error', $site));
         return ['success' => false, 'message' => 'Zoho lead creation failed', 'data' => $decoded];
     }
 
@@ -80,7 +115,12 @@ final class OSM_Zoho_CRM
         ]);
 
         if (is_wp_error($response)) {
-            $this->logger->log('Zoho token refresh failed', ['error' => $response->get_error_message()]);
+            $this->logger->log('Zoho token refresh failed', [
+                'error' => $response->get_error_message(),
+                'site_id' => $site['id'] ?? 0,
+                'site_name' => $site['company_name'] ?? '',
+                'site_domain' => $site['resolved_host'] ?? $site['primary_domain'] ?? '',
+            ], $this->build_log_meta('error', $site));
             return '';
         }
 
@@ -135,5 +175,15 @@ final class OSM_Zoho_CRM
     private function sanitize_value(string $value): string
     {
         return trim(preg_replace('/\s+/', ' ', $value) ?: '');
+    }
+
+    private function build_log_meta(string $level, array $site): array
+    {
+        return [
+            'level' => $level,
+            'site_id' => (int) ($site['id'] ?? 0),
+            'site_name' => (string) ($site['company_name'] ?? ''),
+            'site_domain' => (string) ($site['resolved_host'] ?? $site['primary_domain'] ?? ''),
+        ];
     }
 }

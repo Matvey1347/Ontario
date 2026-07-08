@@ -24,6 +24,7 @@ final class OSM_Sites
         add_filter('manage_' . self::POST_TYPE . '_posts_columns', [$this, 'filter_columns']);
         add_action('manage_' . self::POST_TYPE . '_posts_custom_column', [$this, 'render_column'], 10, 2);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
+        add_action('admin_head', [$this, 'render_admin_list_styles']);
         add_action('admin_footer-post.php', [$this, 'render_media_script']);
         add_action('admin_footer-post-new.php', [$this, 'render_media_script']);
         add_action('init', [$this, 'ensure_seed_site'], 30);
@@ -165,7 +166,11 @@ final class OSM_Sites
     public function register_meta_boxes(): void
     {
         add_meta_box('osm-site-settings', 'Site Settings', [$this, 'render_settings_metabox'], self::POST_TYPE, 'normal', 'high');
-        add_meta_box('osm-site-preview', 'Preview', [$this, 'render_preview_metabox'], self::POST_TYPE, 'side', 'high');
+        $post = get_post();
+
+        if ($post instanceof WP_Post && $post->post_type === self::POST_TYPE && $post->post_status !== 'auto-draft') {
+            add_meta_box('osm-site-preview', 'Preview', [$this, 'render_preview_metabox'], self::POST_TYPE, 'side', 'high');
+        }
     }
 
     public function render_settings_metabox(WP_Post $post): void
@@ -175,6 +180,7 @@ final class OSM_Sites
         $storage_key = 'osm-active-tab-' . $post->ID;
 
         echo '<div class="osm-tabs">';
+        echo '<div class="notice notice-error osm-validation-notice" hidden><p><strong>Please fill in these required fields:</strong></p><ul class="osm-validation-list"></ul></div>';
         echo '<p class="description" style="margin:0 0 14px;">Fields marked with <span class="osm-required">*</span> are required.</p>';
         echo '<div class="osm-tab-nav" role="tablist" aria-label="Site settings tabs">';
         echo '<button type="button" class="button osm-tab-button is-active" data-osm-tab="domain" role="tab" aria-selected="true">Domain</button>';
@@ -305,6 +311,11 @@ final class OSM_Sites
 
             $value = is_string($raw) ? wp_unslash($raw) : '';
             $sanitized = $config['sanitize']($value);
+
+            if ($key === 'meta_title' && $sanitized === '') {
+                $sanitized = $this->default_meta_title($post);
+            }
+
             update_post_meta($post_id, $meta_key, $sanitized);
         }
 
@@ -530,6 +541,50 @@ final class OSM_Sites
         wp_enqueue_media();
     }
 
+    public function render_admin_list_styles(): void
+    {
+        $screen = get_current_screen();
+
+        if (! $screen || $screen->post_type !== self::POST_TYPE) {
+            return;
+        }
+
+        echo '<style>
+          .column-osm_active,
+          .column-osm_default {
+            width:120px;
+          }
+          .osm-status {
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            width:26px;
+            height:26px;
+            border-radius:999px;
+            border:0;
+            font-size:16px;
+            font-weight:700;
+            line-height:1;
+            padding:0;
+            font-family:Arial, sans-serif;
+            vertical-align:middle;
+          }
+          .osm-status span {
+            display:block;
+            line-height:1;
+            transform:translateY(-1px);
+          }
+          .osm-status-success {
+            background:#dcfce7;
+            color:#15803d;
+          }
+          .osm-status-neutral {
+            background:#e5e7eb;
+            color:#4b5563;
+          }
+        </style>';
+    }
+
     private function fields(): array
     {
         return [
@@ -569,23 +624,38 @@ final class OSM_Sites
 
         if ($values['meta_title'] === '') {
             $legacy_title = (string) get_post_meta($post_id, '_osm_site_title', true);
-            $values['meta_title'] = $legacy_title !== '' ? $legacy_title : get_the_title($post_id);
+            $values['meta_title'] = $legacy_title !== '' ? $legacy_title : $this->default_meta_title(get_post($post_id));
         }
 
         return $values;
     }
 
+    private function default_meta_title(WP_Post|false|null $post): string
+    {
+        if (! $post instanceof WP_Post) {
+            return '';
+        }
+
+        $title = trim($post->post_title);
+
+        if ($title === '' || strtolower($title) === 'auto draft') {
+            return '';
+        }
+
+        return $title;
+    }
+
     private function render_text_row(string $key, string $label, string $value, string $placeholder = '', bool $required = false): void
     {
         echo '<tr><th scope="row"><label for="osm-' . esc_attr($key) . '">' . esc_html($label) . $this->render_required_mark($required) . '</label></th><td>';
-        echo '<input class="regular-text" type="text" id="osm-' . esc_attr($key) . '" name="osm[' . esc_attr($key) . ']" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '" ' . ($required ? 'required' : '') . ' />';
+        echo '<input class="regular-text" type="text" id="osm-' . esc_attr($key) . '" name="osm[' . esc_attr($key) . ']" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '" data-osm-label="' . esc_attr($label) . '" ' . ($required ? 'required data-osm-required="1"' : '') . ' />';
         echo '</td></tr>';
     }
 
     private function render_textarea_row(string $key, string $label, string $value, string $help = '', bool $required = false): void
     {
         echo '<tr><th scope="row"><label for="osm-' . esc_attr($key) . '">' . esc_html($label) . $this->render_required_mark($required) . '</label></th><td>';
-        echo '<textarea class="large-text" rows="4" id="osm-' . esc_attr($key) . '" name="osm[' . esc_attr($key) . ']" ' . ($required ? 'required' : '') . '>' . esc_textarea($value) . '</textarea>';
+        echo '<textarea class="large-text" rows="4" id="osm-' . esc_attr($key) . '" name="osm[' . esc_attr($key) . ']" data-osm-label="' . esc_attr($label) . '" ' . ($required ? 'required data-osm-required="1"' : '') . '>' . esc_textarea($value) . '</textarea>';
         if ($help !== '') {
             echo '<p class="description">' . esc_html($help) . '</p>';
         }
@@ -602,9 +672,13 @@ final class OSM_Sites
     private function render_secret_row(string $key, string $label, string $stored_value): void
     {
         $masked = $this->crypto->mask($stored_value);
+        $plain = $this->crypto->decrypt($stored_value);
 
         echo '<tr><th scope="row"><label for="osm-' . esc_attr($key) . '">' . esc_html($label) . '</label></th><td>';
-        echo '<input class="regular-text" type="password" id="osm-' . esc_attr($key) . '" name="osm[' . esc_attr($key) . ']" value="" placeholder="' . esc_attr($masked) . '" autocomplete="new-password" />';
+        echo '<div class="osm-secret-field">';
+        echo '<input class="regular-text osm-secret-input" type="password" id="osm-' . esc_attr($key) . '" name="osm[' . esc_attr($key) . ']" value="" placeholder="' . esc_attr($masked) . '" autocomplete="new-password" data-secret-value="' . esc_attr($plain) . '" />';
+        echo '<button type="button" class="button osm-secret-toggle" data-target="osm-' . esc_attr($key) . '" aria-label="Show secret" aria-pressed="false">Show</button>';
+        echo '</div>';
         echo '<p class="description">Leave empty to keep the current value.</p>';
         echo '</td></tr>';
     }
@@ -669,11 +743,11 @@ final class OSM_Sites
 
     private function render_boolean_icon(bool $value): string
     {
-        $class = $value ? 'osm-check is-checked' : 'osm-check';
-        $symbol = $value ? '&#10003;' : '';
+        $class = $value ? 'osm-status osm-status-success' : 'osm-status osm-status-neutral';
+        $symbol = $value ? '&#10003;' : '-';
         $label = $value ? 'Yes' : 'No';
 
-        return '<span class="' . esc_attr($class) . '" aria-label="' . esc_attr($label) . '" title="' . esc_attr($label) . '">' . $symbol . '</span>';
+        return '<span class="' . esc_attr($class) . '" aria-label="' . esc_attr($label) . '" title="' . esc_attr($label) . '"><span aria-hidden="true">' . $symbol . '</span></span>';
     }
 
     private function render_required_mark(bool $required): string
@@ -736,6 +810,45 @@ final class OSM_Sites
             font-weight: 700;
           }
 
+          .osm-validation-notice {
+            margin: 0 0 16px;
+          }
+
+          .osm-validation-list {
+            margin: 8px 0 0 18px;
+            list-style: disc;
+          }
+
+          .osm-validation-list button {
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #2271b1;
+            text-decoration: underline;
+            cursor: pointer;
+          }
+
+          .osm-secret-field {
+            display:flex;
+            align-items:center;
+            gap:8px;
+            max-width: 34rem;
+          }
+
+          .osm-secret-field .osm-secret-input {
+            flex:1 1 auto;
+          }
+
+          .osm-secret-field .osm-secret-toggle {
+            flex:0 0 auto;
+            min-width:72px;
+          }
+
+          .osm-field-error {
+            border-color: #d63638 !important;
+            box-shadow: 0 0 0 1px #d63638 !important;
+          }
+
           .osm-tab-panel[hidden] {
             display: none !important;
           }
@@ -749,7 +862,15 @@ final class OSM_Sites
             const tabButtons = tabsRoot.querySelectorAll('.osm-tab-button');
             const tabPanels = tabsRoot.querySelectorAll('.osm-tab-panel');
             const tabInput = tabsRoot.querySelector('input[name="osm_active_tab"]');
+            const validationNotice = tabsRoot.querySelector('.osm-validation-notice');
+            const validationList = tabsRoot.querySelector('.osm-validation-list');
             const storageKey = <?php echo wp_json_encode($storage_key); ?>;
+            const postForm = document.getElementById('post');
+            const titleField = document.getElementById('title');
+
+            tabsRoot.activateTab = (target) => {
+              activateTab(target);
+            };
 
             const activateTab = (target) => {
               tabButtons.forEach((item) => {
@@ -779,6 +900,34 @@ final class OSM_Sites
               });
             });
 
+            tabsRoot.querySelectorAll('.osm-secret-toggle').forEach((button) => {
+              button.addEventListener('click', () => {
+                const input = tabsRoot.querySelector('#' + button.dataset.target);
+
+                if (!input) {
+                  return;
+                }
+
+                const revealing = input.type === 'password';
+
+                if (revealing) {
+                  if (!input.value && input.dataset.secretValue) {
+                    input.value = input.dataset.secretValue;
+                  }
+
+                  input.type = 'text';
+                  button.textContent = 'Hide';
+                  button.setAttribute('aria-label', 'Hide secret');
+                  button.setAttribute('aria-pressed', 'true');
+                } else {
+                  input.type = 'password';
+                  button.textContent = 'Show';
+                  button.setAttribute('aria-label', 'Show secret');
+                  button.setAttribute('aria-pressed', 'false');
+                }
+              });
+            });
+
             let savedTab = '';
 
             try {
@@ -789,6 +938,115 @@ final class OSM_Sites
               activateTab(savedTab);
             } else {
               activateTab('domain');
+            }
+
+            const requiredFields = Array.from(tabsRoot.querySelectorAll('[data-osm-required="1"]'));
+
+            const clearErrors = () => {
+              if (validationNotice) {
+                validationNotice.hidden = true;
+              }
+
+              if (validationList) {
+                validationList.innerHTML = '';
+              }
+
+              requiredFields.forEach((field) => {
+                field.classList.remove('osm-field-error');
+              });
+
+              if (titleField) {
+                titleField.classList.remove('osm-field-error');
+              }
+            };
+
+            const getFieldTab = (field) => {
+              const panel = field.closest('.osm-tab-panel');
+              return panel ? panel.dataset.osmPanel || 'domain' : 'domain';
+            };
+
+            const isEmpty = (field) => {
+              return !String(field.value || '').trim();
+            };
+
+            const buildErrors = () => {
+              const errors = [];
+
+              if (titleField && !String(titleField.value || '').trim()) {
+                errors.push({
+                  label: 'Title',
+                  field: titleField,
+                  tab: null
+                });
+              }
+
+              requiredFields.forEach((field) => {
+                if (isEmpty(field)) {
+                  errors.push({
+                    label: field.dataset.osmLabel || 'Required field',
+                    field,
+                    tab: getFieldTab(field)
+                  });
+                }
+              });
+
+              return errors;
+            };
+
+            const focusError = (error) => {
+              if (error.tab) {
+                activateTab(error.tab);
+              }
+
+              window.setTimeout(() => {
+                error.field.focus();
+                if (typeof error.field.scrollIntoView === 'function') {
+                  error.field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }, 50);
+            };
+
+            const renderErrors = (errors) => {
+              clearErrors();
+
+              if (!errors.length || !validationNotice || !validationList) {
+                return;
+              }
+
+              errors.forEach((error) => {
+                error.field.classList.add('osm-field-error');
+                const item = document.createElement('li');
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.textContent = error.label;
+                button.addEventListener('click', () => focusError(error));
+                item.appendChild(button);
+                validationList.appendChild(item);
+              });
+
+              validationNotice.hidden = false;
+              validationNotice.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            };
+
+            [...requiredFields, titleField].filter(Boolean).forEach((field) => {
+              field.addEventListener('input', () => {
+                field.classList.remove('osm-field-error');
+              });
+            });
+
+            if (postForm) {
+              postForm.addEventListener('submit', (event) => {
+                const errors = buildErrors();
+
+                if (!errors.length) {
+                  clearErrors();
+                  return;
+                }
+
+                event.preventDefault();
+                renderErrors(errors);
+                focusError(errors[0]);
+              });
             }
           });
         })();
