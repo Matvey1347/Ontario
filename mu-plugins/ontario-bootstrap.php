@@ -289,7 +289,6 @@ add_action('admin_bar_menu', static function (WP_Admin_Bar $wp_admin_bar): void 
             'id' => 'ontario-edit-current-site',
             'title' => '<span class="ab-icon dashicons dashicons-edit"></span><span class="ab-label">Edit This Site</span>',
             'href' => admin_url('post.php?post=' . $current_site_id . '&action=edit'),
-            'meta' => ['html' => true],
         ]);
     }
 
@@ -297,7 +296,6 @@ add_action('admin_bar_menu', static function (WP_Admin_Bar $wp_admin_bar): void 
         'id' => 'ontario-current-site',
         'title' => '<span class="ab-icon dashicons dashicons-admin-site-alt3"></span><span class="ab-label">' . esc_html($current_label) . '</span>',
         'href' => $current_site_id > 0 ? ontario_bootstrap_preview_url($current_site_id) : home_url('/'),
-        'meta' => ['html' => true],
     ]);
 
     $posts = get_posts([
@@ -325,6 +323,36 @@ add_action('admin_bar_menu', static function (WP_Admin_Bar $wp_admin_bar): void 
         ]);
     }
 }, 90);
+
+add_action('wp_head', static function (): void {
+    if (! is_user_logged_in() || ! is_admin_bar_showing()) {
+        return;
+    }
+
+    echo '<style>
+      #wpadminbar #wp-admin-bar-ontario-edit-current-site > .ab-item,
+      #wpadminbar #wp-admin-bar-ontario-current-site > .ab-item {
+        display:flex;
+        align-items:center;
+        gap:6px;
+      }
+      #wpadminbar #wp-admin-bar-ontario-edit-current-site .ab-icon,
+      #wpadminbar #wp-admin-bar-ontario-current-site .ab-icon {
+        position:static;
+        top:auto;
+        float:none;
+        width:auto;
+        height:auto;
+        margin:0;
+        padding:0;
+        line-height:1;
+      }
+      #wpadminbar #wp-admin-bar-ontario-edit-current-site .ab-label,
+      #wpadminbar #wp-admin-bar-ontario-current-site .ab-label {
+        display:inline-block;
+      }
+    </style>';
+}, 100);
 
 add_action('wp_dashboard_setup', static function (): void {
     remove_meta_box('dashboard_site_health', 'dashboard', 'normal');
