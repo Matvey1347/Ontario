@@ -9,6 +9,7 @@ final class OSM_Sites
 {
     private const POST_TYPE = 'ontario_site';
     private const SEED_OPTION = 'osm_seeded_default_site';
+    private const SETTINGS_OPTION = 'osm_global_settings';
 
     private OSM_Crypto $crypto;
     private OSM_Logger $logger;
@@ -178,6 +179,7 @@ final class OSM_Sites
         wp_nonce_field('osm_save_site', 'osm_site_nonce');
         $meta = $this->get_meta_values($post->ID);
         $storage_key = 'osm-active-tab-' . $post->ID;
+        $show_default_toggle = $this->should_show_default_toggle($post->ID);
 
         echo '<div class="osm-tabs">';
         echo '<div class="notice notice-error osm-validation-notice" hidden><p><strong>Please fill in these required fields:</strong></p><ul class="osm-validation-list"></ul></div>';
@@ -196,7 +198,9 @@ final class OSM_Sites
         echo '<div class="osm-tab-panel is-active" data-osm-panel="domain" role="tabpanel">';
         echo '<table class="form-table"><tbody>';
         $this->render_checkbox_row('is_active', 'Active', $meta['is_active']);
-        $this->render_checkbox_row('is_default', 'Default fallback site', $meta['is_default']);
+        if ($show_default_toggle) {
+            $this->render_checkbox_row('is_default', 'Default fallback site', $meta['is_default']);
+        }
         $this->render_text_row('primary_domain', 'Primary domain', $meta['primary_domain'], 'test.com', true);
         $this->render_textarea_row('domain_aliases', 'Domain aliases', $meta['domain_aliases'], 'One domain per line');
         echo '</tbody></table>';
@@ -260,10 +264,10 @@ final class OSM_Sites
             return;
         }
 
-        $preview_url = wp_nonce_url(
-            add_query_arg('ontario_preview_site', (string) $post->ID, home_url('/')),
-            'ontario_preview_site_' . $post->ID
-        );
+        $preview_url = add_query_arg([
+            'ontario_preview_site' => (string) $post->ID,
+            'ontario_preview_token' => OSM_Current_Site::preview_token((int) $post->ID),
+        ], home_url('/'));
 
         echo '<p>Open this site profile on the current WordPress domain without changing DNS.</p>';
         echo '<p><a class="button button-primary" href="' . esc_url($preview_url) . '" target="_blank" rel="noopener">Open Preview</a></p>';
@@ -394,6 +398,7 @@ final class OSM_Sites
         }
 
         $meta = $this->get_meta_values($post_id);
+        $settings = $this->get_global_settings();
 
         return [
             'id' => $post_id,
@@ -420,9 +425,35 @@ final class OSM_Sites
             'zoho_client_id' => $meta['zoho_client_id'],
             'zoho_client_secret' => $this->crypto->decrypt($meta['zoho_client_secret']),
             'zoho_refresh_token' => $this->crypto->decrypt($meta['zoho_refresh_token']),
-            'default_lead_status' => $meta['default_lead_status'],
-            'notification_emails' => $meta['notification_emails'],
+            'default_lead_status' => $meta['default_lead_status'] !== '' ? $meta['default_lead_status'] : $settings['default_lead_status'],
+            'notification_emails' => $meta['notification_emails'] !== '' ? $meta['notification_emails'] : $settings['notification_emails'],
         ];
+    }
+
+    public function get_global_settings(): array
+    {
+        $stored = get_option(self::SETTINGS_OPTION, []);
+        $stored = is_array($stored) ? $stored : [];
+
+        $notification_emails = isset($stored['notification_emails'])
+            ? $this->sanitize_textarea((string) $stored['notification_emails'])
+            : '';
+        $default_lead_status = isset($stored['default_lead_status'])
+            ? sanitize_text_field((string) $stored['default_lead_status'])
+            : 'Contact in Future';
+
+        return [
+            'notification_emails' => $notification_emails,
+            'default_lead_status' => $default_lead_status,
+        ];
+    }
+
+    public function save_global_settings(array $settings): void
+    {
+        update_option(self::SETTINGS_OPTION, [
+            'notification_emails' => $this->sanitize_textarea((string) ($settings['notification_emails'] ?? '')),
+            'default_lead_status' => sanitize_text_field((string) ($settings['default_lead_status'] ?? 'Contact in Future')),
+        ], false);
     }
 
     public function get_default_site(): array
@@ -688,15 +719,69 @@ final class OSM_Sites
         $preview_id = 'osm-preview-' . $key;
         $input_id = 'osm-' . $key;
         $clear_id = 'osm-clear-' . $key;
-        $image = $attachment_id ? wp_get_attachment_image($attachment_id, 'medium', false, ['style' => 'max-width:140px;height:auto;']) : '';
+        $image = $this->media_preview_markup($key, $attachment_id);
         $clear_style = $attachment_id > 0 ? '' : 'display:none;';
+        $description = $attachment_id > 0 ? '' : $this->media_fallback_description($key);
 
         echo '<tr><th scope="row">' . esc_html($label) . '</th><td>';
         echo '<input type="hidden" id="' . esc_attr($input_id) . '" name="osm[' . esc_attr($key) . ']" value="' . esc_attr((string) $attachment_id) . '" />';
         echo '<div id="' . esc_attr($preview_id) . '" style="margin-bottom:10px;">' . $image . '</div>';
         echo '<button type="button" class="button osm-media-button" data-target="' . esc_attr($input_id) . '" data-preview="' . esc_attr($preview_id) . '" data-title="' . esc_attr($label) . '">Select media</button> ';
         echo '<button type="button" id="' . esc_attr($clear_id) . '" class="button-link-delete osm-media-clear" data-target="' . esc_attr($input_id) . '" data-preview="' . esc_attr($preview_id) . '" style="' . esc_attr($clear_style) . '">Clear</button>';
+        if ($description !== '') {
+            echo '<p class="description">' . esc_html($description) . '</p>';
+        }
         echo '</td></tr>';
+    }
+
+    private function media_preview_markup(string $key, int $attachment_id): string
+    {
+        if ($attachment_id > 0) {
+            return (string) wp_get_attachment_image($attachment_id, 'medium', false, ['style' => 'max-width:140px;height:auto;']);
+        }
+
+        $fallback_url = $this->default_media_preview_url($key);
+
+        if ($fallback_url === '') {
+            return '';
+        }
+
+        return '<img src="' . esc_url($fallback_url) . '" style="max-width:140px;height:auto;" alt="" />';
+    }
+
+    private function default_media_preview_url(string $key): string
+    {
+        if ($key === 'favicon_id') {
+            return content_url('themes/Ontario/assets/images/fav.png');
+        }
+
+        if ($key !== 'logo_id') {
+            return '';
+        }
+
+        $default_site = $this->get_default_site();
+        $default_logo_id = (int) ($default_site['logo_id'] ?? 0);
+
+        if ($default_logo_id > 0) {
+            $url = wp_get_attachment_image_url($default_logo_id, 'medium');
+
+            if (is_string($url) && $url !== '') {
+                return $url;
+            }
+        }
+
+        return 'https://ontariorefunds.info/wp-content/uploads/2026/02/Ontario-Refunds-logo-color.png';
+    }
+
+    private function media_fallback_description(string $key): string
+    {
+        $fallback_url = $this->default_media_preview_url($key);
+
+        if ($fallback_url === '') {
+            return '';
+        }
+
+        return 'If empty, the default image currently shown on the site will be used.';
     }
 
     public function sanitize_domain(string $value): string
@@ -757,6 +842,31 @@ final class OSM_Sites
         }
 
         return ' <span class="osm-required" aria-hidden="true">*</span>';
+    }
+
+    private function should_show_default_toggle(int $post_id): bool
+    {
+        if (get_post_meta($post_id, '_osm_is_default', true) === '1') {
+            return true;
+        }
+
+        $default_site_id = $this->current_default_site_id();
+
+        return $default_site_id === 0;
+    }
+
+    private function current_default_site_id(): int
+    {
+        $posts = get_posts([
+            'post_type' => self::POST_TYPE,
+            'post_status' => 'publish',
+            'posts_per_page' => 1,
+            'fields' => 'ids',
+            'meta_key' => '_osm_is_default',
+            'meta_value' => '1',
+        ]);
+
+        return isset($posts[0]) ? (int) $posts[0] : 0;
     }
 
     private function normalize_phone_href(string $phone_number): string

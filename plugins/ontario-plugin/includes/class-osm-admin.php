@@ -42,6 +42,70 @@ final class OSM_Admin
             'ontario-site-logs',
             [$this, 'render_logs_page']
         );
+
+        add_submenu_page(
+            'edit.php?post_type=' . OSM_Sites::post_type(),
+            'Settings',
+            'Settings',
+            'manage_options',
+            'ontario-site-settings',
+            [$this, 'render_settings_page']
+        );
+    }
+
+    public function render_settings_page(): void
+    {
+        if (! current_user_can('manage_options')) {
+            return;
+        }
+
+        if (
+            isset($_POST['osm_save_global_settings'])
+            && check_admin_referer('osm_save_global_settings_action', 'osm_save_global_settings_nonce')
+        ) {
+            $this->sites->save_global_settings([
+                'notification_emails' => isset($_POST['osm_notification_emails']) ? wp_unslash((string) $_POST['osm_notification_emails']) : '',
+                'default_lead_status' => isset($_POST['osm_default_lead_status']) ? wp_unslash((string) $_POST['osm_default_lead_status']) : '',
+            ]);
+
+            wp_safe_redirect(add_query_arg([
+                'post_type' => OSM_Sites::post_type(),
+                'page' => 'ontario-site-settings',
+                'settings_saved' => '1',
+            ], admin_url('edit.php')));
+            exit;
+        }
+
+        $settings = $this->sites->get_global_settings();
+
+        echo '<div class="wrap"><h1>Settings</h1>';
+
+        if (isset($_GET['settings_saved']) && $_GET['settings_saved'] === '1') {
+            echo '<div class="notice notice-success is-dismissible"><p>Settings saved.</p></div>';
+        }
+
+        echo '<form method="post" style="max-width:760px;">';
+        wp_nonce_field('osm_save_global_settings_action', 'osm_save_global_settings_nonce');
+        echo '<input type="hidden" name="osm_save_global_settings" value="1" />';
+        echo '<table class="form-table" role="presentation"><tbody>';
+        echo '<tr>';
+        echo '<th scope="row"><label for="osm_notification_emails">Global lead email(s)</label></th>';
+        echo '<td>';
+        echo '<textarea class="large-text" rows="5" id="osm_notification_emails" name="osm_notification_emails">' . esc_textarea((string) ($settings['notification_emails'] ?? '')) . '</textarea>';
+        echo '<p class="description">These emails will receive leads from all sites when a site does not have its own notification emails configured.</p>';
+        echo '</td>';
+        echo '</tr>';
+        echo '<tr>';
+        echo '<th scope="row"><label for="osm_default_lead_status">Global default lead status</label></th>';
+        echo '<td>';
+        echo '<input class="regular-text" type="text" id="osm_default_lead_status" name="osm_default_lead_status" value="' . esc_attr((string) ($settings['default_lead_status'] ?? 'Contact in Future')) . '" />';
+        echo '<p class="description">This value is used for Zoho Lead Status when a specific site does not have its own Default lead status set.</p>';
+        echo '</td>';
+        echo '</tr>';
+        echo '</tbody></table>';
+        submit_button('Save settings');
+        echo '</form>';
+        echo '</div>';
     }
 
     public function render_leads_page(): void

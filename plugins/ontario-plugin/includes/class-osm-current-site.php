@@ -17,6 +17,7 @@ final class OSM_Current_Site
         $this->logger = $logger;
 
         add_filter('home_url', [$this, 'filter_frontend_url'], 10, 4);
+        add_filter('get_site_icon_url', [$this, 'filter_site_icon_url'], 10, 3);
         add_filter('pre_get_document_title', [$this, 'filter_document_title']);
         add_filter('the_content', [$this, 'filter_content_tokens'], 20);
         add_action('wp_head', [$this, 'render_head_assets'], 1);
@@ -91,6 +92,21 @@ final class OSM_Current_Site
             return (string) $site['logo_url'];
         }
 
+        $default_site = $this->sites->get_default_site();
+        $default_logo_id = (int) ($default_site['logo_id'] ?? 0);
+
+        if ($default_logo_id > 0) {
+            $url = wp_get_attachment_image_url($default_logo_id, 'full');
+
+            if (is_string($url) && $url !== '') {
+                return $url;
+            }
+        }
+
+        if (! empty($default_site['logo_url'])) {
+            return (string) $default_site['logo_url'];
+        }
+
         $defaults = $this->defaults();
 
         return (string) ($defaults['logo_url'] ?? '');
@@ -111,6 +127,11 @@ final class OSM_Current_Site
     public function is_preview(): bool
     {
         return ! empty($this->get_site()['is_preview']);
+    }
+
+    public static function preview_token(int $site_id): string
+    {
+        return hash_hmac('sha256', 'ontario_preview_site|' . $site_id, wp_salt('auth'));
     }
 
     public function replace_tokens(string $content): string
@@ -175,24 +196,12 @@ final class OSM_Current_Site
 
     public function render_head_assets(): void
     {
-        $site = $this->get_site();
-        $favicon_id = (int) ($site['favicon_id'] ?? 0);
-        $favicon_url = '';
-
-        if ($favicon_id > 0) {
-            $favicon = wp_get_attachment_image_url($favicon_id, 'full');
-
-            if (is_string($favicon) && $favicon !== '') {
-                $favicon_url = $favicon;
-            }
-        }
-
-        if ($favicon_url === '' && ! empty($site['favicon_url'])) {
-            $favicon_url = (string) $site['favicon_url'];
-        }
+        $favicon_url = $this->get_favicon_url();
 
         if ($favicon_url !== '') {
             echo '<link rel="icon" href="' . esc_url($favicon_url) . '" />' . "\n";
+            echo '<link rel="shortcut icon" href="' . esc_url($favicon_url) . '" />' . "\n";
+            echo '<link rel="apple-touch-icon" href="' . esc_url($favicon_url) . '" />' . "\n";
         }
 
         $tracking = $this->render_tracking_code();
@@ -200,6 +209,13 @@ final class OSM_Current_Site
         if ($tracking !== '') {
             echo $tracking;
         }
+    }
+
+    public function filter_site_icon_url(string $url, int $size, int $blog_id): string
+    {
+        $favicon_url = $this->get_favicon_url();
+
+        return $favicon_url !== '' ? $favicon_url : $url;
     }
 
     public function filter_frontend_url(string $url, string $path, ?string $orig_scheme, ?int $blog_id): string
@@ -241,13 +257,17 @@ final class OSM_Current_Site
     private function resolve_preview_site(): array
     {
         $preview_id = isset($_GET['ontario_preview_site']) ? absint($_GET['ontario_preview_site']) : 0;
-        $nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash($_GET['_wpnonce'])) : '';
+        $preview_token = isset($_GET['ontario_preview_token']) ? sanitize_text_field(wp_unslash($_GET['ontario_preview_token'])) : '';
+        $legacy_nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash($_GET['_wpnonce'])) : '';
 
-        if ($preview_id < 1 || ! current_user_can('manage_options')) {
+        if ($preview_id < 1) {
             return [];
         }
 
-        if (! wp_verify_nonce($nonce, 'ontario_preview_site_' . $preview_id)) {
+        $token_valid = $preview_token !== '' && hash_equals(self::preview_token($preview_id), $preview_token);
+        $legacy_nonce_valid = $legacy_nonce !== '' && wp_verify_nonce($legacy_nonce, 'ontario_preview_site_' . $preview_id);
+
+        if (! current_user_can('manage_options') && ! $token_valid && ! $legacy_nonce_valid) {
             return [];
         }
 
@@ -269,6 +289,43 @@ final class OSM_Current_Site
         $host = isset($_SERVER['HTTP_HOST']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])) : '';
 
         return $this->sites->normalize_host($host);
+    }
+
+    private function get_favicon_url(): string
+    {
+        $site = $this->get_site();
+        $favicon_id = (int) ($site['favicon_id'] ?? 0);
+
+        if ($favicon_id > 0) {
+            $favicon = wp_get_attachment_image_url($favicon_id, 'full');
+
+            if (is_string($favicon) && $favicon !== '') {
+                return $favicon;
+            }
+        }
+
+        if (! empty($site['favicon_url'])) {
+            return (string) $site['favicon_url'];
+        }
+
+        $default_site = $this->sites->get_default_site();
+        $default_favicon_id = (int) ($default_site['favicon_id'] ?? 0);
+
+        if ($default_favicon_id > 0) {
+            $favicon = wp_get_attachment_image_url($default_favicon_id, 'full');
+
+            if (is_string($favicon) && $favicon !== '') {
+                return $favicon;
+            }
+        }
+
+        if (! empty($default_site['favicon_url'])) {
+            return (string) $default_site['favicon_url'];
+        }
+
+        $defaults = $this->defaults();
+
+        return (string) ($defaults['favicon_url'] ?? '');
     }
 
     private function get_request_host_raw(): string

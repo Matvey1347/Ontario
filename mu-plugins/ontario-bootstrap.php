@@ -194,6 +194,19 @@ function ontario_bootstrap_hidden_admin_pages(): array
     ];
 }
 
+function ontario_bootstrap_preview_url(int $site_id): string
+{
+    $args = [
+        'ontario_preview_site' => $site_id,
+    ];
+
+    if (class_exists('OSM_Current_Site')) {
+        $args['ontario_preview_token'] = OSM_Current_Site::preview_token($site_id);
+    }
+
+    return add_query_arg($args, home_url('/'));
+}
+
 add_action('init', static function (): void {
     if (get_option('ontario_theme_bootstrapped')) {
         return;
@@ -231,6 +244,7 @@ add_action('admin_menu', static function (): void {
     remove_menu_page('edit-comments.php');
     remove_menu_page('tools.php');
     remove_menu_page('themes.php');
+    remove_submenu_page('edit.php?post_type=ontario_site', 'post-new.php?post_type=ontario_site');
 }, 999);
 
 add_action('wp_before_admin_bar_render', static function (): void {
@@ -243,7 +257,74 @@ add_action('wp_before_admin_bar_render', static function (): void {
     $wp_admin_bar->remove_node('dashboard');
     $wp_admin_bar->remove_node('comments');
     $wp_admin_bar->remove_node('new-post');
+    $wp_admin_bar->remove_node('wp-logo');
+    $wp_admin_bar->remove_node('customize');
+    $wp_admin_bar->remove_node('new-content');
+    $wp_admin_bar->remove_node('themes');
+    $wp_admin_bar->remove_node('plugins');
 }, 999);
+
+add_action('admin_bar_menu', static function (WP_Admin_Bar $wp_admin_bar): void {
+    if (is_admin() || ! current_user_can('manage_options')) {
+        return;
+    }
+
+    $sites_post_type = class_exists('OSM_Sites') ? OSM_Sites::post_type() : 'ontario_site';
+    $current_site = function_exists('ontario_current_site') ? ontario_current_site() : [];
+    $current_site_id = (int) ($current_site['id'] ?? 0);
+    $current_label = trim((string) ($current_site['company_name'] ?? ''));
+
+    if ($current_label === '') {
+        $current_label = trim((string) ($current_site['post_title'] ?? 'Ontario Site'));
+    }
+
+    $wp_admin_bar->add_node([
+        'id' => 'site-name',
+        'title' => 'Dashboard',
+        'href' => admin_url('edit.php?post_type=' . $sites_post_type),
+    ]);
+
+    if ($current_site_id > 0) {
+        $wp_admin_bar->add_node([
+            'id' => 'ontario-edit-current-site',
+            'title' => '<span class="ab-icon dashicons dashicons-edit"></span><span class="ab-label">Edit This Site</span>',
+            'href' => admin_url('post.php?post=' . $current_site_id . '&action=edit'),
+            'meta' => ['html' => true],
+        ]);
+    }
+
+    $wp_admin_bar->add_node([
+        'id' => 'ontario-current-site',
+        'title' => '<span class="ab-icon dashicons dashicons-admin-site-alt3"></span><span class="ab-label">' . esc_html($current_label) . '</span>',
+        'href' => $current_site_id > 0 ? ontario_bootstrap_preview_url($current_site_id) : home_url('/'),
+        'meta' => ['html' => true],
+    ]);
+
+    $posts = get_posts([
+        'post_type' => $sites_post_type,
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'orderby' => 'title',
+        'order' => 'ASC',
+    ]);
+
+    foreach ($posts as $post) {
+        $label = get_post_meta($post->ID, '_osm_company_name', true);
+
+        if (! is_string($label) || trim($label) === '') {
+            $label = $post->post_title;
+        }
+
+        $title = ((int) $post->ID === $current_site_id ? '&#10003; ' : '') . esc_html($label);
+
+        $wp_admin_bar->add_node([
+            'id' => 'ontario-preview-site-' . (int) $post->ID,
+            'parent' => 'ontario-current-site',
+            'title' => $title,
+            'href' => ontario_bootstrap_preview_url((int) $post->ID),
+        ]);
+    }
+}, 90);
 
 add_action('wp_dashboard_setup', static function (): void {
     remove_meta_box('dashboard_site_health', 'dashboard', 'normal');

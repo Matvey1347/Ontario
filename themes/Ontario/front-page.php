@@ -453,6 +453,20 @@ get_header();
   </section>
 </main>
 
+<div class="modal welcome-modal" id="welcome-modal" aria-hidden="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-dialog welcome-dialog" role="dialog" aria-modal="true" aria-labelledby="welcomeModalTitle">
+    <div class="welcome-card">
+      <div class="success-eyebrow">Please note</div>
+      <h2 id="welcomeModalTitle">Only If You Lost $2,000+</h2>
+      <div class="welcome-copy">
+        <p>We will only accept your case if your losses exceed $2,000.</p>
+      </div>
+      <button class="btn btn-primary welcome-close" type="button" data-welcome-close>I Understand</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="quick-contact-modal" aria-hidden="true">
   <div class="modal-backdrop" data-modal-close></div>
   <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="quickContactTitle">

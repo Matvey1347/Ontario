@@ -21,7 +21,7 @@ add_action('wp_enqueue_scripts', static function (): void {
     if (! empty($current_site['is_preview']) && ! empty($current_site['id'])) {
         $rest_endpoint = add_query_arg([
             'ontario_preview_site' => (int) $current_site['id'],
-            '_wpnonce' => wp_create_nonce('ontario_preview_site_' . (int) $current_site['id']),
+            'ontario_preview_token' => OSM_Current_Site::preview_token((int) $current_site['id']),
         ], $rest_endpoint);
     }
 

@@ -1,5 +1,9 @@
 (() => {
   const osmConfig = window.ontarioSiteManager || {};
+  const submissionState = {
+    quickSubmitted: false,
+    caseSubmitted: false
+  };
   const nav = document.getElementById('nav');
   const menuBtn = document.getElementById('menuBtn');
 
@@ -113,6 +117,7 @@
     const modal = document.getElementById('quick-contact-modal');
     if (!modal) return;
 
+    const quickForm = document.getElementById('quickForm');
     const openButtons = document.querySelectorAll('[data-modal-open]');
     const closeButtons = modal.querySelectorAll('[data-modal-close]');
     const firstField = modal.querySelector('input, textarea, button');
@@ -120,6 +125,10 @@
 
     function openModal(event) {
       event?.preventDefault();
+      if (submissionState.quickSubmitted) {
+        showSuccessModal();
+        return;
+      }
       lastFocusedElement = document.activeElement;
       modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');
@@ -150,6 +159,15 @@
         closeModal();
       }
     });
+
+    if (quickForm) {
+      quickForm.addEventListener('submit', (event) => {
+        if (submissionState.quickSubmitted) {
+          event.preventDefault();
+          showSuccessModal();
+        }
+      });
+    }
   }
 
   function openModal(modal) {
@@ -193,6 +211,79 @@
         closeModal(successModal);
       }
     });
+  }
+
+  function resetFormState(formElement) {
+    if (!formElement) return;
+
+    formElement.reset();
+    formElement.dataset.validationStarted = '0';
+    formElement.querySelectorAll('.has-error').forEach((element) => element.classList.remove('has-error'));
+    formElement.querySelectorAll('.is-invalid').forEach((element) => element.classList.remove('is-invalid'));
+    formElement.querySelectorAll('.field-error').forEach((element) => element.remove());
+    setFormMessage(formElement, '');
+  }
+
+  function renderCaseFormSuccessState() {
+    if (!form) return;
+
+    form.classList.add('is-submitted');
+    form.innerHTML = `
+      <div class="form-success-state">
+        <div class="success-icon" aria-hidden="true"><span>✓</span></div>
+        <div class="success-eyebrow">Submission received</div>
+        <h3>Request sent successfully</h3>
+        <p>${osmConfig.brandName || 'Our team'} will review your case and contact you shortly.</p>
+      </div>
+    `;
+  }
+
+  function initWelcomeModal() {
+    const welcomeModal = document.getElementById('welcome-modal');
+    if (!welcomeModal) return;
+
+    const storageKey = `ontarioWelcomeSeen:${osmConfig.siteId || 'default'}`;
+
+    function wasSeen() {
+      try {
+        if (window.localStorage.getItem(storageKey) === '1') {
+          return true;
+        }
+      } catch (error) {
+        return document.cookie.includes(`${storageKey}=1`);
+      }
+
+      return document.cookie.includes(`${storageKey}=1`);
+    }
+
+    function markSeen() {
+      try {
+        window.localStorage.setItem(storageKey, '1');
+      } catch (error) {
+        document.cookie = `${storageKey}=1; path=/; max-age=31536000; SameSite=Lax`;
+      }
+    }
+
+    function closeWelcomeModal() {
+      markSeen();
+      closeModal(welcomeModal);
+    }
+
+    if (wasSeen()) {
+      return;
+    }
+
+    welcomeModal.querySelectorAll('[data-welcome-close]').forEach((button) => {
+      button.addEventListener('click', closeWelcomeModal);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && welcomeModal.classList.contains('is-open')) {
+        closeWelcomeModal();
+      }
+    });
+
+    window.setTimeout(() => openModal(welcomeModal), 220);
   }
 
   function initCustomSelects() {
@@ -432,6 +523,11 @@
   }
 
   nextBtn?.addEventListener('click', () => {
+    if (submissionState.caseSubmitted) {
+      showSuccessModal();
+      return;
+    }
+
     startValidation(form);
     if (!validateCurrentStep()) return;
 
@@ -455,7 +551,10 @@
 
     submitLead(formData)
       .then(() => {
+        submissionState.caseSubmitted = true;
         nextBtn.textContent = 'Submitted';
+        resetFormState(form);
+        renderCaseFormSuccessState();
         showSuccessModal();
       })
       .catch((error) => {
@@ -467,6 +566,11 @@
 
   document.getElementById('quickForm')?.addEventListener('submit', (event) => {
     event.preventDefault();
+
+    if (submissionState.quickSubmitted) {
+      showSuccessModal();
+      return;
+    }
 
     const quickForm = event.currentTarget;
     const submitButton = quickForm.querySelector('button[type="submit"]');
@@ -492,7 +596,11 @@
 
     submitLead(formData)
       .then(() => {
+        submissionState.quickSubmitted = true;
         submitButton.textContent = 'Sent';
+        resetFormState(quickForm);
+        submitButton.textContent = 'Send Message';
+        submitButton.disabled = false;
         showSuccessModal();
       })
       .catch((error) => {
@@ -535,5 +643,6 @@
   initHeroField();
   initQuickContactModal();
   initSuccessModal();
+  initWelcomeModal();
   updateForm();
 })();
