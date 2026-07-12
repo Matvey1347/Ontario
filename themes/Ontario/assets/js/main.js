@@ -1,5 +1,6 @@
 (() => {
   const osmConfig = window.ontarioSiteManager || {};
+  const successUrl = osmConfig.successUrl || `${window.location.origin}/success/`;
   const submissionState = {
     quickSubmitted: false,
     caseSubmitted: false
@@ -190,33 +191,22 @@
   }
 
   function showSuccessModal() {
-    const quickModal = document.getElementById('quick-contact-modal');
-    const successModal = document.getElementById('success-modal');
-
-    closeModal(quickModal);
-    openModal(successModal);
-    window.setTimeout(() => successModal?.querySelector('button[data-success-close]')?.focus(), 80);
+    closeModal(document.getElementById('quick-contact-modal'));
+    closeModal(document.getElementById('success-modal'));
+    window.location.href = successUrl;
   }
 
   function initSuccessModal() {
-    const successModal = document.getElementById('success-modal');
-    if (!successModal) return;
-
-    successModal.querySelectorAll('[data-success-close]').forEach((button) => {
-      button.addEventListener('click', () => closeModal(successModal));
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && successModal.classList.contains('is-open')) {
-        closeModal(successModal);
-      }
-    });
+    return;
   }
 
   function resetFormState(formElement) {
     if (!formElement) return;
 
+    setFormLoading(formElement, false);
     formElement.reset();
+    formElement.classList.remove('is-submitted');
+    formElement.removeAttribute('aria-busy');
     formElement.dataset.validationStarted = '0';
     formElement.querySelectorAll('.has-error').forEach((element) => element.classList.remove('has-error'));
     formElement.querySelectorAll('.is-invalid').forEach((element) => element.classList.remove('is-invalid'));
@@ -225,17 +215,16 @@
   }
 
   function renderCaseFormSuccessState() {
-    if (!form) return;
+    if (form) {
+      setFormLoading(form, false);
+      resetFormState(form);
+    }
 
-    form.classList.add('is-submitted');
-    form.innerHTML = `
-      <div class="form-success-state">
-        <div class="success-icon" aria-hidden="true"><span>✓</span></div>
-        <div class="success-eyebrow">Submission received</div>
-        <h3>Request sent successfully</h3>
-        <p>${osmConfig.brandName || 'Our team'} will review your case and contact you shortly.</p>
-      </div>
-    `;
+    currentStep = 0;
+    updateForm();
+    closeModal(document.getElementById('quick-contact-modal'));
+    closeModal(document.getElementById('success-modal'));
+    window.location.href = successUrl;
   }
 
   function initWelcomeModal() {
@@ -359,6 +348,72 @@
 
     status.textContent = message;
     status.dataset.state = type;
+  }
+
+  function ensureLoadingOverlay(formElement) {
+    let overlay = formElement.querySelector('.form-loading-overlay');
+
+    if (overlay) {
+      return overlay;
+    }
+
+    overlay = document.createElement('div');
+    overlay.className = 'form-loading-overlay';
+    overlay.setAttribute('hidden', 'hidden');
+    overlay.innerHTML = `
+      <div class="form-loading-spinner" aria-hidden="true"></div>
+      <div class="form-loading-title">Submitting your request...</div>
+      <div class="form-loading-copy">Please wait a moment while we process your form.</div>
+    `;
+    formElement.appendChild(overlay);
+
+    return overlay;
+  }
+
+  function setFormLoading(formElement, isLoading, message = 'Submitting your request...') {
+    if (!formElement) return;
+
+    const overlay = ensureLoadingOverlay(formElement);
+    formElement.classList.toggle('is-loading', isLoading);
+    formElement.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+    formElement.querySelectorAll('input, select, textarea, button').forEach((field) => {
+      if (field.classList.contains('hp-field')) {
+        return;
+      }
+
+      field.disabled = isLoading;
+    });
+
+    if (isLoading) {
+      overlay.hidden = false;
+      const title = overlay.querySelector('.form-loading-title');
+
+      if (title) {
+        title.textContent = message;
+      }
+
+      setFormMessage(formElement, '');
+      return;
+    }
+
+    overlay.hidden = true;
+    setFormMessage(formElement, '');
+  }
+
+  function resetTransientUi() {
+    const quickForm = document.getElementById('quickForm');
+
+    submissionState.quickSubmitted = false;
+    submissionState.caseSubmitted = false;
+
+    resetFormState(form);
+    resetFormState(quickForm);
+    currentStep = 0;
+    updateForm();
+    closeModal(document.getElementById('quick-contact-modal'));
+    closeModal(document.getElementById('success-modal'));
+    closeModal(document.getElementById('welcome-modal'));
+    document.body.classList.remove('modal-open');
   }
 
   async function submitLead(formData) {
@@ -547,17 +602,16 @@
 
     nextBtn.disabled = true;
     nextBtn.textContent = 'Submitting...';
-    setFormMessage(form, '');
+    setFormLoading(form, true);
 
     submitLead(formData)
       .then(() => {
         submissionState.caseSubmitted = true;
         nextBtn.textContent = 'Submitted';
-        resetFormState(form);
         renderCaseFormSuccessState();
-        showSuccessModal();
       })
       .catch((error) => {
+        setFormLoading(form, false);
         nextBtn.disabled = false;
         nextBtn.textContent = 'Submit Case Review';
         setFormMessage(form, error.message || 'Unable to submit the form.', 'error');
@@ -592,11 +646,12 @@
     formData.set('formType', 'quickForm');
     submitButton.textContent = 'Sending...';
     submitButton.disabled = true;
-    setFormMessage(quickForm, '');
+    setFormLoading(quickForm, true, 'Sending your message...');
 
     submitLead(formData)
       .then(() => {
         submissionState.quickSubmitted = true;
+        setFormLoading(quickForm, false);
         submitButton.textContent = 'Sent';
         resetFormState(quickForm);
         submitButton.textContent = 'Send Message';
@@ -604,6 +659,7 @@
         showSuccessModal();
       })
       .catch((error) => {
+        setFormLoading(quickForm, false);
         submitButton.textContent = 'Send Message';
         submitButton.disabled = false;
         setFormMessage(quickForm, error.message || 'Unable to send the form.', 'error');
@@ -645,4 +701,12 @@
   initSuccessModal();
   initWelcomeModal();
   updateForm();
+
+  window.addEventListener('pageshow', (event) => {
+    if (!event.persisted) {
+      return;
+    }
+
+    resetTransientUi();
+  });
 })();

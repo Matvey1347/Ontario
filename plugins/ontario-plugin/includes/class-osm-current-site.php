@@ -21,6 +21,7 @@ final class OSM_Current_Site
         add_filter('pre_get_document_title', [$this, 'filter_document_title']);
         add_filter('the_content', [$this, 'filter_content_tokens'], 20);
         add_action('wp_head', [$this, 'render_head_assets'], 1);
+        add_action('wp_body_open', [$this, 'render_body_assets'], 1);
     }
 
     public function get_site(): array
@@ -147,26 +148,28 @@ final class OSM_Current_Site
         return strtr($content, $replacements);
     }
 
-    public function render_tracking_code(): string
+    public function get_tracking_code(string $location = 'head'): string
     {
         if ($this->is_preview()) {
             return '';
         }
 
         $site = $this->get_site();
-        $html = '';
-        $pixel = trim((string) ($site['tracking_pixel'] ?? ''));
-        $head_code = trim((string) ($site['tracking_head_code'] ?? ''));
+        $field = match ($location) {
+            'head_open' => 'tracking_head_open_code',
+            'body' => 'tracking_body_code',
+            'success' => 'tracking_success_code',
+            default => 'tracking_header_code',
+        };
 
-        if ($pixel !== '') {
-            $html .= sprintf("<!-- OSM Pixel ID: %s -->\n", esc_html($pixel));
-        }
+        return trim((string) ($site[$field] ?? ''));
+    }
 
-        if ($head_code !== '') {
-            $html .= $head_code . "\n";
-        }
+    public function render_tracking_code(string $location = 'head'): string
+    {
+        $code = $this->get_tracking_code($location);
 
-        return $html;
+        return $code !== '' ? $code . "\n" : '';
     }
 
     public function filter_document_title(string $title): string
@@ -204,7 +207,16 @@ final class OSM_Current_Site
             echo '<link rel="apple-touch-icon" href="' . esc_url($favicon_url) . '" />' . "\n";
         }
 
-        $tracking = $this->render_tracking_code();
+        $tracking = $this->render_tracking_code('head');
+
+        if ($tracking !== '') {
+            echo $tracking;
+        }
+    }
+
+    public function render_body_assets(): void
+    {
+        $tracking = $this->render_tracking_code('body');
 
         if ($tracking !== '') {
             echo $tracking;
@@ -364,6 +376,10 @@ final class OSM_Current_Site
             'working_hours' => '11AM-7PM ET',
             'meta_description' => 'Ontario Refunds helps victims of online financial fraud trace digital assets, prepare evidence-based reports, and understand practical next steps.',
             'notification_emails' => 'support@ontariorefunds.info',
+            'tracking_head_open_code' => '',
+            'tracking_header_code' => '',
+            'tracking_body_code' => '',
+            'tracking_success_code' => '',
         ];
     }
 }

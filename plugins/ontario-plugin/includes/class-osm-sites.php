@@ -188,7 +188,7 @@ final class OSM_Sites
         echo '<button type="button" class="button osm-tab-button is-active" data-osm-tab="domain" role="tab" aria-selected="true">Domain</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="brand" role="tab" aria-selected="false">Brand</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="meta" role="tab" aria-selected="false">Meta</button>';
-        echo '<button type="button" class="button osm-tab-button" data-osm-tab="pixel" role="tab" aria-selected="false">Pixel</button>';
+        echo '<button type="button" class="button osm-tab-button" data-osm-tab="pixel" role="tab" aria-selected="false">Tracking</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="crm" role="tab" aria-selected="false">CRM</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="notifications" role="tab" aria-selected="false">Notifications</button>';
         echo '</div>';
@@ -227,8 +227,10 @@ final class OSM_Sites
 
         echo '<div class="osm-tab-panel" data-osm-panel="pixel" role="tabpanel" hidden>';
         echo '<table class="form-table"><tbody>';
-        $this->render_text_row('tracking_pixel', 'Meta / Pixel ID', $meta['tracking_pixel']);
-        $this->render_textarea_row('tracking_head_code', 'Custom head tracking code', $meta['tracking_head_code']);
+        $this->render_textarea_row('tracking_head_open_code', 'Head open tracking code', $meta['tracking_head_open_code'], 'Rendered immediately after the opening <head> tag. Use this for Google tag installs that require top-of-head placement.');
+        $this->render_textarea_row('tracking_header_code', 'Header tracking code', $meta['tracking_header_code'], 'Rendered inside <head>. Paste full pixel / tag manager / analytics code here.');
+        $this->render_textarea_row('tracking_body_code', 'Body tracking code', $meta['tracking_body_code'], 'Rendered right after <body> opens. Useful for noscript pixels or body snippets.');
+        $this->render_textarea_row('tracking_success_code', 'Success page tracking code', $meta['tracking_success_code'], 'Rendered only on the /success/ page after a successful form submission.');
         echo '</tbody></table>';
         echo '</div>';
 
@@ -417,8 +419,10 @@ final class OSM_Sites
             'address' => $meta['address'],
             'working_hours' => $meta['working_hours'],
             'meta_description' => $meta['meta_description'],
-            'tracking_pixel' => $meta['tracking_pixel'],
-            'tracking_head_code' => $meta['tracking_head_code'],
+            'tracking_head_open_code' => $meta['tracking_head_open_code'],
+            'tracking_header_code' => $meta['tracking_header_code'],
+            'tracking_body_code' => $meta['tracking_body_code'],
+            'tracking_success_code' => $meta['tracking_success_code'],
             'zoho_enabled' => $meta['zoho_enabled'],
             'zoho_accounts_url' => $meta['zoho_accounts_url'],
             'zoho_api_domain' => $meta['zoho_api_domain'],
@@ -632,8 +636,10 @@ final class OSM_Sites
             'address' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_textarea']],
             'working_hours' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'meta_description' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_textarea']],
-            'tracking_pixel' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
-            'tracking_head_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
+            'tracking_head_open_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
+            'tracking_header_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
+            'tracking_body_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
+            'tracking_success_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
             'zoho_enabled' => ['type' => 'checkbox', 'sanitize' => 'sanitize_text_field'],
             'zoho_accounts_url' => ['type' => 'text', 'sanitize' => 'esc_url_raw'],
             'zoho_api_domain' => ['type' => 'text', 'sanitize' => 'esc_url_raw'],
@@ -656,6 +662,10 @@ final class OSM_Sites
         if ($values['meta_title'] === '') {
             $legacy_title = (string) get_post_meta($post_id, '_osm_site_title', true);
             $values['meta_title'] = $legacy_title !== '' ? $legacy_title : $this->default_meta_title(get_post($post_id));
+        }
+
+        if ($values['tracking_header_code'] === '') {
+            $values['tracking_header_code'] = (string) get_post_meta($post_id, '_osm_tracking_head_code', true);
         }
 
         return $values;

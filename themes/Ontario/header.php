@@ -7,6 +7,7 @@ if (! defined('ABSPATH')) {
 ?><!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
+  <?php echo ontario_render_tracking_code('head_open'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
   <meta charset="<?php bloginfo('charset'); ?>" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="<?php echo esc_attr(ontario_site_field('meta_description', 'Ontario Refunds helps victims of online financial fraud trace digital assets, prepare evidence-based reports, and understand practical next steps.')); ?>" />

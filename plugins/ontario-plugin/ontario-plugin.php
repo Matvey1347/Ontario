@@ -69,8 +69,15 @@ if (! function_exists('ontario_replace_site_tokens')) {
 }
 
 if (! function_exists('ontario_render_tracking_code')) {
-    function ontario_render_tracking_code(): string
+    function ontario_render_tracking_code(string $location = 'head'): string
     {
-        return OSM_Plugin::instance()->current_site()->render_tracking_code();
+        return OSM_Plugin::instance()->current_site()->render_tracking_code($location);
+    }
+}
+
+if (! function_exists('ontario_render_success_tracking_code')) {
+    function ontario_render_success_tracking_code(): string
+    {
+        return OSM_Plugin::instance()->current_site()->render_tracking_code('success');
     }
 }
