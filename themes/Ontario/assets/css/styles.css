@@ -29,6 +29,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
@@ -40,7 +41,7 @@ body {
     radial-gradient(circle at 88% 12%, rgba(77, 227, 255, 0.16), transparent 30%),
     radial-gradient(circle at 50% 100%, rgba(80, 255, 177, 0.08), transparent 35%),
     var(--bg);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body.modal-open {
@@ -122,6 +123,9 @@ textarea {
 .site-header {
   position: sticky;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 150;
   border-bottom: 1px solid rgba(126, 221, 255, 0.12);
   background: rgba(5, 9, 20, 0.72);
@@ -1841,6 +1845,13 @@ textarea.is-invalid,
 }
 
 @media (max-width: 720px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
   .container {
     width: min(100% - 28px, var(--container));
   }
@@ -1865,6 +1876,11 @@ textarea.is-invalid,
 
   .hero {
     padding-top: 48px;
+  }
+
+  .reveal.from-left,
+  .reveal.from-right {
+    transform: translate3d(0, 18px, 0) scale(0.985);
   }
 
   h1 {
@@ -1907,6 +1923,39 @@ textarea.is-invalid,
 
   .form-actions .btn {
     width: 100%;
+  }
+
+  .welcome-dialog {
+    width: min(100%, 560px);
+  }
+
+  .welcome-card {
+    padding: 30px 22px 24px;
+    border-radius: 24px;
+  }
+
+  .welcome-card h2 {
+    max-width: 100%;
+    font-size: clamp(28px, 9vw, 42px);
+    line-height: 1.04;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .welcome-copy {
+    max-width: 100%;
+  }
+
+  .welcome-card p {
+    font-size: clamp(16px, 5.4vw, 24px);
+  }
+
+  .welcome-close {
+    width: 100%;
+    min-width: 0;
+    min-height: 56px;
+    margin-top: 28px;
+    font-size: 18px;
   }
 }
 

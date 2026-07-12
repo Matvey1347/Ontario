@@ -330,6 +330,22 @@ add_action('wp_head', static function (): void {
     }
 
     echo '<style>
+      @media (max-width: 782px) {
+        html {
+          margin-top: 0 !important;
+        }
+        body.admin-bar {
+          margin-top: 46px !important;
+          padding-top: 0 !important;
+        }
+        #wpadminbar {
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          width: 100% !important;
+        }
+      }
       #wpadminbar #wp-admin-bar-ontario-edit-current-site > .ab-item,
       #wpadminbar #wp-admin-bar-ontario-current-site > .ab-item {
         display:flex;
