@@ -979,6 +979,10 @@ textarea.is-invalid,
   box-shadow: 0 0 0 4px rgba(255, 107, 138, 0.12) !important;
 }
 
+.choices {
+  overflow: visible !important;
+}
+
 .field-error {
   color: #ff9fb5;
   font-size: 12px;
@@ -1033,7 +1037,12 @@ textarea.is-invalid,
 }
 
 .is-open .choices__inner {
+  border-color: rgba(77, 227, 255, 0.42);
   box-shadow: none;
+}
+
+.ontario-display-simple .is-open .choices__inner {
+  border-color: rgba(82, 185, 231, 0.42);
 }
 
 .choices[data-type*=select-one].is-open .choices__inner {
