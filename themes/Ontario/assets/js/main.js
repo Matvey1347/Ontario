@@ -1,6 +1,8 @@
 (() => {
   const osmConfig = window.ontarioSiteManager || {};
   const successUrl = osmConfig.successUrl || `${window.location.origin}/success/`;
+  const effectiveDisplayMode = osmConfig.effectiveDisplayMode || 'full';
+  const isSimpleDisplay = effectiveDisplayMode === 'simple';
   const submissionState = {
     quickSubmitted: false,
     caseSubmitted: false
@@ -36,6 +38,11 @@
       .filter((element) => !element.closest('.modal'));
 
     elements.forEach((element, index) => {
+      if (isSimpleDisplay) {
+        element.classList.add('is-visible');
+        return;
+      }
+
       element.classList.add('reveal');
 
       if (element.matches('.hero-content, .scanner-panel, .process-copy-card')) {
@@ -78,6 +85,8 @@
   }
 
   function initPointerGlow() {
+    if (isSimpleDisplay) return;
+
     document.querySelectorAll('.card, .strip-card').forEach((card) => {
       card.addEventListener('pointermove', (event) => {
         setLocalPointerVars(card, event, '--glow-x', '--glow-y');
@@ -86,6 +95,8 @@
   }
 
   function initHeroField() {
+    if (isSimpleDisplay) return;
+
     const hero = document.querySelector('.hero');
     if (!hero) return;
 
@@ -229,7 +240,7 @@
 
   function initWelcomeModal() {
     const welcomeModal = document.getElementById('welcome-modal');
-    if (!welcomeModal) return;
+    if (!welcomeModal || !osmConfig.showWelcomeModal) return;
 
     const storageKey = `ontarioWelcomeSeen:${osmConfig.siteId || 'default'}`;
 
@@ -432,6 +443,10 @@
   }
 
   function updateForm() {
+    if (!form || !stepLabel || !progressBar || !prevBtn || !nextBtn || !steps.length) {
+      return;
+    }
+
     steps.forEach((step, index) => step.classList.toggle('active', index === currentStep));
     stepLabel.textContent = `Step ${currentStep + 1} of ${steps.length}`;
     progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
@@ -573,6 +588,10 @@
   }
 
   function validateCurrentStep() {
+    if (!steps.length || !steps[currentStep]) {
+      return false;
+    }
+
     const fields = [...steps[currentStep].querySelectorAll('input, select, textarea')];
     return validateFields(fields);
   }
@@ -673,19 +692,75 @@
     }
   });
 
+  const faqItems = [...document.querySelectorAll('.faq-item')];
+
+  function setFaqState(item, shouldOpen) {
+    if (!item) return;
+
+    const answer = item.querySelector('.faq-answer');
+    const icon = item.querySelector('.faq-question span');
+
+    if (!answer) return;
+
+    if (shouldOpen) {
+      item.classList.add('open');
+      answer.style.maxHeight = `${answer.scrollHeight}px`;
+
+      if (icon) {
+        icon.textContent = '−';
+      }
+    } else {
+      answer.style.maxHeight = `${answer.scrollHeight}px`;
+
+      window.requestAnimationFrame(() => {
+        item.classList.remove('open');
+        answer.style.maxHeight = '0px';
+      });
+
+      if (icon) {
+        icon.textContent = '+';
+      }
+    }
+  }
+
+  faqItems.forEach((item) => {
+    const answer = item.querySelector('.faq-answer');
+
+    if (answer) {
+      answer.style.maxHeight = item.classList.contains('open') ? `${answer.scrollHeight}px` : '0px';
+    }
+  });
+
   document.querySelectorAll('.faq-question').forEach((button) => {
     button.addEventListener('click', () => {
       const item = button.closest('.faq-item');
+
+      if (!item) {
+        return;
+      }
+
       const wasOpen = item.classList.contains('open');
 
-      document.querySelectorAll('.faq-item').forEach((faq) => {
-        faq.classList.remove('open');
-        faq.querySelector('.faq-question span').textContent = '+';
+      faqItems.forEach((faq) => {
+        if (faq !== item) {
+          setFaqState(faq, false);
+        }
       });
 
-      if (!wasOpen) {
-        item.classList.add('open');
-        button.querySelector('span').textContent = '−';
+      setFaqState(item, !wasOpen);
+    });
+  });
+
+  window.addEventListener('resize', () => {
+    faqItems.forEach((item) => {
+      if (!item.classList.contains('open')) {
+        return;
+      }
+
+      const answer = item.querySelector('.faq-answer');
+
+      if (answer) {
+        answer.style.maxHeight = `${answer.scrollHeight}px`;
       }
     });
   });

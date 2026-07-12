@@ -1,0 +1,610 @@
+.ontario-display-simple,
+.ontario-display-simple body {
+  color: #e7f1fb;
+  background:
+    radial-gradient(circle at top right, rgba(76, 148, 212, 0.18), transparent 26%),
+    linear-gradient(180deg, #071523 0%, #0b1d31 55%, #0a1828 100%);
+}
+
+.ontario-display-simple body {
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.ontario-display-simple .top-notice {
+  background: rgba(206, 229, 247, 0.9);
+  color: #112b44;
+  border-bottom: 1px solid rgba(151, 193, 223, 0.2);
+}
+
+.ontario-display-simple .site-header {
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(10px);
+  background: rgba(10, 24, 40, 0.88);
+  border-bottom: 1px solid rgba(132, 179, 212, 0.12);
+}
+
+.ontario-display-simple .nav {
+  min-height: 82px;
+}
+
+.ontario-display-simple .brand img,
+.ontario-display-simple .footer-brand img {
+  max-height: 54px;
+}
+
+.ontario-display-simple .nav-links a,
+.ontario-display-simple .phone {
+  color: #d9ecfb;
+  font-size: 16px;
+}
+
+.ontario-display-simple .btn {
+  min-height: 52px;
+  font-size: 17px;
+}
+
+.ontario-display-simple .btn-secondary {
+  border-color: rgba(141, 187, 218, 0.2);
+  color: #e7f1fb;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ontario-display-simple .btn-primary {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+}
+
+.ontario-display-simple .hero,
+.ontario-display-simple .simple-hero,
+.ontario-display-simple .simple-summary,
+.ontario-display-simple .simple-services,
+.ontario-display-simple .simple-scanner,
+.ontario-display-simple .simple-report,
+.ontario-display-simple .simple-process,
+.ontario-display-simple .simple-warning,
+.ontario-display-simple .simple-faq,
+.ontario-display-simple .simple-cta {
+  background: transparent;
+}
+
+.ontario-display-simple .simple-front-page section {
+  padding: 52px 0;
+}
+
+.ontario-display-simple .eyebrow,
+.ontario-display-simple .success-eyebrow {
+  color: #77d8e6;
+}
+
+.ontario-display-simple .simple-hero-note strong,
+.ontario-display-simple .simple-report-list strong,
+.ontario-display-simple .simple-process-list strong,
+.ontario-display-simple .footer-contact a,
+.ontario-display-simple .report-row small {
+  color: #eaf4fc;
+}
+
+.ontario-display-simple .simple-hero {
+  padding: 44px 0 34px;
+}
+
+.ontario-display-simple .simple-hero-grid,
+.ontario-display-simple .simple-scanner-grid,
+.ontario-display-simple .simple-report-grid,
+.ontario-display-simple .simple-process-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 34px;
+  align-items: center;
+}
+
+.ontario-display-simple .simple-hero-copy,
+.ontario-display-simple .simple-summary-card,
+.ontario-display-simple .simple-service-card,
+.ontario-display-simple .simple-scanner-copy,
+.ontario-display-simple .simple-report-copy,
+.ontario-display-simple .simple-process-copy,
+.ontario-display-simple .simple-warning-shell,
+.ontario-display-simple .simple-cta-shell,
+.ontario-display-simple .form-card,
+.ontario-display-simple .report,
+.ontario-display-simple .card,
+.ontario-display-simple .warning-panel,
+.ontario-display-simple .process-copy-card,
+.ontario-display-simple .faq-item,
+.ontario-display-simple .success-card,
+.ontario-display-simple .welcome-card,
+.ontario-display-simple .display-choice-card,
+.ontario-display-simple .legal-shell,
+.ontario-display-simple .success-page-card {
+  color: #e7f1fb;
+  background:
+    linear-gradient(180deg, rgba(16, 33, 52, 0.96), rgba(12, 25, 40, 0.96));
+  border: 1px solid rgba(131, 178, 212, 0.14);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.24);
+}
+
+.ontario-display-simple .simple-hero-copy,
+.ontario-display-simple .simple-summary-card,
+.ontario-display-simple .simple-service-card,
+.ontario-display-simple .simple-scanner-copy,
+.ontario-display-simple .simple-report-copy,
+.ontario-display-simple .simple-process-copy,
+.ontario-display-simple .simple-warning-shell,
+.ontario-display-simple .simple-cta-shell {
+  border-radius: 28px;
+  padding: 28px;
+}
+
+.ontario-display-simple .simple-hero h1,
+.ontario-display-simple .simple-section-head h2,
+.ontario-display-simple .simple-warning h2,
+.ontario-display-simple .simple-cta h2,
+.ontario-display-simple .legal-shell h1,
+.ontario-display-simple .success-page-card h1 {
+  color: #f4f9fe;
+  font-family: "Space Grotesk", Inter, sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.ontario-display-simple .simple-hero h1 {
+  font-size: clamp(27px, 3vw, 36px);
+  line-height: 1.16;
+  text-wrap: balance;
+  margin: 0 0 18px;
+}
+
+.ontario-display-simple .simple-lead,
+.ontario-display-simple .simple-hero-note,
+.ontario-display-simple .simple-report-copy p,
+.ontario-display-simple .simple-process-copy,
+.ontario-display-simple .simple-scanner-copy p,
+.ontario-display-simple .section-head p,
+.ontario-display-simple .faq-answer,
+.ontario-display-simple .legal-content {
+  color: #c6d9ea;
+}
+
+.ontario-display-simple .simple-lead {
+  max-width: 34rem;
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+.ontario-display-simple .simple-hero-note {
+  max-width: 34rem;
+  margin-top: 14px;
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.ontario-display-simple .simple-hero-actions,
+.ontario-display-simple .simple-trust-list,
+.ontario-display-simple .display-choice-actions {
+  margin-top: 22px;
+}
+
+.ontario-display-simple .simple-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.ontario-display-simple .simple-trust-list,
+.ontario-display-simple .simple-report-list {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.ontario-display-simple .simple-trust-list li,
+.ontario-display-simple .simple-report-list li {
+  position: relative;
+  padding-left: 20px;
+  color: #d5e6f4;
+}
+
+.ontario-display-simple .simple-trust-list li::before,
+.ontario-display-simple .simple-report-list li::before {
+  content: "";
+  position: absolute;
+  top: 0.72em;
+  transform: translateY(-50%);
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #15b4c7, #3ec38f);
+}
+
+.ontario-display-simple .simple-hero-visual img,
+.ontario-display-simple .simple-scanner-copy img,
+.ontario-display-simple .simple-report-visual img,
+.ontario-display-simple .simple-process-visual img {
+  width: 100%;
+  border-radius: 28px;
+  display: block;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+}
+
+.ontario-display-simple .simple-summary-grid,
+.ontario-display-simple .simple-services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.ontario-display-simple .simple-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr);
+  gap: 28px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+
+.ontario-display-simple .simple-section-head-stack {
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 12px;
+}
+
+.ontario-display-simple .simple-section-head h2 {
+  margin: 0;
+}
+
+.ontario-display-simple .simple-section-head-stack h2 {
+  max-width: 18ch;
+}
+
+.ontario-display-simple .simple-section-head-wide h2 {
+  max-width: none;
+}
+
+.ontario-display-simple .simple-section-head p {
+  margin: 0;
+  max-width: 30rem;
+  justify-self: end;
+  text-align: left;
+}
+
+.ontario-display-simple .simple-section-head-stack p {
+  justify-self: start;
+  max-width: 42rem;
+}
+
+.ontario-display-simple .simple-section-head-wide p {
+  max-width: none;
+}
+
+.ontario-display-simple .simple-service-card h3,
+.ontario-display-simple .simple-summary-card h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #f0f7fd;
+}
+
+.ontario-display-simple .simple-process-list {
+  display: grid;
+  gap: 16px;
+  padding-left: 22px;
+  margin: 0;
+}
+
+.ontario-display-simple .simple-process-list li {
+  padding-left: 10px;
+  color: #eef6fd;
+}
+
+.ontario-display-simple .simple-process-list span {
+  display: block;
+  margin-top: 6px;
+  color: #c2d7e8;
+}
+
+.ontario-display-simple .form-card,
+.ontario-display-simple .short-form {
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(14, 29, 47, 0.98), rgba(11, 23, 38, 0.98));
+}
+
+.ontario-display-simple .form-top {
+  border-bottom-color: rgba(141, 187, 218, 0.14);
+}
+
+.ontario-display-simple .form-top strong,
+.ontario-display-simple label,
+.ontario-display-simple .faq-question,
+.ontario-display-simple .footer-contact strong,
+.ontario-display-simple .report-header strong {
+  color: #eff7fd;
+}
+
+.ontario-display-simple input:not([type="checkbox"]):not([type="radio"]),
+.ontario-display-simple select,
+.ontario-display-simple textarea,
+.ontario-display-simple .choices__inner,
+.ontario-display-simple .phone-input {
+  min-height: 54px;
+  font-size: 18px;
+  color: #edf6fd;
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(141, 187, 218, 0.16);
+}
+
+.ontario-display-simple input:not([type="checkbox"]):not([type="radio"])::placeholder,
+.ontario-display-simple textarea::placeholder {
+  color: #8ea8bd;
+}
+
+.ontario-display-simple textarea {
+  min-height: 140px;
+}
+
+.ontario-display-simple input:not([type="checkbox"]):not([type="radio"]):focus,
+.ontario-display-simple select:focus,
+.ontario-display-simple textarea:focus {
+  box-shadow: 0 0 0 3px rgba(82, 185, 231, 0.18);
+  border-color: rgba(82, 185, 231, 0.42);
+}
+
+.ontario-display-simple .progress {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ontario-display-simple .report,
+.ontario-display-simple .report-body {
+  background: transparent;
+}
+
+.ontario-display-simple .report-header {
+  border-bottom-color: rgba(141, 187, 218, 0.14);
+}
+
+.ontario-display-simple .simple-report-card {
+  align-self: stretch;
+}
+
+.ontario-display-simple .report-row,
+.ontario-display-simple .report-row div,
+.ontario-display-simple .hash {
+  color: #dceaf6;
+}
+
+.ontario-display-simple .faq-item {
+  border-radius: 22px;
+}
+
+.ontario-display-simple .faq-question span {
+  color: #1599b7;
+}
+
+.ontario-display-simple .faq-question {
+  background: transparent;
+}
+
+.ontario-display-simple .faq-answer {
+  display: block;
+  max-height: 0;
+  overflow: hidden;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  transition:
+    max-height 0.32s ease,
+    padding 0.32s ease,
+    opacity 0.24s ease;
+}
+
+.ontario-display-simple .faq-item.open .faq-answer {
+  padding-top: 2px;
+  padding-bottom: 20px;
+  opacity: 1;
+}
+
+.ontario-display-simple .simple-warning-shell {
+  border-color: rgba(255, 167, 94, 0.28);
+  background:
+    radial-gradient(circle at 10% 20%, rgba(255, 151, 76, 0.12), transparent 32%),
+    linear-gradient(180deg, rgba(34, 23, 18, 0.96), rgba(22, 17, 14, 0.96));
+}
+
+.ontario-display-simple .simple-warning-shell h2 {
+  color: #ffd3b0;
+}
+
+.ontario-display-simple .simple-warning-shell p {
+  color: #f6dfcc;
+}
+
+.ontario-display-simple .simple-cta-shell {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 34px 28px;
+}
+
+.ontario-display-simple .simple-cta-shell p {
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.ontario-display-simple .simple-cta-shell h2,
+.ontario-display-simple .simple-cta-shell .btn {
+  margin: 0;
+}
+
+.ontario-display-simple .site-footer {
+  background: rgba(6, 16, 27, 0.72);
+  border-top: 1px solid rgba(132, 179, 212, 0.12);
+}
+
+.ontario-display-simple .footer-brand p,
+.ontario-display-simple .footer-contact,
+.ontario-display-simple .footer-bottom {
+  color: #b8cee1;
+}
+
+.ontario-display-simple .footer-links a,
+.ontario-display-simple .display-mode-switch {
+  color: #e5f1fb;
+}
+
+.ontario-display-simple .legal-page,
+.ontario-display-simple .success-page {
+  background:
+    radial-gradient(circle at top right, rgba(76, 148, 212, 0.18), transparent 26%),
+    linear-gradient(180deg, #071523 0%, #0b1d31 55%, #0a1828 100%);
+}
+
+.ontario-display-simple .legal-shell,
+.ontario-display-simple .success-page-card {
+  max-width: 900px;
+}
+
+.ontario-display-simple .legal-content,
+.ontario-display-simple .legal-content p,
+.ontario-display-simple .legal-content li {
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+.ontario-display-simple .legal-content h2,
+.ontario-display-simple .legal-content h3 {
+  color: #f0f7fd;
+  margin-top: 34px;
+}
+
+@media (max-width: 960px) {
+  .ontario-display-simple .simple-section-head {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .ontario-display-simple .simple-section-head p {
+    justify-self: start;
+    max-width: 40rem;
+  }
+
+  .ontario-display-simple .simple-hero-grid,
+  .ontario-display-simple .simple-scanner-grid,
+  .ontario-display-simple .simple-report-grid,
+  .ontario-display-simple .simple-process-grid,
+  .ontario-display-simple .simple-summary-grid,
+  .ontario-display-simple .simple-services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ontario-display-simple .nav-links {
+    background: rgba(10, 24, 40, 0.98);
+  }
+}
+
+@media (max-width: 640px) {
+  .ontario-display-simple body {
+    font-size: 15px;
+  }
+
+  .ontario-display-simple .btn {
+    font-size: 16px;
+  }
+
+  .ontario-display-simple .simple-front-page section {
+    padding: 42px 0;
+  }
+
+  .ontario-display-simple .simple-hero-copy,
+  .ontario-display-simple .simple-summary-card,
+  .ontario-display-simple .simple-service-card,
+  .ontario-display-simple .simple-scanner-copy,
+  .ontario-display-simple .simple-report-copy,
+  .ontario-display-simple .simple-process-copy,
+  .ontario-display-simple .simple-warning-shell,
+  .ontario-display-simple .simple-cta-shell,
+  .ontario-display-simple .form-card,
+  .ontario-display-simple .success-page-card,
+  .ontario-display-simple .welcome-card,
+  .ontario-display-simple .display-choice-card {
+    padding: 22px;
+  }
+
+  .ontario-display-simple .simple-hero h1 {
+    max-width: none;
+    font-size: clamp(30px, 9vw, 38px);
+  }
+
+  .ontario-display-simple .simple-lead {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .ontario-display-simple .simple-hero-note,
+  .ontario-display-simple .section-head p,
+  .ontario-display-simple .faq-answer,
+  .ontario-display-simple .simple-cta-shell p,
+  .ontario-display-simple .simple-summary-card p,
+  .ontario-display-simple .simple-service-card p {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .ontario-display-simple .display-choice-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 360px) {
+  .ontario-display-simple body {
+    font-size: 14px;
+  }
+
+  .ontario-display-simple .btn {
+    font-size: 15px;
+  }
+
+  .ontario-display-simple .simple-hero-copy,
+  .ontario-display-simple .simple-summary-card,
+  .ontario-display-simple .simple-service-card,
+  .ontario-display-simple .simple-scanner-copy,
+  .ontario-display-simple .simple-report-copy,
+  .ontario-display-simple .simple-process-copy,
+  .ontario-display-simple .simple-warning-shell,
+  .ontario-display-simple .simple-cta-shell,
+  .ontario-display-simple .form-card {
+    padding: 18px;
+  }
+
+  .ontario-display-simple .simple-hero h1 {
+    font-size: 24px;
+    line-height: 1.14;
+  }
+
+  .ontario-display-simple .simple-lead {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .ontario-display-simple .simple-hero-note,
+  .ontario-display-simple .section-head p,
+  .ontario-display-simple .faq-answer,
+  .ontario-display-simple .simple-cta-shell p,
+  .ontario-display-simple .simple-summary-card p,
+  .ontario-display-simple .simple-service-card p,
+  .ontario-display-simple .simple-process-list span,
+  .ontario-display-simple .simple-report-copy p {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .ontario-display-simple .simple-summary-card h2,
+  .ontario-display-simple .simple-service-card h3,
+  .ontario-display-simple .simple-warning h2,
+  .ontario-display-simple .simple-cta h2 {
+    font-size: 18px;
+    line-height: 1.2;
+  }
+}

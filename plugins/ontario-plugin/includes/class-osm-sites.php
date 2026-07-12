@@ -112,6 +112,11 @@ final class OSM_Sites
             'address' => '10-40 WEST WILMOT ST., RICHMOND HILL ON L4B 1H8',
             'working_hours' => '11AM-7PM ET',
             'meta_description' => 'Ontario Refunds helps victims of online financial fraud trace digital assets, prepare evidence-based reports, and understand practical next steps.',
+            'display_mode' => 'full',
+            'display_choice_title' => 'Choose how you would like to view this website',
+            'display_choice_description' => 'You can continue with the full interactive design or switch to a simpler version with larger text and a calmer layout.',
+            'display_choice_simple_label' => 'Use simple design',
+            'display_choice_full_label' => 'Continue with full design',
             'zoho_accounts_url' => 'https://accounts.zoho.eu',
             'zoho_api_domain' => 'https://www.zohoapis.eu',
             'default_lead_status' => 'Contact in Future',
@@ -188,6 +193,7 @@ final class OSM_Sites
         echo '<button type="button" class="button osm-tab-button is-active" data-osm-tab="domain" role="tab" aria-selected="true">Domain</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="brand" role="tab" aria-selected="false">Brand</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="meta" role="tab" aria-selected="false">Meta</button>';
+        echo '<button type="button" class="button osm-tab-button" data-osm-tab="display" role="tab" aria-selected="false">Display</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="pixel" role="tab" aria-selected="false">Tracking</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="crm" role="tab" aria-selected="false">CRM</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="notifications" role="tab" aria-selected="false">Notifications</button>';
@@ -222,6 +228,20 @@ final class OSM_Sites
         echo '<table class="form-table"><tbody>';
         $this->render_text_row('meta_title', 'Meta title', $meta['meta_title'], '', true);
         $this->render_textarea_row('meta_description', 'Meta description', $meta['meta_description']);
+        echo '</tbody></table>';
+        echo '</div>';
+
+        echo '<div class="osm-tab-panel" data-osm-panel="display" role="tabpanel" hidden>';
+        echo '<table class="form-table"><tbody>';
+        $this->render_select_row('display_mode', 'Website display mode', $meta['display_mode'], [
+            'full' => 'Full interactive design',
+            'simple' => 'Always use simple design',
+            'choice' => 'Let visitor choose',
+        ]);
+        $this->render_text_row('display_choice_title', 'Display choice modal title', $meta['display_choice_title']);
+        $this->render_textarea_row('display_choice_description', 'Display choice modal description', $meta['display_choice_description']);
+        $this->render_text_row('display_choice_simple_label', 'Simple design button label', $meta['display_choice_simple_label']);
+        $this->render_text_row('display_choice_full_label', 'Full design button label', $meta['display_choice_full_label']);
         echo '</tbody></table>';
         echo '</div>';
 
@@ -419,6 +439,11 @@ final class OSM_Sites
             'address' => $meta['address'],
             'working_hours' => $meta['working_hours'],
             'meta_description' => $meta['meta_description'],
+            'display_mode' => $meta['display_mode'] !== '' ? $meta['display_mode'] : 'full',
+            'display_choice_title' => $meta['display_choice_title'] !== '' ? $meta['display_choice_title'] : 'Choose how you would like to view this website',
+            'display_choice_description' => $meta['display_choice_description'] !== '' ? $meta['display_choice_description'] : 'You can continue with the full interactive design or switch to a simpler version with larger text and a calmer layout.',
+            'display_choice_simple_label' => $meta['display_choice_simple_label'] !== '' ? $meta['display_choice_simple_label'] : 'Use simple design',
+            'display_choice_full_label' => $meta['display_choice_full_label'] !== '' ? $meta['display_choice_full_label'] : 'Continue with full design',
             'tracking_head_open_code' => $meta['tracking_head_open_code'],
             'tracking_header_code' => $meta['tracking_header_code'],
             'tracking_body_code' => $meta['tracking_body_code'],
@@ -519,7 +544,7 @@ final class OSM_Sites
               frame.on('select', () => {
                 const attachment = frame.state().get('selection').first().toJSON();
                 if (target) target.value = attachment.id || '';
-                if (preview) preview.innerHTML = attachment.url ? `<img src="${attachment.url}" style="max-width:140px;height:auto;" alt="" />` : '';
+                if (preview) preview.innerHTML = attachment.url ? `<div class="osm-media-preview-shell"><img src="${attachment.url}" style="max-width:140px;height:auto;" alt="" /></div>` : '';
                 if (clearButton) clearButton.style.display = attachment.url ? '' : 'none';
               });
 
@@ -541,6 +566,24 @@ final class OSM_Sites
         })();
         </script>
         <style>
+          .osm-media-preview-shell {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 160px;
+            min-height: 88px;
+            padding: 16px;
+            border-radius: 16px;
+            background: linear-gradient(180deg, #17324d, #0f2438);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+          }
+
+          .osm-media-preview-shell img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+          }
+
           .osm-check {
             display: inline-flex;
             align-items: center;
@@ -636,6 +679,11 @@ final class OSM_Sites
             'address' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_textarea']],
             'working_hours' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'meta_description' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_textarea']],
+            'display_mode' => ['type' => 'text', 'sanitize' => [$this, 'sanitize_display_mode']],
+            'display_choice_title' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
+            'display_choice_description' => ['type' => 'textarea', 'sanitize' => 'sanitize_textarea_field'],
+            'display_choice_simple_label' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
+            'display_choice_full_label' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'tracking_head_open_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
             'tracking_header_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
             'tracking_body_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
@@ -668,6 +716,24 @@ final class OSM_Sites
             $values['tracking_header_code'] = (string) get_post_meta($post_id, '_osm_tracking_head_code', true);
         }
 
+        $values['display_mode'] = $this->sanitize_display_mode($values['display_mode']);
+
+        if ($values['display_choice_title'] === '') {
+            $values['display_choice_title'] = 'Choose how you would like to view this website';
+        }
+
+        if ($values['display_choice_description'] === '') {
+            $values['display_choice_description'] = 'You can continue with the full interactive design or switch to a simpler version with larger text and a calmer layout.';
+        }
+
+        if ($values['display_choice_simple_label'] === '') {
+            $values['display_choice_simple_label'] = 'Use simple design';
+        }
+
+        if ($values['display_choice_full_label'] === '') {
+            $values['display_choice_full_label'] = 'Continue with full design';
+        }
+
         return $values;
     }
 
@@ -688,18 +754,31 @@ final class OSM_Sites
 
     private function render_text_row(string $key, string $label, string $value, string $placeholder = '', bool $required = false): void
     {
-        echo '<tr><th scope="row"><label for="osm-' . esc_attr($key) . '">' . esc_html($label) . $this->render_required_mark($required) . '</label></th><td>';
+        echo '<tr data-osm-field-row="' . esc_attr($key) . '"><th scope="row"><label for="osm-' . esc_attr($key) . '">' . esc_html($label) . $this->render_required_mark($required) . '</label></th><td>';
         echo '<input class="regular-text" type="text" id="osm-' . esc_attr($key) . '" name="osm[' . esc_attr($key) . ']" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '" data-osm-label="' . esc_attr($label) . '" ' . ($required ? 'required data-osm-required="1"' : '') . ' />';
         echo '</td></tr>';
     }
 
     private function render_textarea_row(string $key, string $label, string $value, string $help = '', bool $required = false): void
     {
-        echo '<tr><th scope="row"><label for="osm-' . esc_attr($key) . '">' . esc_html($label) . $this->render_required_mark($required) . '</label></th><td>';
+        echo '<tr data-osm-field-row="' . esc_attr($key) . '"><th scope="row"><label for="osm-' . esc_attr($key) . '">' . esc_html($label) . $this->render_required_mark($required) . '</label></th><td>';
         echo '<textarea class="large-text" rows="4" id="osm-' . esc_attr($key) . '" name="osm[' . esc_attr($key) . ']" data-osm-label="' . esc_attr($label) . '" ' . ($required ? 'required data-osm-required="1"' : '') . '>' . esc_textarea($value) . '</textarea>';
         if ($help !== '') {
             echo '<p class="description">' . esc_html($help) . '</p>';
         }
+        echo '</td></tr>';
+    }
+
+    private function render_select_row(string $key, string $label, string $value, array $options): void
+    {
+        echo '<tr data-osm-field-row="' . esc_attr($key) . '"><th scope="row"><label for="osm-' . esc_attr($key) . '">' . esc_html($label) . '</label></th><td>';
+        echo '<select id="osm-' . esc_attr($key) . '" name="osm[' . esc_attr($key) . ']" data-osm-label="' . esc_attr($label) . '">';
+
+        foreach ($options as $option_value => $option_label) {
+            echo '<option value="' . esc_attr($option_value) . '"' . selected($value, $option_value, false) . '>' . esc_html($option_label) . '</option>';
+        }
+
+        echo '</select>';
         echo '</td></tr>';
     }
 
@@ -747,7 +826,9 @@ final class OSM_Sites
     private function media_preview_markup(string $key, int $attachment_id): string
     {
         if ($attachment_id > 0) {
-            return (string) wp_get_attachment_image($attachment_id, 'medium', false, ['style' => 'max-width:140px;height:auto;']);
+            $image = (string) wp_get_attachment_image($attachment_id, 'medium', false, ['style' => 'max-width:140px;height:auto;']);
+
+            return $image !== '' ? '<div class="osm-media-preview-shell">' . $image . '</div>' : '';
         }
 
         $fallback_url = $this->default_media_preview_url($key);
@@ -756,7 +837,7 @@ final class OSM_Sites
             return '';
         }
 
-        return '<img src="' . esc_url($fallback_url) . '" style="max-width:140px;height:auto;" alt="" />';
+        return '<div class="osm-media-preview-shell"><img src="' . esc_url($fallback_url) . '" style="max-width:140px;height:auto;" alt="" /></div>';
     }
 
     private function default_media_preview_url(string $key): string
@@ -807,6 +888,17 @@ final class OSM_Sites
     public function sanitize_tracking_code(string $value): string
     {
         return trim((string) wp_unslash($value));
+    }
+
+    public function sanitize_display_mode(string $value): string
+    {
+        $value = sanitize_key($value);
+
+        if (! in_array($value, ['full', 'simple', 'choice'], true)) {
+            return 'full';
+        }
+
+        return $value;
     }
 
     public function normalize_host(string $host): string
@@ -987,9 +1079,49 @@ final class OSM_Sites
             const storageKey = <?php echo wp_json_encode($storage_key); ?>;
             const postForm = document.getElementById('post');
             const titleField = document.getElementById('title');
+            const metaTitleField = tabsRoot.querySelector('#osm-meta_title');
+            const displayModeField = tabsRoot.querySelector('#osm-display_mode');
+            const displayChoiceRows = [
+              'display_choice_title',
+              'display_choice_description',
+              'display_choice_simple_label',
+              'display_choice_full_label'
+            ].map((key) => tabsRoot.querySelector(`[data-osm-field-row="${key}"]`)).filter(Boolean);
 
             tabsRoot.activateTab = (target) => {
               activateTab(target);
+            };
+
+            const syncDisplayModeFields = () => {
+              if (!displayModeField || !displayChoiceRows.length) {
+                return;
+              }
+
+              const showChoiceFields = displayModeField.value === 'choice';
+
+              displayChoiceRows.forEach((row) => {
+                row.hidden = !showChoiceFields;
+              });
+            };
+
+            const syncMetaTitleFromTitle = () => {
+              if (!titleField || !metaTitleField) {
+                return;
+              }
+
+              if (metaTitleField.dataset.osmManual === '1') {
+                return;
+              }
+
+              metaTitleField.value = String(titleField.value || '').trim();
+            };
+
+            const refreshMetaTitleManualState = () => {
+              if (!metaTitleField) {
+                return;
+              }
+
+              metaTitleField.dataset.osmManual = String(metaTitleField.value || '').trim() ? '1' : '0';
             };
 
             const activateTab = (target) => {
@@ -1018,6 +1150,13 @@ final class OSM_Sites
               button.addEventListener('click', () => {
                 activateTab(button.dataset.osmTab);
               });
+            });
+
+            displayModeField?.addEventListener('change', syncDisplayModeFields);
+            titleField?.addEventListener('input', syncMetaTitleFromTitle);
+            metaTitleField?.addEventListener('input', () => {
+              refreshMetaTitleManualState();
+              syncMetaTitleFromTitle();
             });
 
             tabsRoot.querySelectorAll('.osm-secret-toggle').forEach((button) => {
@@ -1059,6 +1198,10 @@ final class OSM_Sites
             } else {
               activateTab('domain');
             }
+
+            syncDisplayModeFields();
+            refreshMetaTitleManualState();
+            syncMetaTitleFromTitle();
 
             const requiredFields = Array.from(tabsRoot.querySelectorAll('[data-osm-required="1"]'));
 

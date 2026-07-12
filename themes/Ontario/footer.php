@@ -54,11 +54,19 @@ $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== ''
       <div class="footer-links">
         <a href="/termsandconditions/">Terms &amp; Conditions</a>
         <a href="/privacypolicy/">Privacy Policy</a>
+        <?php if (ontario_site_display_mode() === 'choice') : ?>
+          <button class="display-mode-switch" type="button" id="displayModeSwitch">Change display mode</button>
+        <?php endif; ?>
       </div>
     </div>
   </div>
 </footer>
 
+<?php
+if (ontario_site_display_mode() === 'choice') {
+    include locate_template('template-parts/modals/display-mode.php');
+}
+?>
 <?php wp_footer(); ?>
 </body>
 </html>
