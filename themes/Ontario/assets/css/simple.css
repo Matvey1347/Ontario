@@ -197,7 +197,7 @@
   display: grid;
   gap: 10px;
   padding: 0;
-  margin: 0;
+  margin: 6px 0 0;
   list-style: none;
 }
 
@@ -335,6 +335,17 @@
   border-color: rgba(141, 187, 218, 0.16);
 }
 
+.ontario-display-simple .choices,
+.ontario-display-simple .choices[data-type*="select-one"],
+.ontario-display-simple .choices__inner,
+.ontario-display-simple .choices__list--single {
+  border-radius: 14px !important;
+}
+
+.ontario-display-simple .choices {
+  overflow: visible;
+}
+
 .ontario-display-simple input:not([type="checkbox"]):not([type="radio"])::placeholder,
 .ontario-display-simple textarea::placeholder {
   color: #8ea8bd;
@@ -349,6 +360,19 @@
 .ontario-display-simple textarea:focus {
   box-shadow: 0 0 0 3px rgba(82, 185, 231, 0.18);
   border-color: rgba(82, 185, 231, 0.42);
+}
+
+.ontario-display-simple .phone-input input,
+.ontario-display-simple .phone-input input:focus,
+.ontario-display-simple .phone-input input.is-invalid {
+  min-height: 50px;
+  font-size: 18px;
+  background: transparent;
+  border: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none;
 }
 
 .ontario-display-simple .progress {

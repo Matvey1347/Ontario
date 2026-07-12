@@ -478,9 +478,10 @@
     if (!container) return;
 
     container.classList.add('has-error');
-    field.classList.add('is-invalid');
     if (phoneWrapper) {
       phoneWrapper.classList.add('has-error');
+    } else {
+      field.classList.add('is-invalid');
     }
 
     let error = container.querySelector('.field-error');
@@ -501,9 +502,11 @@
     if (!container) return;
 
     container.classList.remove('has-error');
-    field.classList.remove('is-invalid');
     if (phoneWrapper) {
       phoneWrapper.classList.remove('has-error');
+      field.classList.remove('is-invalid');
+    } else {
+      field.classList.remove('is-invalid');
     }
 
     const error = container.querySelector('.field-error');

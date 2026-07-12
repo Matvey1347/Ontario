@@ -28,7 +28,6 @@ if (! defined('ABSPATH')) {
       <div class="form-top">
         <div>
           <strong id="quickContactTitle">Quick Contact</strong>
-          <span>Short form</span>
         </div>
         <button class="modal-close" type="button" aria-label="Close quick contact form" data-modal-close>x</button>
       </div>
