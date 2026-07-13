@@ -537,6 +537,72 @@ final class OSM_Sites
         ], false);
     }
 
+    public function field_registry(): array
+    {
+        return $this->fields();
+    }
+
+    public function secret_field_keys(): array
+    {
+        $keys = [];
+
+        foreach ($this->fields() as $key => $config) {
+            if (($config['type'] ?? '') === 'secret') {
+                $keys[] = $key;
+            }
+        }
+
+        return $keys;
+    }
+
+    public function attachment_field_keys(): array
+    {
+        $keys = [];
+
+        foreach ($this->fields() as $key => $config) {
+            if (($config['reference'] ?? '') === 'attachment') {
+                $keys[] = $key;
+            }
+        }
+
+        return $keys;
+    }
+
+    public function sanitize_registry_value(string $key, mixed $value): mixed
+    {
+        $fields = $this->fields();
+        $config = $fields[$key] ?? null;
+
+        if (! is_array($config)) {
+            return is_scalar($value) ? sanitize_text_field((string) $value) : $value;
+        }
+
+        if (($config['type'] ?? '') === 'checkbox') {
+            return ! empty($value) ? '1' : '0';
+        }
+
+        if (($config['type'] ?? '') === 'multi_checkbox') {
+            return ($config['sanitize'])(is_array($value) ? $value : []);
+        }
+
+        if (($config['type'] ?? '') === 'secret') {
+            return is_string($value) ? trim($value) : '';
+        }
+
+        $string_value = is_scalar($value) ? (string) $value : '';
+
+        return ($config['sanitize'])($string_value);
+    }
+
+    public function encrypt_secret_value(string $key, string $plaintext): string
+    {
+        if (! in_array($key, $this->secret_field_keys(), true)) {
+            return $plaintext;
+        }
+
+        return $this->crypto->encrypt($plaintext);
+    }
+
     public function get_global_content_overrides(): array
     {
         $settings = $this->get_global_settings();
@@ -731,8 +797,8 @@ final class OSM_Sites
             'domain_aliases' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_textarea']],
             'meta_title' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'company_name' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
-            'logo_id' => ['type' => 'text', 'sanitize' => 'absint'],
-            'favicon_id' => ['type' => 'text', 'sanitize' => 'absint'],
+            'logo_id' => ['type' => 'text', 'sanitize' => 'absint', 'reference' => 'attachment'],
+            'favicon_id' => ['type' => 'text', 'sanitize' => 'absint', 'reference' => 'attachment'],
             'public_email' => ['type' => 'text', 'sanitize' => 'sanitize_email'],
             'phone_number' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'address' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_textarea']],

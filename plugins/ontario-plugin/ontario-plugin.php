@@ -26,6 +26,7 @@ require_once OSM_PLUGIN_PATH . 'includes/class-osm-leads.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-zoho-crm.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-rest-forms.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-admin.php';
+require_once OSM_PLUGIN_PATH . 'includes/class-osm-data-portability.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-plugin.php';
 
 register_activation_hook(OSM_PLUGIN_FILE, ['OSM_Plugin', 'activate']);

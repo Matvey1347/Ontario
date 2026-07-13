@@ -18,6 +18,8 @@ final class OSM_Plugin
     private OSM_Zoho_CRM $zoho;
     private OSM_Rest_Forms $rest_forms;
     private OSM_Admin $admin;
+    private OSM_Data_Portability $data_portability;
+    private array $table_schema_callbacks = [];
 
     private function __construct()
     {
@@ -30,6 +32,8 @@ final class OSM_Plugin
         $this->zoho = new OSM_Zoho_CRM($this->logger);
         $this->rest_forms = new OSM_Rest_Forms($this->current_site, $this->translations, $this->leads, $this->zoho, $this->logger);
         $this->admin = new OSM_Admin($this->sites, $this->current_site, $this->translations, $this->leads, $this->logger);
+        $this->register_table_schema_callback('osm_leads', [OSM_Leads::class, 'activate']);
+        $this->data_portability = new OSM_Data_Portability($this->sites, $this->translations, $this->leads, $this->logger, $this->crypto, $this);
 
         add_action('init', [$this, 'maybe_upgrade'], 40);
     }
@@ -61,6 +65,42 @@ final class OSM_Plugin
     public function translations(): OSM_Translations
     {
         return $this->translations;
+    }
+
+    public function sites(): OSM_Sites
+    {
+        return $this->sites;
+    }
+
+    public function logger(): OSM_Logger
+    {
+        return $this->logger;
+    }
+
+    public function crypto(): OSM_Crypto
+    {
+        return $this->crypto;
+    }
+
+    public function leads(): OSM_Leads
+    {
+        return $this->leads;
+    }
+
+    public function register_table_schema_callback(string $logical_name, callable $callback): void
+    {
+        $logical_name = sanitize_key($logical_name);
+
+        if ($logical_name === '') {
+            return;
+        }
+
+        $this->table_schema_callbacks[$logical_name] = $callback;
+    }
+
+    public function table_schema_callbacks(): array
+    {
+        return $this->table_schema_callbacks;
     }
 
     public function maybe_upgrade(): void

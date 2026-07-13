@@ -5,17 +5,20 @@ if (! defined('ABSPATH')) {
     exit;
 }
 ?><!doctype html>
-<html <?php language_attributes(); ?>>
+<html <?php language_attributes(); ?> class="notranslate" translate="no">
 <head>
   <?php echo ontario_render_tracking_code('head_open'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
   <meta charset="<?php bloginfo('charset'); ?>" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="google" content="notranslate" />
+  <meta name="googlebot" content="notranslate" />
+  <meta name="translator" content="no" />
   <meta name="description" content="<?php echo esc_attr(ontario_site_field('meta_description', ontario_t('hero.copy', ['brand_name' => ontario_site_brand_name()], 'Ontario Refunds helps victims of online financial fraud trace digital assets, prepare evidence-based reports, and understand practical next steps.'))); ?>" />
   <link rel="preconnect" href="<?php echo esc_url(home_url('/')); ?>" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <?php wp_head(); ?>
 </head>
-<body <?php body_class(); ?>>
+<body <?php body_class('notranslate'); ?> translate="no">
 <?php wp_body_open(); ?>
 <?php
 $brand_name = ontario_site_brand_name();
