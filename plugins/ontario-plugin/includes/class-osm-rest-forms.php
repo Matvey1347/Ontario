@@ -42,7 +42,15 @@ final class OSM_Rest_Forms
         }
 
         if (! empty($params['website'])) {
-            return new WP_REST_Response(['success' => true, 'message' => 'Submitted'], 200);
+            $site = $this->current_site->get_site();
+
+            $this->logger->log('Lead honeypot filled', [
+                'form_key' => $form_key,
+                'site_id' => $site['id'] ?? 0,
+                'site_name' => $site['company_name'] ?? '',
+                'site_domain' => $site['resolved_host'] ?? $site['primary_domain'] ?? '',
+                'website' => sanitize_text_field((string) $params['website']),
+            ], $this->build_log_meta('info', $site));
         }
 
         $payload = $this->sanitize_payload($form_key, $params);

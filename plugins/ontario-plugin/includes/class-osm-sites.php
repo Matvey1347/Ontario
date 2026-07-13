@@ -262,6 +262,20 @@ final class OSM_Sites
         $this->render_text_row('zoho_client_id', 'Zoho client ID', $meta['zoho_client_id']);
         $this->render_secret_row('zoho_client_secret', 'Zoho client secret', $meta['zoho_client_secret']);
         $this->render_secret_row('zoho_refresh_token', 'Zoho refresh token', $meta['zoho_refresh_token']);
+        $this->render_text_row(
+            'zoho_owner_id',
+            'Zoho lead owner ID',
+            $meta['zoho_owner_id'],
+            '937731000000123456',
+            false,
+            [
+                'inputmode' => 'numeric',
+                'pattern' => '[0-9]+',
+                'autocomplete' => 'off',
+                'help' => 'Optional. Enter the Zoho CRM user ID. New leads created from this site will be assigned to this user as Owner. Leave empty to keep the current Zoho owner assignment behavior.',
+                'help_secondary' => 'The value must be the numeric Zoho CRM user ID, not the user\'s name or email.',
+            ]
+        );
         $this->render_text_row('default_lead_status', 'Default lead status', $meta['default_lead_status'], 'Contact in Future');
         echo '</tbody></table>';
         echo '</div>';
@@ -454,6 +468,7 @@ final class OSM_Sites
             'zoho_client_id' => $meta['zoho_client_id'],
             'zoho_client_secret' => $this->crypto->decrypt($meta['zoho_client_secret']),
             'zoho_refresh_token' => $this->crypto->decrypt($meta['zoho_refresh_token']),
+            'zoho_owner_id' => $meta['zoho_owner_id'],
             'default_lead_status' => $meta['default_lead_status'] !== '' ? $meta['default_lead_status'] : $settings['default_lead_status'],
             'notification_emails' => $meta['notification_emails'] !== '' ? $meta['notification_emails'] : $settings['notification_emails'],
         ];
@@ -694,6 +709,7 @@ final class OSM_Sites
             'zoho_client_id' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'zoho_client_secret' => ['type' => 'secret', 'sanitize' => 'sanitize_text_field'],
             'zoho_refresh_token' => ['type' => 'secret', 'sanitize' => 'sanitize_text_field'],
+            'zoho_owner_id' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'default_lead_status' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'notification_emails' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_textarea']],
         ];
@@ -752,10 +768,24 @@ final class OSM_Sites
         return $title;
     }
 
-    private function render_text_row(string $key, string $label, string $value, string $placeholder = '', bool $required = false): void
+    private function render_text_row(string $key, string $label, string $value, string $placeholder = '', bool $required = false, array $options = []): void
     {
+        $attributes = [];
+
+        foreach (['inputmode', 'pattern', 'autocomplete'] as $attribute) {
+            if (! empty($options[$attribute]) && is_string($options[$attribute])) {
+                $attributes[] = $attribute . '="' . esc_attr($options[$attribute]) . '"';
+            }
+        }
+
         echo '<tr data-osm-field-row="' . esc_attr($key) . '"><th scope="row"><label for="osm-' . esc_attr($key) . '">' . esc_html($label) . $this->render_required_mark($required) . '</label></th><td>';
-        echo '<input class="regular-text" type="text" id="osm-' . esc_attr($key) . '" name="osm[' . esc_attr($key) . ']" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '" data-osm-label="' . esc_attr($label) . '" ' . ($required ? 'required data-osm-required="1"' : '') . ' />';
+        echo '<input class="regular-text" type="text" id="osm-' . esc_attr($key) . '" name="osm[' . esc_attr($key) . ']" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '" data-osm-label="' . esc_attr($label) . '" ' . ($required ? 'required data-osm-required="1" ' : '') . implode(' ', $attributes) . ' />';
+        if (! empty($options['help']) && is_string($options['help'])) {
+            echo '<p class="description">' . esc_html($options['help']) . '</p>';
+        }
+        if (! empty($options['help_secondary']) && is_string($options['help_secondary'])) {
+            echo '<p class="description">' . esc_html($options['help_secondary']) . '</p>';
+        }
         echo '</td></tr>';
     }
 

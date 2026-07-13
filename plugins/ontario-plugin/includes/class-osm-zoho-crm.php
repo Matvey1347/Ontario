@@ -89,15 +89,19 @@ final class OSM_Zoho_CRM
             return ['success' => true, 'message' => 'Lead created', 'data' => $decoded, 'reference' => $reference];
         }
 
+        $error_message = $this->extract_error_message($decoded);
+
         $this->logger->log('Zoho create lead non-success response', [
             'status_code' => $code,
             'body' => $body,
+            'parsed_error' => $error_message,
             'form_key' => $form_key,
             'site_id' => $site['id'] ?? 0,
             'site_name' => $site['company_name'] ?? '',
             'site_domain' => $site['resolved_host'] ?? $site['primary_domain'] ?? '',
         ], $this->build_log_meta('error', $site));
-        return ['success' => false, 'message' => 'Zoho lead creation failed', 'data' => $decoded];
+
+        return ['success' => false, 'message' => $error_message, 'data' => $decoded];
     }
 
     private function refresh_access_token(array $site): string
@@ -139,18 +143,6 @@ final class OSM_Zoho_CRM
             $last_name = $name !== '' ? $name : 'Website Lead';
         }
 
-        $description_lines = [
-            'Form: ' . $form_key,
-        ];
-
-        foreach ($payload as $key => $value) {
-            if (is_array($value)) {
-                $value = implode(', ', array_map('strval', $value));
-            }
-
-            $description_lines[] = $key . ': ' . (string) $value;
-        }
-
         $lead = [
             'First_Name' => $first_name,
             'Last_Name' => $last_name,
@@ -158,8 +150,16 @@ final class OSM_Zoho_CRM
             'Phone' => (string) ($payload['phone'] ?? ''),
             'Lead_Source' => $this->sanitize_value((string) ($site['company_name'] ?? 'Website')),
             'Lead_Status' => (string) ($site['default_lead_status'] ?? 'Contact in Future'),
-            'Description' => implode("\n", $description_lines),
+            'Description' => $this->build_description($payload),
         ];
+
+        $owner_id = trim((string) ($site['zoho_owner_id'] ?? ''));
+
+        if ($owner_id !== '') {
+            $lead['Owner'] = [
+                'id' => $owner_id,
+            ];
+        }
 
         if (! empty($payload['lossAmount'])) {
             $lead['Amount_lost'] = $this->sanitize_value((string) $payload['lossAmount']);
@@ -170,6 +170,38 @@ final class OSM_Zoho_CRM
         }
 
         return array_filter($lead, static fn($value) => $value !== '');
+    }
+
+    private function build_description(array $payload): string
+    {
+        if (! empty($payload['message'])) {
+            return $this->sanitize_value((string) $payload['message']);
+        }
+
+        if (! empty($payload['caseDetails'])) {
+            return $this->sanitize_value((string) $payload['caseDetails']);
+        }
+
+        return '';
+    }
+
+    private function extract_error_message(mixed $decoded): string
+    {
+        if (! is_array($decoded) || empty($decoded['data'][0]) || ! is_array($decoded['data'][0])) {
+            return 'Zoho lead creation failed';
+        }
+
+        $error = $decoded['data'][0];
+        $code = (string) ($error['code'] ?? '');
+        $message = (string) ($error['message'] ?? 'Zoho lead creation failed');
+        $details = isset($error['details']) && is_array($error['details']) ? $error['details'] : [];
+        $json_path = (string) ($details['json_path'] ?? '');
+
+        if ($code === 'INVALID_DATA' && $json_path === '$.data[0].Owner.id') {
+            return 'Invalid Zoho lead owner ID. Use the numeric Zoho CRM user ID for a user that exists in this CRM account.';
+        }
+
+        return $code !== '' ? $code . ': ' . $message : $message;
     }
 
     private function sanitize_value(string $value): string
