@@ -189,7 +189,7 @@ final class OSM_Sites
         $storage_key = 'osm-active-tab-' . $post->ID;
         $show_default_toggle = $this->should_show_default_toggle($post->ID);
 
-        echo '<div class="osm-tabs">';
+        echo '<div class="osm-tabs" data-osm-storage-key="' . esc_attr($storage_key) . '">';
         echo '<div class="notice notice-error osm-validation-notice" hidden><p><strong>Please fill in these required fields:</strong></p><ul class="osm-validation-list"></ul></div>';
         echo '<p class="description" style="margin:0 0 14px;">Fields marked with <span class="osm-required">*</span> are required.</p>';
         echo '<div class="osm-tab-nav" role="tablist" aria-label="Site settings tabs">';
@@ -197,6 +197,7 @@ final class OSM_Sites
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="brand" role="tab" aria-selected="false">Brand</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="meta" role="tab" aria-selected="false">Meta</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="translations" role="tab" aria-selected="false">Translations</button>';
+        echo '<button type="button" class="button osm-tab-button" data-osm-tab="content" role="tab" aria-selected="false">Content</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="pixel" role="tab" aria-selected="false">Tracking</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="crm" role="tab" aria-selected="false">CRM</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="notifications" role="tab" aria-selected="false">Notifications</button>';
@@ -247,6 +248,10 @@ final class OSM_Sites
         $this->render_translations_panel($meta);
         echo '</div>';
 
+        echo '<div class="osm-tab-panel" data-osm-panel="content" role="tabpanel" hidden>';
+        $this->render_content_panel($meta);
+        echo '</div>';
+
         echo '<div class="osm-tab-panel" data-osm-panel="pixel" role="tabpanel" hidden>';
         echo '<table class="form-table"><tbody>';
         $this->render_textarea_row('tracking_head_open_code', 'Head open tracking code', $meta['tracking_head_open_code'], 'Rendered immediately after the opening <head> tag. Use this for Google tag installs that require top-of-head placement.');
@@ -292,7 +297,7 @@ final class OSM_Sites
         );
         echo '</tbody></table>';
         echo '</div>';
-        $this->render_tabs_assets();
+        $this->render_tabs_assets($storage_key);
         echo '</div>';
     }
 
@@ -365,6 +370,19 @@ final class OSM_Sites
             }
 
             update_post_meta($post_id, $meta_key, $sanitized);
+        }
+
+        if (class_exists('OSM_Plugin')) {
+            $translations = OSM_Plugin::instance()->translations();
+            $submitted_overrides = isset($_POST['osm_content_overrides']) && is_array($_POST['osm_content_overrides']) ? wp_unslash($_POST['osm_content_overrides']) : [];
+            $submitted_state = isset($_POST['osm_content_state']) && is_array($_POST['osm_content_state']) ? wp_unslash($_POST['osm_content_state']) : [];
+            $content_overrides = $this->build_content_overrides_from_request($translations, $submitted_overrides, $submitted_state);
+
+            if ($content_overrides === []) {
+                delete_post_meta($post_id, '_osm_content_overrides');
+            } else {
+                update_post_meta($post_id, '_osm_content_overrides', $content_overrides);
+            }
         }
 
         if (get_post_meta($post_id, '_osm_is_default', true) === '1') {
@@ -483,6 +501,7 @@ final class OSM_Sites
             'enabled_languages_raw' => $meta['enabled_languages'],
             'default_language_raw' => $meta['default_language'],
             'phone_country_selector_mode' => $meta['phone_country_selector_mode'],
+            'content_overrides' => $meta['content_overrides'],
         ];
     }
 
@@ -501,6 +520,9 @@ final class OSM_Sites
         return [
             'notification_emails' => $notification_emails,
             'default_lead_status' => $default_lead_status,
+            'content_overrides' => class_exists('OSM_Plugin')
+                ? OSM_Plugin::instance()->translations()->sanitize_content_overrides((array) ($stored['content_overrides'] ?? []))
+                : [],
         ];
     }
 
@@ -509,7 +531,17 @@ final class OSM_Sites
         update_option(self::SETTINGS_OPTION, [
             'notification_emails' => $this->sanitize_textarea((string) ($settings['notification_emails'] ?? '')),
             'default_lead_status' => sanitize_text_field((string) ($settings['default_lead_status'] ?? 'Contact in Future')),
+            'content_overrides' => class_exists('OSM_Plugin')
+                ? OSM_Plugin::instance()->translations()->sanitize_content_overrides((array) ($settings['content_overrides'] ?? []))
+                : [],
         ], false);
+    }
+
+    public function get_global_content_overrides(): array
+    {
+        $settings = $this->get_global_settings();
+
+        return is_array($settings['content_overrides'] ?? null) ? $settings['content_overrides'] : [];
     }
 
     public function get_default_site(): array
@@ -782,6 +814,11 @@ final class OSM_Sites
             $values['phone_country_selector_mode'] = 'inherit';
         }
 
+        $content_overrides = get_post_meta($post_id, '_osm_content_overrides', true);
+        $values['content_overrides'] = class_exists('OSM_Plugin')
+            ? OSM_Plugin::instance()->translations()->sanitize_content_overrides(is_array($content_overrides) ? $content_overrides : [])
+            : [];
+
         return $values;
     }
 
@@ -912,6 +949,144 @@ final class OSM_Sites
         echo '<p class="description">Overrides the global phone country selector setting for this site only.</p>';
         echo '</td></tr>';
         echo '</tbody></table>';
+        echo '</div>';
+    }
+
+    private function build_content_overrides_from_request(OSM_Translations $translations, array $submitted_overrides, array $submitted_state): array
+    {
+        $sanitized_input = $translations->sanitize_content_overrides(is_array($submitted_overrides) ? $submitted_overrides : []);
+        $result = [];
+
+        foreach ($translations->available_languages() as $language) {
+            $code = (string) $language['code'];
+
+            foreach ($translations->editable_content_keys() as $key) {
+                $value = $sanitized_input[$code][$key] ?? '';
+                $state = is_array($submitted_state[$code][$key] ?? null) ? $submitted_state[$code][$key] : [];
+                $has_override = ! empty($state['has_override']);
+                $effective = $translations->sanitize_content_text((string) ($state['effective'] ?? ''));
+                $reset = ! empty($state['reset']);
+
+                if ($reset || $value === '') {
+                    continue;
+                }
+
+                if (! $has_override && $value === $effective) {
+                    continue;
+                }
+
+                $result[$code][$key] = $value;
+            }
+        }
+
+        return $translations->sanitize_content_overrides($result);
+    }
+
+    private function content_source_label(string $source): string
+    {
+        return match ($source) {
+            'site_override' => 'Site override',
+            'global_override' => 'Global override',
+            'english_translation_fallback' => 'English translation fallback',
+            'translation_file' => 'Translation file',
+            default => 'Inherited value',
+        };
+    }
+
+    private function render_content_panel(array $meta): void
+    {
+        if (! class_exists('OSM_Plugin')) {
+            echo '<p>Content settings are unavailable.</p>';
+            return;
+        }
+
+        $translations = OSM_Plugin::instance()->translations();
+        $groups = $translations->content_groups();
+        $available_languages = $translations->available_languages();
+        $global_settings = $translations->global_settings();
+        $global_enabled = (array) ($global_settings['enabled_languages'] ?? ['en']);
+        $selected_languages = $meta['enabled_languages'] !== [] ? $meta['enabled_languages'] : $global_enabled;
+        $effective_languages = $selected_languages !== [] ? $selected_languages : ['en'];
+        $site = [
+            'enabled_languages_raw' => $meta['enabled_languages'],
+            'default_language_raw' => $meta['default_language'],
+            'phone_country_selector_mode' => $meta['phone_country_selector_mode'],
+            'content_overrides' => $meta['content_overrides'],
+        ];
+        $site = array_merge($meta, $site);
+        $effective_settings = $translations->effective_settings($site);
+        $effective_languages = (array) ($effective_settings['enabled_languages'] ?? ['en']);
+        $content_languages = [];
+
+        foreach ($effective_languages as $code) {
+            if (isset($available_languages[$code])) {
+                $content_languages[] = $available_languages[$code];
+            }
+        }
+
+        $show_language_tabs = count($effective_languages) > 1;
+
+        echo '<div class="osm-content-editor" data-osm-content-editor data-global-enabled="' . esc_attr(wp_json_encode(array_values($global_enabled))) . '">';
+        echo '<p class="description" style="margin-top:0;">These fields show the effective text currently visible on this site for each enabled language. Edit a field to create a site override, or reset it to inherit the current global or translation-file value.</p>';
+
+        if ($show_language_tabs) {
+            echo '<div class="osm-language-tab-nav" role="tablist" aria-label="Content language tabs">';
+
+            $first = true;
+            foreach ($content_languages as $language) {
+                $code = (string) $language['code'];
+                echo '<button type="button" class="button osm-language-tab' . ($first ? ' is-active' : '') . '" data-osm-content-lang-tab="' . esc_attr($code) . '">' . esc_html((string) $language['flag'] . ' ' . $language['native_name']) . '</button>';
+                if ($first) {
+                    $first = false;
+                }
+            }
+
+            echo '</div>';
+        }
+
+        $activated = false;
+
+        foreach ($content_languages as $language) {
+            $code = (string) $language['code'];
+            $active = ! $activated;
+            if ($active) {
+                $activated = true;
+            }
+
+            echo '<div class="osm-language-tab-panel' . (($active || ! $show_language_tabs) ? ' is-active' : '') . '" data-osm-content-lang-panel="' . esc_attr($code) . '"' . ($active || ! $show_language_tabs ? '' : ' hidden') . '>';
+
+            foreach ($groups as $group) {
+                echo '<section class="osm-content-group">';
+                echo '<h3>' . esc_html((string) $group['label']) . '</h3>';
+
+                foreach ((array) $group['keys'] as $key) {
+                    $resolved = $translations->resolve_site_content_value($site, (string) $key, $code);
+                    $site_override_exists = ! empty($meta['content_overrides'][$code][$key]);
+                    $reset_value = $translations->resolve_global_content_value((string) $key, $code)['value'];
+                    $source_label = $this->content_source_label((string) $resolved['source']);
+                    $field_id = 'osm-content-' . md5($code . '|' . $key);
+
+                    echo '<div class="osm-content-field">';
+                    echo '<div class="osm-content-field__head">';
+                    echo '<label for="' . esc_attr($field_id) . '"><strong>' . esc_html((string) $key) . '</strong></label>';
+                    echo '<span class="osm-content-source osm-content-source--' . esc_attr((string) $resolved['source']) . '" data-osm-content-source-label>' . esc_html($source_label) . '</span>';
+                    echo '</div>';
+                    echo '<textarea class="large-text" rows="3" id="' . esc_attr($field_id) . '" name="osm_content_overrides[' . esc_attr($code) . '][' . esc_attr((string) $key) . ']" data-osm-content-input data-reset-value="' . esc_attr($reset_value) . '" data-reset-source="' . esc_attr($this->content_source_label($translations->resolve_global_content_value((string) $key, $code)['source'])) . '">' . esc_textarea((string) $resolved['value']) . '</textarea>';
+                    echo '<input type="hidden" name="osm_content_state[' . esc_attr($code) . '][' . esc_attr((string) $key) . '][has_override]" value="' . ($site_override_exists ? '1' : '0') . '" />';
+                    echo '<input type="hidden" name="osm_content_state[' . esc_attr($code) . '][' . esc_attr((string) $key) . '][effective]" value="' . esc_attr((string) $resolved['value']) . '" />';
+                    echo '<input type="hidden" name="osm_content_state[' . esc_attr($code) . '][' . esc_attr((string) $key) . '][reset]" value="0" data-osm-content-reset-flag />';
+                    echo '<div class="osm-content-field__actions">';
+                    echo '<button type="button" class="button-link" data-osm-reset-content>Use inherited value</button>';
+                    echo '</div>';
+                    echo '</div>';
+                }
+
+                echo '</section>';
+            }
+
+            echo '</div>';
+        }
+
         echo '</div>';
     }
 
@@ -1140,7 +1315,7 @@ final class OSM_Sites
         return '+' . $digits;
     }
 
-    private function render_tabs_assets(): void
+    private function render_tabs_assets(string $storage_key): void
     {
         ?>
         <style>
@@ -1174,6 +1349,7 @@ final class OSM_Sites
           .osm-required {
             color: #d63638;
             font-weight: 700;
+            display: inline-block;
           }
 
           .osm-validation-notice {
@@ -1254,6 +1430,85 @@ final class OSM_Sites
             min-width: 240px;
             font-size: 16px;
           }
+
+          .osm-content-editor {
+            display: grid;
+            gap: 18px;
+          }
+
+          .osm-language-tab-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+          }
+
+          .osm-language-tab.is-active,
+          .osm-language-tab.is-active:hover,
+          .osm-language-tab.is-active:focus {
+            background: #2271b1;
+            border-color: #2271b1;
+            color: #fff !important;
+          }
+
+          .osm-language-tab-panel[hidden] {
+            display: none !important;
+          }
+
+          .osm-language-tab-panel {
+            display: none;
+          }
+
+          .osm-language-tab-panel.is-active {
+            display: grid;
+            gap: 18px;
+          }
+
+          .osm-content-group {
+            background: #fff;
+            border: 1px solid #dcdcde;
+            border-radius: 16px;
+            padding: 18px;
+          }
+
+          .osm-content-group h3 {
+            margin: 0 0 16px;
+          }
+
+          .osm-content-field + .osm-content-field {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+          }
+
+          .osm-content-field__head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+          }
+
+          .osm-content-source {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 26px;
+            padding: 0 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #eef2ff;
+            color: #1d4ed8;
+          }
+
+          .osm-content-source--site_override { background:#dcfce7; color:#166534; }
+          .osm-content-source--global_override { background:#dbeafe; color:#1d4ed8; }
+          .osm-content-source--translation_file { background:#f3f4f6; color:#374151; }
+          .osm-content-source--english_translation_fallback { background:#fef3c7; color:#92400e; }
+
+          .osm-content-field__actions {
+            margin-top: 6px;
+          }
         </style>
         <script>
         (() => {
@@ -1261,12 +1516,12 @@ final class OSM_Sites
             if (tabsRoot.dataset.osmReady === '1') return;
             tabsRoot.dataset.osmReady = '1';
 
-            const tabButtons = tabsRoot.querySelectorAll('.osm-tab-button');
-            const tabPanels = tabsRoot.querySelectorAll('.osm-tab-panel');
+            const tabButtons = Array.from(tabsRoot.querySelectorAll('.osm-tab-button'));
+            const tabPanels = Array.from(tabsRoot.querySelectorAll('.osm-tab-panel'));
             const tabInput = tabsRoot.querySelector('input[name="osm_active_tab"]');
             const validationNotice = tabsRoot.querySelector('.osm-validation-notice');
             const validationList = tabsRoot.querySelector('.osm-validation-list');
-            const storageKey = <?php echo wp_json_encode($storage_key); ?>;
+            const storageKey = tabsRoot.dataset.osmStorageKey || '';
             const postForm = document.getElementById('post');
             const titleField = document.getElementById('title');
             const metaTitleField = tabsRoot.querySelector('#osm-meta_title');
@@ -1277,10 +1532,8 @@ final class OSM_Sites
               'display_choice_simple_label',
               'display_choice_full_label'
             ].map((key) => tabsRoot.querySelector(`[data-osm-field-row="${key}"]`)).filter(Boolean);
-
-            tabsRoot.activateTab = (target) => {
-              activateTab(target);
-            };
+            const contentEditor = tabsRoot.querySelector('[data-osm-content-editor]');
+            const languageCheckboxes = Array.from(tabsRoot.querySelectorAll('input[name="osm[enabled_languages][]"]'));
 
             const syncDisplayModeFields = () => {
               if (!displayModeField || !displayChoiceRows.length) {
@@ -1331,16 +1584,139 @@ final class OSM_Sites
                 tabInput.value = target;
               }
 
+              if (!storageKey) {
+                return;
+              }
+
               try {
                 window.localStorage.setItem(storageKey, target);
               } catch (error) {}
             };
+
+            tabsRoot.activateTab = activateTab;
+
+            const updateContentLanguagePanels = () => {
+              if (!contentEditor) {
+                return;
+              }
+
+              let activeCodes = languageCheckboxes.filter((input) => input.checked).map((input) => input.value);
+
+              if (!activeCodes.length) {
+                try {
+                  activeCodes = JSON.parse(contentEditor.dataset.globalEnabled || '[]');
+                } catch (error) {
+                  activeCodes = [];
+                }
+              }
+
+              if (!activeCodes.length) {
+                activeCodes = ['en'];
+              }
+
+              const tabs = Array.from(contentEditor.querySelectorAll('[data-osm-content-lang-tab]'));
+              const panels = Array.from(contentEditor.querySelectorAll('[data-osm-content-lang-panel]'));
+              const currentActiveTab = contentEditor.querySelector('[data-osm-content-lang-tab].is-active');
+              let nextActiveCode = currentActiveTab && !currentActiveTab.hidden ? currentActiveTab.dataset.osmContentLangTab : '';
+
+              tabs.forEach((tab) => {
+                const visible = activeCodes.includes(tab.dataset.osmContentLangTab);
+                tab.hidden = !visible;
+                tab.classList.toggle('is-active', false);
+              });
+
+              panels.forEach((panel) => {
+                const visible = activeCodes.includes(panel.dataset.osmContentLangPanel);
+                panel.hidden = !visible;
+                panel.classList.toggle('is-active', false);
+              });
+
+              if (!nextActiveCode || !activeCodes.includes(nextActiveCode)) {
+                nextActiveCode = activeCodes[0] || '';
+              }
+
+              if (!nextActiveCode) {
+                return;
+              }
+
+              const nextTab = contentEditor.querySelector(`[data-osm-content-lang-tab="${nextActiveCode}"]`);
+              const nextPanel = contentEditor.querySelector(`[data-osm-content-lang-panel="${nextActiveCode}"]`);
+
+              nextTab?.classList.add('is-active');
+              nextPanel?.classList.add('is-active');
+            };
+
+            const activateContentLanguage = (code) => {
+              if (!contentEditor) {
+                return;
+              }
+
+              contentEditor.querySelectorAll('[data-osm-content-lang-tab]').forEach((tab) => {
+                tab.classList.toggle('is-active', tab.dataset.osmContentLangTab === code);
+              });
+
+              contentEditor.querySelectorAll('[data-osm-content-lang-panel]').forEach((panel) => {
+                const isActive = panel.dataset.osmContentLangPanel === code;
+                panel.classList.toggle('is-active', isActive);
+                panel.hidden = !isActive;
+              });
+            };
+
+            if (!tabButtons.length || !tabPanels.length) {
+              return;
+            }
 
             tabButtons.forEach((button) => {
               button.addEventListener('click', () => {
                 activateTab(button.dataset.osmTab);
               });
             });
+
+            if (contentEditor) {
+              Array.from(contentEditor.querySelectorAll('[data-osm-content-lang-tab]')).forEach((button) => {
+                button.addEventListener('click', () => activateContentLanguage(button.dataset.osmContentLangTab));
+              });
+
+              languageCheckboxes.forEach((checkbox) => {
+                checkbox.addEventListener('change', updateContentLanguagePanels);
+              });
+
+              Array.from(contentEditor.querySelectorAll('[data-osm-reset-content]')).forEach((button) => {
+                button.addEventListener('click', () => {
+                  const field = button.closest('.osm-content-field');
+
+                  if (!field) {
+                    return;
+                  }
+
+                  const input = field.querySelector('[data-osm-content-input]');
+                  const resetFlag = field.querySelector('[data-osm-content-reset-flag]');
+                  const sourceLabel = field.querySelector('[data-osm-content-source-label]');
+
+                  if (!input || !resetFlag) {
+                    return;
+                  }
+
+                  input.value = input.dataset.resetValue || '';
+                  resetFlag.value = '1';
+
+                  if (sourceLabel) {
+                    sourceLabel.textContent = input.dataset.resetSource || 'Inherited value';
+                  }
+                });
+              });
+
+              Array.from(contentEditor.querySelectorAll('[data-osm-content-input]')).forEach((input) => {
+                input.addEventListener('input', () => {
+                  const field = input.closest('.osm-content-field');
+                  const resetFlag = field ? field.querySelector('[data-osm-content-reset-flag]') : null;
+
+                  if (resetFlag) {
+                    resetFlag.value = '0';
+                  }
+                });
+              });
+            }
 
             displayModeField?.addEventListener('change', syncDisplayModeFields);
             titleField?.addEventListener('input', syncMetaTitleFromTitle);
@@ -1379,9 +1755,11 @@ final class OSM_Sites
 
             let savedTab = '';
 
-            try {
-              savedTab = window.localStorage.getItem(storageKey) || '';
-            } catch (error) {}
+            if (storageKey) {
+              try {
+                savedTab = window.localStorage.getItem(storageKey) || '';
+              } catch (error) {}
+            }
 
             if (savedTab && tabsRoot.querySelector(`[data-osm-tab="${savedTab}"]`)) {
               activateTab(savedTab);
@@ -1392,6 +1770,9 @@ final class OSM_Sites
             syncDisplayModeFields();
             refreshMetaTitleManualState();
             syncMetaTitleFromTitle();
+            if (contentEditor) {
+              updateContentLanguagePanels();
+            }
 
             const requiredFields = Array.from(tabsRoot.querySelectorAll('[data-osm-required="1"]'));
 

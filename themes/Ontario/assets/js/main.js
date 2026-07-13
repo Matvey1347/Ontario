@@ -16,11 +16,28 @@
   }
 
   menuBtn?.addEventListener('click', () => {
-    nav.classList.toggle('open');
+    const isOpen = nav.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   });
 
   document.querySelectorAll('.nav-links a').forEach((link) => {
-    link.addEventListener('click', () => nav.classList.remove('open'));
+    link.addEventListener('click', () => {
+      nav.classList.remove('open');
+      menuBtn?.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!nav || !menuBtn || !nav.classList.contains('open')) {
+      return;
+    }
+
+    if (nav.contains(event.target)) {
+      return;
+    }
+
+    nav.classList.remove('open');
+    menuBtn.setAttribute('aria-expanded', 'false');
   });
 
   function initLanguageSwitcher() {

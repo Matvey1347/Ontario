@@ -77,7 +77,7 @@ $current_language = ontario_current_language();
           <a class="phone" href="tel:<?php echo esc_attr($phone_href); ?>"><?php echo esc_html($phone_number); ?></a>
         <?php endif; ?>
         <a class="btn btn-primary" href="#quick-contact-modal" data-modal-open><?php echo esc_html(ontario_t('nav.free_consultation', [], 'Free Consultation')); ?></a>
-        <button class="mobile-menu-btn" type="button" aria-label="<?php echo esc_attr(ontario_t('site.open_menu', [], 'Open menu')); ?>" id="menuBtn">☰</button>
+        <button class="mobile-menu-btn" type="button" aria-label="<?php echo esc_attr(ontario_t('site.open_menu', [], 'Open menu')); ?>" aria-expanded="false" id="menuBtn">☰</button>
       </div>
     </nav>
   </div>

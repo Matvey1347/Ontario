@@ -9,6 +9,44 @@ final class OSM_Translations
 {
     private const SETTINGS_OPTION = 'osm_localization_settings';
     private const QUERY_ARG = 'ontario_lang';
+    private const CONTENT_GROUPS = [
+        'full_hero' => [
+            'label' => 'Full Hero',
+            'keys' => [
+                'hero.badge',
+                'hero.title',
+                'hero.copy',
+                'hero.cta_primary',
+                'hero.cta_secondary',
+                'hero.trust.encrypted',
+                'hero.trust.pipeda',
+                'hero.trust.soc2',
+            ],
+        ],
+        'simple_hero' => [
+            'label' => 'Simple Hero',
+            'keys' => [
+                'simple.hero.badge',
+                'simple.hero.title',
+                'simple.hero.lead',
+                'simple.hero.note',
+                'simple.hero.primary',
+                'simple.hero.secondary',
+                'simple.hero.trust_private',
+                'simple.hero.trust_encrypted',
+            ],
+        ],
+        'footer' => [
+            'label' => 'Footer',
+            'keys' => [
+                'footer.description',
+                'footer.security',
+                'footer.copyright',
+                'footer.terms',
+                'footer.privacy',
+            ],
+        ],
+    ];
 
     private OSM_Sites $sites;
     private OSM_Current_Site $current_site;
@@ -83,6 +121,29 @@ final class OSM_Translations
     public function save_global_settings(array $settings): void
     {
         update_option(self::SETTINGS_OPTION, $this->sanitize_localization_settings($settings), false);
+    }
+
+    public function content_groups(): array
+    {
+        return self::CONTENT_GROUPS;
+    }
+
+    public function editable_content_keys(): array
+    {
+        $keys = [];
+
+        foreach (self::CONTENT_GROUPS as $group) {
+            foreach ($group['keys'] as $key) {
+                $keys[] = $key;
+            }
+        }
+
+        return array_values(array_unique($keys));
+    }
+
+    public function is_editable_content_key(string $key): bool
+    {
+        return in_array($key, $this->editable_content_keys(), true);
     }
 
     public function effective_settings(array $site): array
@@ -189,15 +250,8 @@ final class OSM_Translations
     public function translate(string $key, array $replacements = [], string $fallback = ''): string
     {
         $language = $this->current_language();
-        $value = $this->translation_value($language, $key);
-
-        if ($value === '' && $language !== 'en') {
-            $value = $this->translation_value('en', $key);
-        }
-
-        if ($value === '') {
-            $value = $fallback;
-        }
+        $resolved = $this->resolve_value($key, $language, $this->current_site->get_site(), $fallback);
+        $value = $resolved['value'];
 
         if ($value === '') {
             return $key;
@@ -323,6 +377,60 @@ final class OSM_Translations
         return $value !== '' ? $value : $fallback;
     }
 
+    public function sanitize_content_text(string $value): string
+    {
+        return trim(wp_kses_post($value));
+    }
+
+    public function sanitize_content_overrides(array $overrides): array
+    {
+        $available_languages = array_keys($this->available_languages());
+        $allowed_keys = $this->editable_content_keys();
+        $sanitized = [];
+
+        foreach ($overrides as $language => $values) {
+            $language = sanitize_key((string) $language);
+
+            if ($language === '' || ! in_array($language, $available_languages, true) || ! is_array($values)) {
+                continue;
+            }
+
+            foreach ($values as $key => $value) {
+                $key = (string) $key;
+
+                if (! in_array($key, $allowed_keys, true)) {
+                    continue;
+                }
+
+                $text = $this->sanitize_content_text(is_string($value) ? wp_unslash($value) : '');
+
+                if ($text === '') {
+                    continue;
+                }
+
+                $sanitized[$language][$key] = $text;
+            }
+        }
+
+        ksort($sanitized);
+
+        foreach ($sanitized as &$values) {
+            ksort($values);
+        }
+
+        return $sanitized;
+    }
+
+    public function resolve_global_content_value(string $key, string $language, string $fallback = ''): array
+    {
+        return $this->resolve_value($key, $language, [], $fallback, false);
+    }
+
+    public function resolve_site_content_value(array $site, string $key, string $language, string $fallback = ''): array
+    {
+        return $this->resolve_value($key, $language, $site, $fallback, true);
+    }
+
     private function translation_value(string $language, string $key): string
     {
         if (! isset($this->translations[$language])) {
@@ -333,6 +441,46 @@ final class OSM_Translations
         $value = $this->translations[$language][$key] ?? '';
 
         return is_string($value) ? $value : '';
+    }
+
+    private function resolve_value(string $key, string $language, array $site, string $fallback = '', bool $include_site_override = true): array
+    {
+        $site_overrides = $include_site_override ? $this->sanitize_content_overrides((array) ($site['content_overrides'] ?? [])) : [];
+        $global_overrides = $this->sites->get_global_content_overrides();
+
+        if ($this->is_editable_content_key($key)) {
+            $site_value = $site_overrides[$language][$key] ?? '';
+
+            if ($site_value !== '') {
+                return ['value' => $site_value, 'source' => 'site_override'];
+            }
+
+            $global_value = $global_overrides[$language][$key] ?? '';
+
+            if ($global_value !== '') {
+                return ['value' => $global_value, 'source' => 'global_override'];
+            }
+        }
+
+        $language_value = $this->translation_value($language, $key);
+
+        if ($language_value !== '') {
+            return ['value' => $language_value, 'source' => 'translation_file'];
+        }
+
+        if ($language !== 'en') {
+            $english_value = $this->translation_value('en', $key);
+
+            if ($english_value !== '') {
+                return ['value' => $english_value, 'source' => 'english_translation_fallback'];
+            }
+        }
+
+        if ($fallback !== '') {
+            return ['value' => $fallback, 'source' => 'fallback'];
+        }
+
+        return ['value' => $key, 'source' => 'key'];
     }
 
     private function sanitize_localization_settings(array $settings): array
