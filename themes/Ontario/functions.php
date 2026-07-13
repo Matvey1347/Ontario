@@ -255,6 +255,151 @@ if (! function_exists('ontario_simple_image_uri')) {
     }
 }
 
+if (! function_exists('ontario_legal_page_key')) {
+    function ontario_legal_page_key(): string
+    {
+        if (! is_page()) {
+            return '';
+        }
+
+        $post = get_queried_object();
+
+        if (! $post instanceof WP_Post) {
+            return '';
+        }
+
+        $slug = sanitize_title($post->post_name);
+        $title = sanitize_title((string) $post->post_title);
+
+        return match (true) {
+            in_array($slug, ['termsandconditions', 'terms-and-conditions', 'termsconditions'], true),
+            in_array($title, ['terms-and-conditions', 'terms-conditions'], true) => 'terms',
+            in_array($slug, ['privacypolicy', 'privacy-policy'], true),
+            $title === 'privacy-policy' => 'privacy',
+            default => '',
+        };
+    }
+}
+
+if (! function_exists('ontario_legal_page_url')) {
+    function ontario_legal_page_url(string $page_key): string
+    {
+        $slug = match ($page_key) {
+            'terms' => 'termsandconditions',
+            'privacy' => 'privacypolicy',
+            default => '',
+        };
+
+        return $slug !== '' ? home_url('/' . $slug . '/') : home_url('/');
+    }
+}
+
+if (! function_exists('ontario_legal_page_content')) {
+    function ontario_legal_page_content(string $page_key): array
+    {
+        $site = ontario_current_site();
+        $website = (string) ($site['resolved_host'] ?? wp_parse_url(home_url('/'), PHP_URL_HOST) ?? '');
+        $brand_name = ontario_site_brand_name();
+        $email = ontario_site_field('public_email');
+        $phone = ontario_site_field('phone_number');
+        $address = ontario_site_field('address');
+
+        $replacements = [
+            'brand_name' => $brand_name,
+            'website' => $website,
+            'email' => $email,
+            'phone' => $phone,
+            'address' => $address,
+            'effective_date' => '01.01.2026',
+        ];
+
+        if ($page_key === 'terms') {
+            return [
+                'title' => ontario_t('legal.terms.title', [], 'Terms & Conditions'),
+                'effective_date' => ontario_t('legal.effective_date', $replacements, 'Effective Date: 01.01.2026'),
+                'intro' => [
+                    ontario_t('legal.terms.intro_1', $replacements, 'Welcome to {brand_name} (“we,” “our,” or “us”).'),
+                    ontario_t('legal.terms.intro_2', $replacements, 'These Terms and Conditions (“Terms”) govern your use of our website, {website}, and any services provided by us. By accessing or using our site and services, you agree to be bound by these Terms.'),
+                    ontario_t('legal.terms.intro_3', $replacements, 'If you do not agree with any part of these Terms, you must not use our website or services.'),
+                ],
+                'sections' => [
+                    [
+                        'heading' => ontario_t('legal.terms.section_1.heading', [], '1. Our Services'),
+                        'paragraphs' => [
+                            ontario_t('legal.terms.section_1.intro', [], 'Ontario Refunds provides assistance and guidance to individuals and organizations who have been victims of online scams and frauds. Our services may include:'),
+                        ],
+                        'list' => [
+                            ontario_t('legal.terms.section_1.item_1', [], 'Scam consultation and case evaluation'),
+                            ontario_t('legal.terms.section_1.item_2', [], 'Guidance on recovery actions'),
+                            ontario_t('legal.terms.section_1.item_3', [], 'Communication support with relevant authorities or financial institutions'),
+                            ontario_t('legal.terms.section_1.item_4', [], 'Referral to legal or investigative partners (when applicable)'),
+                        ],
+                    ],
+                    [
+                        'heading' => ontario_t('legal.terms.section_2.heading', [], '2. No Guarantee of Fund Recovery'),
+                        'paragraphs' => [
+                            ontario_t('legal.terms.section_2.notice', [], 'IMPORTANT NOTICE:'),
+                            ontario_t('legal.terms.section_2.p1', [], 'While we strive to assist victims to the best of our ability, we do not and cannot guarantee a full or partial recovery of lost funds. Many scam-related losses are difficult or impossible to recover due to jurisdictional limitations, anonymity of perpetrators, and other legal or technical constraints.'),
+                            ontario_t('legal.terms.section_2.p2', [], 'You acknowledge and accept that using our services does not ensure successful recovery.'),
+                        ],
+                    ],
+                    [
+                        'heading' => ontario_t('legal.terms.section_3.heading', [], '3. User Responsibilities'),
+                        'paragraphs' => [
+                            ontario_t('legal.terms.section_3.intro', [], 'By using our services, you agree to:'),
+                        ],
+                        'list' => [
+                            ontario_t('legal.terms.section_3.item_1', [], 'Provide accurate, complete, and honest information'),
+                            ontario_t('legal.terms.section_3.item_2', [], 'Not misuse or abuse our services'),
+                            ontario_t('legal.terms.section_3.item_3', [], 'Cooperate fully with our team or any third parties involved in your case'),
+                            ontario_t('legal.terms.section_3.item_4', [], 'Abide by all applicable laws and regulations'),
+                        ],
+                    ],
+                    [
+                        'heading' => ontario_t('legal.terms.section_4.heading', [], '4. Eligibility'),
+                        'paragraphs' => [
+                            ontario_t('legal.terms.section_4.intro', [], 'To use our services, you must:'),
+                        ],
+                        'list' => [
+                            ontario_t('legal.terms.section_4.item_1', [], 'Be at least 18 years old or have parental/guardian consent'),
+                            ontario_t('legal.terms.section_4.item_2', [], 'Be legally competent to enter into a binding agreement'),
+                        ],
+                    ],
+                    ['heading' => ontario_t('legal.terms.section_5.heading', [], '5. Payment and Fees'), 'paragraphs' => [ontario_t('legal.terms.section_5.p1', [], 'Some of our services may be free, while others may require payment. You will be informed of any costs before service delivery. All payments are final unless otherwise agreed in writing.')]],
+                    ['heading' => ontario_t('legal.terms.section_6.heading', [], '6. Intellectual Property'), 'paragraphs' => [ontario_t('legal.terms.section_6.p1', $replacements, 'All content on our website, including text, graphics, logos, and other materials, is the property of {brand_name} or its content providers and is protected by intellectual property laws. You may not reproduce, distribute, or use any content without written permission.')]],
+                    ['heading' => ontario_t('legal.terms.section_7.heading', [], '7. Limitation of Liability'), 'paragraphs' => [ontario_t('legal.terms.section_7.intro', $replacements, 'To the fullest extent permitted by law, {brand_name} is not liable for any direct, indirect, incidental, or consequential damages resulting from:' )], 'list' => [ontario_t('legal.terms.section_7.item_1', [], 'Use or misuse of our website or services'), ontario_t('legal.terms.section_7.item_2', [], 'Failure to recover funds or achieve desired outcomes'), ontario_t('legal.terms.section_7.item_3', [], 'Delays, errors, or interruptions in service')], 'closing' => [ontario_t('legal.terms.section_7.p2', [], 'Our liability, if any, shall be limited to the amount paid for our services.')]],
+                    ['heading' => ontario_t('legal.terms.section_8.heading', [], '8. Third-Party Services and Referrals'), 'paragraphs' => [ontario_t('legal.terms.section_8.p1', [], 'We may refer you to trusted third parties such as legal experts or investigators. We do not control these third parties and are not responsible for their actions, advice, or results.')]],
+                    ['heading' => ontario_t('legal.terms.section_9.heading', [], '9. Changes to Terms'), 'paragraphs' => [ontario_t('legal.terms.section_9.p1', [], 'We may update these Terms at any time. The revised version will be posted on this page with an updated effective date. Continued use of our services means you accept the updated Terms.')]],
+                    ['heading' => ontario_t('legal.terms.section_10.heading', [], '10. Termination'), 'paragraphs' => [ontario_t('legal.terms.section_10.p1', [], 'We reserve the right to terminate or suspend access to our website or services at any time, with or without notice, for any reason including violation of these Terms.')]],
+                    ['heading' => ontario_t('legal.terms.section_11.heading', [], '11. Contact Us'), 'paragraphs' => [ontario_t('legal.terms.section_11.p1', [], 'For questions about these Terms, please contact:')], 'contact_block' => true],
+                ],
+            ];
+        }
+
+        return [
+            'title' => ontario_t('legal.privacy.title', [], 'Privacy Policy'),
+            'effective_date' => ontario_t('legal.effective_date', $replacements, 'Effective Date: 01.01.2026'),
+            'intro' => [
+                ontario_t('legal.privacy.intro_1', $replacements, 'Welcome to {brand_name} (“we,” “our,” or “us”). Your privacy is important to us. This Privacy Policy describes how we collect, use, disclose, and protect your personal information when you use our website, {website}, and our scam recovery services.'),
+            ],
+            'sections' => [
+                ['heading' => ontario_t('legal.privacy.section_1.heading', [], '1. Information We Collect.'), 'paragraphs' => [ontario_t('legal.privacy.section_1.intro', [], 'We may collect and process the following types of personal data:'), ontario_t('legal.privacy.section_1.sub_a', [], 'a. Information You Provide to Us:')], 'list' => [ontario_t('legal.privacy.section_1.item_1', [], 'Full name'), ontario_t('legal.privacy.section_1.item_2', [], 'Email address'), ontario_t('legal.privacy.section_1.item_3', [], 'Phone number'), ontario_t('legal.privacy.section_1.item_4', [], 'Details about your scam incident (e.g., dates, amounts lost, parties involved)'), ontario_t('legal.privacy.section_1.item_5', [], 'Documents or evidence you choose to upload')], 'closing' => [ontario_t('legal.privacy.section_1.sub_b', [], 'b. Information We Collect Automatically:'), ontario_t('legal.privacy.section_1.item_auto_1', [], 'IP address'), ontario_t('legal.privacy.section_1.item_auto_2', [], 'Browser type and version'), ontario_t('legal.privacy.section_1.item_auto_3', [], 'Operating system'), ontario_t('legal.privacy.section_1.item_auto_4', [], 'Pages visited and time spent on the site'), ontario_t('legal.privacy.section_1.item_auto_5', [], 'Cookies and similar tracking technologies')]],
+                ['heading' => ontario_t('legal.privacy.section_2.heading', [], '2. How We Use Your Information.'), 'paragraphs' => [ontario_t('legal.privacy.section_2.intro', [], 'We use your information for the following purposes:')], 'list' => [ontario_t('legal.privacy.section_2.item_1', [], 'To provide scam recovery advice and services'), ontario_t('legal.privacy.section_2.item_2', [], 'To contact you regarding your case'), ontario_t('legal.privacy.section_2.item_3', [], 'To improve our services and website'), ontario_t('legal.privacy.section_2.item_4', [], 'To comply with legal obligations'), ontario_t('legal.privacy.section_2.item_5', [], 'For internal record keeping')]],
+                ['heading' => ontario_t('legal.privacy.section_3.heading', [], '3. Legal Basis for Processing.'), 'paragraphs' => [ontario_t('legal.privacy.section_3.intro', [], 'We process your personal data based on:')], 'list' => [ontario_t('legal.privacy.section_3.item_1', [], 'Consent – When you provide us with personal data voluntarily'), ontario_t('legal.privacy.section_3.item_2', [], 'Contract – To fulfill our agreement to assist with your case'), ontario_t('legal.privacy.section_3.item_3', [], 'Legal obligation – When required to comply with laws'), ontario_t('legal.privacy.section_3.item_4', [], 'Legitimate interest – To ensure service quality and security')]],
+                ['heading' => ontario_t('legal.privacy.section_4.heading', [], '4. Sharing Your Information.'), 'paragraphs' => [ontario_t('legal.privacy.section_4.intro', [], 'We do not sell or rent your data. We may share your information with:')], 'list' => [ontario_t('legal.privacy.section_4.item_1', [], 'Law enforcement or regulatory bodies upon request or legal obligation'), ontario_t('legal.privacy.section_4.item_2', [], 'Service providers who assist in our operations (e.g., hosting, communication tools)'), ontario_t('legal.privacy.section_4.item_3', [], 'Legal professionals or partner investigators involved in your case, with your consent')], 'closing' => [ontario_t('legal.privacy.section_4.p2', [], 'All third parties are required to protect your data and use it only for the agreed purpose.')]],
+                ['heading' => ontario_t('legal.privacy.section_5.heading', [], '5. Data Retention.'), 'paragraphs' => [ontario_t('legal.privacy.section_5.intro', [], 'We retain your personal information only as long as necessary:')], 'list' => [ontario_t('legal.privacy.section_5.item_1', [], 'To fulfill the purposes outlined in this policy'), ontario_t('legal.privacy.section_5.item_2', [], 'To comply with legal obligations'), ontario_t('legal.privacy.section_5.item_3', [], 'To resolve disputes and enforce agreements')]],
+                ['heading' => ontario_t('legal.privacy.section_6.heading', [], '6. Your Rights.'), 'paragraphs' => [ontario_t('legal.privacy.section_6.intro', [], 'Under GDPR and other applicable laws, you have the right to:')], 'list' => [ontario_t('legal.privacy.section_6.item_1', [], 'Access your personal data'), ontario_t('legal.privacy.section_6.item_2', [], 'Request correction or deletion'), ontario_t('legal.privacy.section_6.item_3', [], 'Withdraw consent at any time'), ontario_t('legal.privacy.section_6.item_4', [], 'Object to or restrict processing'), ontario_t('legal.privacy.section_6.item_5', [], 'Data portability (in some cases)'), ontario_t('legal.privacy.section_6.item_6', [], 'File a complaint with a data protection authority')], 'closing' => [ontario_t('legal.privacy.section_6.p2', $replacements, 'To exercise these rights, contact us at: {email}')]],
+                ['heading' => ontario_t('legal.privacy.section_7.heading', [], '7. Security of Your Data.'), 'paragraphs' => [ontario_t('legal.privacy.section_7.p1', [], 'We take reasonable administrative, technical, and physical measures to safeguard your information against loss, theft, and unauthorized use or access.')]],
+                ['heading' => ontario_t('legal.privacy.section_8.heading', [], '8. Cookies'), 'paragraphs' => [ontario_t('legal.privacy.section_8.p1', [], 'Our website uses cookies to improve user experience and analyze website usage. You can control cookie preferences through your browser settings.')]],
+                ['heading' => ontario_t('legal.privacy.section_9.heading', [], '9. International Data Transfers.'), 'paragraphs' => [ontario_t('legal.privacy.section_9.p1', [], 'If you are located outside of Canada, your information may be transferred to and processed in Canada or other countries with different data protection laws.')]],
+                ['heading' => ontario_t('legal.privacy.section_10.heading', [], '10. Third-Party Links.'), 'paragraphs' => [ontario_t('legal.privacy.section_10.p1', [], 'Our website may contain links to third-party sites. We are not responsible for the privacy practices of these websites.')]],
+                ['heading' => ontario_t('legal.privacy.section_11.heading', [], '11. Changes to This Policy.'), 'paragraphs' => [ontario_t('legal.privacy.section_11.p1', [], 'We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated effective date.')]],
+                ['heading' => ontario_t('legal.privacy.section_12.heading', [], '12. Contact Us.'), 'paragraphs' => [ontario_t('legal.privacy.section_12.p1', [], 'If you have any questions or concerns about this Privacy Policy, please contact:')], 'contact_block' => true],
+            ],
+        ];
+    }
+}
+
 add_action('admin_init', static function (): void {
     if (! is_admin() || wp_doing_ajax()) {
         return;

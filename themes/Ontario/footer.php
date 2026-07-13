@@ -51,8 +51,8 @@ $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== ''
     <div class="footer-bottom">
       <div><?php echo esc_html(ontario_t('footer.copyright', ['year' => (string) gmdate('Y'), 'brand_name' => $brand_name], '© ' . gmdate('Y') . ' ' . $brand_name . '. All Rights Reserved.')); ?></div>
       <div class="footer-links">
-        <a href="/termsandconditions/"><?php echo esc_html(ontario_t('footer.terms', [], 'Terms & Conditions')); ?></a>
-        <a href="/privacypolicy/"><?php echo esc_html(ontario_t('footer.privacy', [], 'Privacy Policy')); ?></a>
+        <a href="<?php echo esc_url(ontario_legal_page_url('terms')); ?>"><?php echo esc_html(ontario_t('footer.terms', [], 'Terms & Conditions')); ?></a>
+        <a href="<?php echo esc_url(ontario_legal_page_url('privacy')); ?>"><?php echo esc_html(ontario_t('footer.privacy', [], 'Privacy Policy')); ?></a>
         <?php if (ontario_site_display_mode() === 'choice') : ?>
           <button class="display-mode-switch" type="button" id="displayModeSwitch"><?php echo esc_html(ontario_t('footer.change_display_mode', [], 'Change display mode')); ?></button>
         <?php endif; ?>

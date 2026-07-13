@@ -642,6 +642,7 @@ section {
 
 .legal-shell h1 {
   margin-bottom: 18px;
+  max-width: 100%;
 }
 
 .legal-content {
