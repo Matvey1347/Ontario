@@ -3,12 +3,17 @@
   const successUrl = osmConfig.successUrl || `${window.location.origin}/success/`;
   const effectiveDisplayMode = osmConfig.effectiveDisplayMode || 'full';
   const isSimpleDisplay = effectiveDisplayMode === 'simple';
+  const i18n = osmConfig.i18n || {};
   const submissionState = {
     quickSubmitted: false,
     caseSubmitted: false
   };
   const nav = document.getElementById('nav');
   const menuBtn = document.getElementById('menuBtn');
+
+  function t(key, fallback) {
+    return typeof i18n[key] === 'string' && i18n[key] ? i18n[key] : fallback;
+  }
 
   menuBtn?.addEventListener('click', () => {
     nav.classList.toggle('open');
@@ -17,6 +22,46 @@
   document.querySelectorAll('.nav-links a').forEach((link) => {
     link.addEventListener('click', () => nav.classList.remove('open'));
   });
+
+  function initLanguageSwitcher() {
+    const switcher = document.querySelector('[data-language-switcher]');
+    if (!switcher) return;
+
+    const button = switcher.querySelector('.language-switcher__button');
+    const menu = switcher.querySelector('.language-switcher__menu');
+
+    if (!button || !menu) return;
+
+    function closeMenu() {
+      button.setAttribute('aria-expanded', 'false');
+      menu.hidden = true;
+    }
+
+    function openMenu() {
+      button.setAttribute('aria-expanded', 'true');
+      menu.hidden = false;
+    }
+
+    button.addEventListener('click', () => {
+      if (menu.hidden) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!switcher.contains(event.target)) {
+        closeMenu();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeMenu();
+      }
+    });
+  }
 
   function initScrollReveal() {
     const revealGroups = [
@@ -296,7 +341,7 @@
 
     selects.forEach((select) => {
       new Choices(select, {
-        searchEnabled: false,
+        searchEnabled: select.hasAttribute('data-phone-country'),
         shouldSort: false,
         itemSelectText: '',
         allowHTML: false,
@@ -333,6 +378,11 @@
 
     phoneInputs.forEach((phoneInput) => {
       phoneInput.addEventListener('input', () => {
+        if (phoneInput.dataset.phoneMode === 'international') {
+          phoneInput.value = phoneInput.value.replace(/[^\d\s()-]/g, '');
+          return;
+        }
+
         phoneInput.value = formatCanadianPhone(phoneInput.value);
       });
     });
@@ -371,17 +421,24 @@
     overlay = document.createElement('div');
     overlay.className = 'form-loading-overlay';
     overlay.setAttribute('hidden', 'hidden');
-    overlay.innerHTML = `
-      <div class="form-loading-spinner" aria-hidden="true"></div>
-      <div class="form-loading-title">Submitting your request...</div>
-      <div class="form-loading-copy">Please wait a moment while we process your form.</div>
-    `;
+    const spinner = document.createElement('div');
+    spinner.className = 'form-loading-spinner';
+    spinner.setAttribute('aria-hidden', 'true');
+    const title = document.createElement('div');
+    title.className = 'form-loading-title';
+    title.textContent = t('loadingTitle', 'Submitting your request...');
+    const copy = document.createElement('div');
+    copy.className = 'form-loading-copy';
+    copy.textContent = t('loadingCopy', 'Please wait a moment while we process your form.');
+    overlay.appendChild(spinner);
+    overlay.appendChild(title);
+    overlay.appendChild(copy);
     formElement.appendChild(overlay);
 
     return overlay;
   }
 
-  function setFormLoading(formElement, isLoading, message = 'Submitting your request...') {
+  function setFormLoading(formElement, isLoading, message = t('loadingTitle', 'Submitting your request...')) {
     if (!formElement) return;
 
     const overlay = ensureLoadingOverlay(formElement);
@@ -436,7 +493,7 @@
     const payload = await response.json().catch(() => ({}));
 
     if (!response.ok || !payload.success) {
-      throw new Error(payload.message || 'Unable to submit the form right now.');
+      throw new Error(payload.message || t('submitError', 'Unable to submit the form right now.'));
     }
 
     return payload;
@@ -448,10 +505,12 @@
     }
 
     steps.forEach((step, index) => step.classList.toggle('active', index === currentStep));
-    stepLabel.textContent = `Step ${currentStep + 1} of ${steps.length}`;
+    stepLabel.textContent = t('stepLabel', 'Step {current} of {total}')
+      .replace('{current}', String(currentStep + 1))
+      .replace('{total}', String(steps.length));
     progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
     prevBtn.style.visibility = currentStep === 0 ? 'hidden' : 'visible';
-    nextBtn.textContent = currentStep === steps.length - 1 ? 'Submit Case Review' : 'Next Step';
+    nextBtn.textContent = currentStep === steps.length - 1 ? t('submitCase', 'Submit Case Review') : t('nextStep', 'Next Step');
   }
 
   function getFieldContainer(field) {
@@ -520,22 +579,28 @@
     const value = field.type === 'checkbox' ? field.checked : String(field.value || '').trim();
 
     if (field.hasAttribute('required') && !value) {
-      return 'This field is required.';
+      return t('required', 'This field is required.');
     }
 
     if (field.type === 'email' && value) {
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (!emailPattern.test(String(field.value).trim())) {
-        return 'Enter a valid email address.';
+        return t('invalidEmail', 'Enter a valid email address.');
       }
     }
 
     if (field.type === 'tel' && value) {
-      const digits = getCanadianPhoneDigits(String(field.value));
-
-      if (digits.length < 10) {
-        return 'Enter a valid Canadian phone number.';
+      if (field.dataset.phoneMode === 'international') {
+        const digits = String(field.value).replace(/\D/g, '');
+        if (digits.length < 6 || digits.length > 15) {
+          return t('invalidPhone', 'Enter a valid phone number.');
+        }
+      } else {
+        const digits = getCanadianPhoneDigits(String(field.value));
+        if (digits.length < 10) {
+          return t('invalidCanadianPhone', 'Enter a valid Canadian phone number.');
+        }
       }
     }
 
@@ -599,6 +664,27 @@
     return validateFields(fields);
   }
 
+  function getSelectedDialCode(phoneInput) {
+    const wrapper = phoneInput.closest('.phone-input');
+    const select = wrapper?.querySelector('[data-phone-country]');
+    const option = select?.selectedOptions?.[0];
+    return option?.dataset?.dialCode || '+1';
+  }
+
+  function buildPhonePayload(phoneInput) {
+    if (!phoneInput) {
+      return '';
+    }
+
+    if (phoneInput.dataset.phoneMode === 'international') {
+      const digits = String(phoneInput.value || '').replace(/\D/g, '');
+      const dialCode = getSelectedDialCode(phoneInput).replace(/\D/g, '');
+      return `+${dialCode}${digits}`;
+    }
+
+    return `+1 ${phoneInput.value}`;
+  }
+
   nextBtn?.addEventListener('click', () => {
     if (submissionState.caseSubmitted) {
       showSuccessModal();
@@ -617,26 +703,26 @@
     const formData = new FormData(form);
     const phone = formData.get('phone');
 
-    if (phone) {
-      formData.set('phone', `+1 ${phone}`);
+    if (phone && form) {
+      formData.set('phone', buildPhonePayload(form.querySelector('#phone')) || String(phone));
     }
     formData.set('formType', 'caseForm');
 
     nextBtn.disabled = true;
-    nextBtn.textContent = 'Submitting...';
+    nextBtn.textContent = t('submitting', 'Submitting...');
     setFormLoading(form, true);
 
     submitLead(formData)
       .then(() => {
         submissionState.caseSubmitted = true;
-        nextBtn.textContent = 'Submitted';
+        nextBtn.textContent = t('submitted', 'Submitted');
         renderCaseFormSuccessState();
       })
       .catch((error) => {
         setFormLoading(form, false);
         nextBtn.disabled = false;
-        nextBtn.textContent = 'Submit Case Review';
-        setFormMessage(form, error.message || 'Unable to submit the form.', 'error');
+        nextBtn.textContent = t('submitCase', 'Submit Case Review');
+        setFormMessage(form, error.message || t('submitError', 'Unable to submit the form right now.'), 'error');
       });
   });
 
@@ -661,30 +747,30 @@
     const formData = new FormData(quickForm);
     const phone = formData.get('phone');
 
-    if (phone) {
-      formData.set('phone', `+1 ${phone}`);
+    if (phone && quickForm instanceof HTMLElement) {
+      formData.set('phone', buildPhonePayload(quickForm.querySelector('#quickPhone')) || String(phone));
     }
 
     formData.set('formType', 'quickForm');
-    submitButton.textContent = 'Sending...';
+    submitButton.textContent = t('sending', 'Sending...');
     submitButton.disabled = true;
-    setFormLoading(quickForm, true, 'Sending your message...');
+    setFormLoading(quickForm, true, t('sendingMessage', 'Sending your message...'));
 
     submitLead(formData)
       .then(() => {
         submissionState.quickSubmitted = true;
         setFormLoading(quickForm, false);
-        submitButton.textContent = 'Sent';
+        submitButton.textContent = t('submitted', 'Submitted');
         resetFormState(quickForm);
-        submitButton.textContent = 'Send Message';
+        submitButton.textContent = t('sendMessage', 'Send Message');
         submitButton.disabled = false;
         showSuccessModal();
       })
       .catch((error) => {
         setFormLoading(quickForm, false);
-        submitButton.textContent = 'Send Message';
+        submitButton.textContent = t('sendMessage', 'Send Message');
         submitButton.disabled = false;
-        setFormMessage(quickForm, error.message || 'Unable to send the form.', 'error');
+        setFormMessage(quickForm, error.message || t('sendError', 'Unable to send the form.'), 'error');
       });
   });
 
@@ -770,6 +856,7 @@
 
   initCustomSelects();
   initPhoneMask();
+  initLanguageSwitcher();
   attachFieldValidation(form);
   attachFieldValidation(document.getElementById('quickForm'));
   initScrollReveal();

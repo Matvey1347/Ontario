@@ -8,13 +8,15 @@ if (! defined('ABSPATH')) {
 final class OSM_Rest_Forms
 {
     private OSM_Current_Site $current_site;
+    private OSM_Translations $translations;
     private OSM_Leads $leads;
     private OSM_Zoho_CRM $zoho;
     private OSM_Logger $logger;
 
-    public function __construct(OSM_Current_Site $current_site, OSM_Leads $leads, OSM_Zoho_CRM $zoho, OSM_Logger $logger)
+    public function __construct(OSM_Current_Site $current_site, OSM_Translations $translations, OSM_Leads $leads, OSM_Zoho_CRM $zoho, OSM_Logger $logger)
     {
         $this->current_site = $current_site;
+        $this->translations = $translations;
         $this->leads = $leads;
         $this->zoho = $zoho;
         $this->logger = $logger;
@@ -38,7 +40,7 @@ final class OSM_Rest_Forms
         $form_key = $this->detect_form_key($params);
 
         if ($form_key === '') {
-            return new WP_REST_Response(['success' => false, 'message' => 'Unknown form'], 400);
+            return new WP_REST_Response(['success' => false, 'message' => $this->t('validation.unknown_form', 'Unknown form')], 400);
         }
 
         if (! empty($params['website'])) {
@@ -64,7 +66,7 @@ final class OSM_Rest_Forms
         $lead_id = $this->leads->create($site, $form_key, $payload);
 
         if ($lead_id < 1) {
-            return new WP_REST_Response(['success' => false, 'message' => 'Failed to save lead'], 500);
+            return new WP_REST_Response(['success' => false, 'message' => $this->t('validation.failed_save', 'Failed to save lead')], 500);
         }
 
         $this->logger->log('Lead captured', [
@@ -89,7 +91,7 @@ final class OSM_Rest_Forms
 
         return new WP_REST_Response([
             'success' => true,
-            'message' => 'Lead submitted successfully',
+            'message' => $this->t('validation.submit_success', 'Lead submitted successfully'),
             'leadId' => $lead_id,
             'email' => [
                 'success' => ! empty($email_result['success']),
@@ -212,15 +214,32 @@ final class OSM_Rest_Forms
 
         foreach ($required[$form_key] as $field) {
             if (empty($payload[$field])) {
-                return 'Please complete all required fields.';
+                return $this->t('validation.complete_required', 'Please complete all required fields.');
             }
         }
 
         if (! is_email($payload['email'] ?? '')) {
-            return 'Enter a valid email address.';
+            return $this->t('validation.invalid_email', 'Enter a valid email address.');
+        }
+
+        $phone = preg_replace('/\D+/', '', (string) ($payload['phone'] ?? '')) ?: '';
+        $site = $this->current_site->get_site();
+        $international = ! empty($site['phone_country_selector_enabled']);
+
+        if ($international) {
+            if (strlen($phone) < 7 || strlen($phone) > 15) {
+                return $this->t('validation.invalid_phone', 'Enter a valid phone number.');
+            }
+        } elseif (strlen($phone) < 11) {
+            return $this->t('validation.invalid_ca_phone', 'Enter a valid Canadian phone number.');
         }
 
         return true;
+    }
+
+    private function t(string $key, string $fallback): string
+    {
+        return $this->translations->translate($key, [], $fallback);
     }
 
     private function send_notification_email(array $site, string $form_key, array $payload): array

@@ -22,8 +22,7 @@ $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== ''
           <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($brand_name); ?>" />
         <?php endif; ?>
         <p>
-          <?php echo esc_html($brand_name); ?> provides private blockchain intelligence and forensic case analysis for victims of online financial fraud.
-          We trace digital asset movement, prepare evidence-based documentation, and explain practical next steps.
+          <?php echo esc_html(ontario_t('footer.description', ['brand_name' => $brand_name], $brand_name . ' provides private blockchain intelligence and forensic case analysis for victims of online financial fraud.')); ?>
         </p>
       </div>
 
@@ -44,18 +43,18 @@ $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== ''
           <?php if ($public_email !== '') : ?>
             <a href="mailto:<?php echo esc_attr($public_email); ?>"><?php echo esc_html($public_email); ?></a>
           <?php endif; ?>
-          <span>🔒 Encrypted in transit & at rest · PIPEDA compliant · SOC 2 Type II</span>
+          <span>🔒 <?php echo esc_html(ontario_t('footer.security', [], 'Encrypted in transit & at rest · PIPEDA compliant · SOC 2 Type II')); ?></span>
         </div>
       <?php endif; ?>
     </div>
 
     <div class="footer-bottom">
-      <div>© <?php echo esc_html((string) gmdate('Y')); ?> <?php echo esc_html($brand_name); ?>. All Rights Reserved.</div>
+      <div><?php echo esc_html(ontario_t('footer.copyright', ['year' => (string) gmdate('Y'), 'brand_name' => $brand_name], '© ' . gmdate('Y') . ' ' . $brand_name . '. All Rights Reserved.')); ?></div>
       <div class="footer-links">
-        <a href="/termsandconditions/">Terms &amp; Conditions</a>
-        <a href="/privacypolicy/">Privacy Policy</a>
+        <a href="/termsandconditions/"><?php echo esc_html(ontario_t('footer.terms', [], 'Terms & Conditions')); ?></a>
+        <a href="/privacypolicy/"><?php echo esc_html(ontario_t('footer.privacy', [], 'Privacy Policy')); ?></a>
         <?php if (ontario_site_display_mode() === 'choice') : ?>
-          <button class="display-mode-switch" type="button" id="displayModeSwitch">Change display mode</button>
+          <button class="display-mode-switch" type="button" id="displayModeSwitch"><?php echo esc_html(ontario_t('footer.change_display_mode', [], 'Change display mode')); ?></button>
         <?php endif; ?>
       </div>
     </div>

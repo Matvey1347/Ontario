@@ -56,6 +56,78 @@ if (! function_exists('ontario_render_success_tracking_code')) {
     }
 }
 
+if (! function_exists('ontario_current_language')) {
+    function ontario_current_language(): string
+    {
+        return 'en';
+    }
+}
+
+if (! function_exists('ontario_available_languages')) {
+    function ontario_available_languages(): array
+    {
+        return [
+            [
+                'code' => 'en',
+                'name' => 'English',
+                'native_name' => 'English',
+                'flag' => '🇬🇧',
+            ],
+        ];
+    }
+}
+
+if (! function_exists('ontario_enabled_languages')) {
+    function ontario_enabled_languages(): array
+    {
+        return ontario_available_languages();
+    }
+}
+
+if (! function_exists('ontario_language_switch_url')) {
+    function ontario_language_switch_url(string $language): string
+    {
+        return add_query_arg('ontario_lang', sanitize_key($language), home_url(add_query_arg([])));
+    }
+}
+
+if (! function_exists('ontario_phone_country_selector_enabled')) {
+    function ontario_phone_country_selector_enabled(): bool
+    {
+        return false;
+    }
+}
+
+if (! function_exists('ontario_phone_countries')) {
+    function ontario_phone_countries(): array
+    {
+        return [
+            ['iso2' => 'CA', 'name' => 'Canada', 'dial_code' => '+1', 'flag' => '🇨🇦'],
+        ];
+    }
+}
+
+if (! function_exists('ontario_t')) {
+    function ontario_t(string $key, array $replacements = [], string $fallback = ''): string
+    {
+        $value = $fallback !== '' ? $fallback : $key;
+
+        if ($replacements !== []) {
+            $normalized = [];
+
+            foreach ($replacements as $placeholder => $replacement) {
+                if (is_scalar($replacement)) {
+                    $normalized['{' . sanitize_key((string) $placeholder) . '}'] = (string) $replacement;
+                }
+            }
+
+            $value = strtr($value, $normalized);
+        }
+
+        return $value;
+    }
+}
+
 if (! function_exists('ontario_success_page_url')) {
     function ontario_success_page_url(): string
     {
@@ -115,28 +187,56 @@ if (! function_exists('ontario_should_show_display_choice_modal')) {
 if (! function_exists('ontario_site_display_choice_title')) {
     function ontario_site_display_choice_title(): string
     {
-        return ontario_site_field('display_choice_title', 'Choose how you would like to view this website');
+        $site = ontario_current_site();
+        $custom = ontario_site_field('display_choice_title', '');
+
+        if ($custom !== '' && ontario_current_language() === (string) ($site['default_language'] ?? 'en')) {
+            return $custom;
+        }
+
+        return ontario_t('display.default_title', [], 'Choose how you would like to view this website');
     }
 }
 
 if (! function_exists('ontario_site_display_choice_description')) {
     function ontario_site_display_choice_description(): string
     {
-        return ontario_site_field('display_choice_description', 'You can continue with the full interactive design or switch to a simpler version with larger text and a calmer layout.');
+        $site = ontario_current_site();
+        $custom = ontario_site_field('display_choice_description', '');
+
+        if ($custom !== '' && ontario_current_language() === (string) ($site['default_language'] ?? 'en')) {
+            return $custom;
+        }
+
+        return ontario_t('display.default_description', [], 'You can continue with the full interactive design or switch to a simpler version with larger text and a calmer layout.');
     }
 }
 
 if (! function_exists('ontario_site_display_choice_simple_label')) {
     function ontario_site_display_choice_simple_label(): string
     {
-        return ontario_site_field('display_choice_simple_label', 'Use simple design');
+        $site = ontario_current_site();
+        $custom = ontario_site_field('display_choice_simple_label', '');
+
+        if ($custom !== '' && ontario_current_language() === (string) ($site['default_language'] ?? 'en')) {
+            return $custom;
+        }
+
+        return ontario_t('display.default_simple', [], 'Use simple design');
     }
 }
 
 if (! function_exists('ontario_site_display_choice_full_label')) {
     function ontario_site_display_choice_full_label(): string
     {
-        return ontario_site_field('display_choice_full_label', 'Continue with full design');
+        $site = ontario_current_site();
+        $custom = ontario_site_field('display_choice_full_label', '');
+
+        if ($custom !== '' && ontario_current_language() === (string) ($site['default_language'] ?? 'en')) {
+            return $custom;
+        }
+
+        return ontario_t('display.default_full', [], 'Continue with full design');
     }
 }
 
@@ -250,6 +350,8 @@ add_action('wp_enqueue_scripts', static function (): void {
     $site_display_mode = ontario_site_display_mode();
     $effective_display_mode = ontario_effective_display_mode();
     $rest_endpoint = home_url('/wp-json/ontario-site-manager/v1/lead');
+    $phone_selector_enabled = ontario_phone_country_selector_enabled();
+    $enabled_languages = ontario_enabled_languages();
 
     if (! empty($current_site['is_preview']) && ! empty($current_site['id'])) {
         $rest_endpoint = add_query_arg([
@@ -377,6 +479,30 @@ JS;
         'effectiveDisplayMode' => $effective_display_mode,
         'showWelcomeModal' => $effective_display_mode === 'full',
         'showDisplayChoiceModal' => ontario_should_show_display_choice_modal(),
+        'currentLanguage' => ontario_current_language(),
+        'enabledLanguages' => $enabled_languages,
+        'phoneCountrySelectorEnabled' => $phone_selector_enabled,
+        'phoneCountries' => ontario_phone_countries(),
+        'i18n' => [
+            'required' => ontario_t('validation.required', [], 'This field is required.'),
+            'invalidEmail' => ontario_t('validation.invalid_email', [], 'Enter a valid email address.'),
+            'invalidCanadianPhone' => ontario_t('validation.invalid_ca_phone', [], 'Enter a valid Canadian phone number.'),
+            'invalidPhone' => ontario_t('validation.invalid_phone', [], 'Enter a valid phone number.'),
+            'submitError' => ontario_t('validation.submit_error', [], 'Unable to submit the form right now.'),
+            'sendError' => ontario_t('validation.send_error', [], 'Unable to send the form.'),
+            'submitting' => ontario_t('form.submitting', [], 'Submitting...'),
+            'submitCase' => ontario_t('form.submit_case', [], 'Submit Case Review'),
+            'nextStep' => ontario_t('form.next', [], 'Next Step'),
+            'submitted' => ontario_t('form.sent', [], 'Submitted'),
+            'sending' => ontario_t('form.sending', [], 'Sending...'),
+            'sendMessage' => ontario_t('quick_contact.send', [], 'Send Message'),
+            'sendingMessage' => ontario_t('form.sending_message', [], 'Sending your message...'),
+            'loadingTitle' => ontario_t('form.submitting_request', [], 'Submitting your request...'),
+            'loadingCopy' => ontario_t('form.processing_copy', [], 'Please wait a moment while we process your form.'),
+            'stepLabel' => ontario_t('form.step_label', ['current' => '{current}', 'total' => '{total}'], 'Step {current} of {total}'),
+            'menuOpen' => ontario_t('site.language_switcher_open', [], 'Open language menu'),
+            'menuClose' => ontario_t('site.language_switcher_close', [], 'Close language menu'),
+        ],
     ]);
 
     if ($site_display_mode === 'choice') {

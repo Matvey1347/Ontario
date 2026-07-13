@@ -21,6 +21,7 @@ require_once OSM_PLUGIN_PATH . 'includes/class-osm-logger.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-crypto.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-sites.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-current-site.php';
+require_once OSM_PLUGIN_PATH . 'includes/class-osm-translations.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-leads.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-zoho-crm.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-rest-forms.php';
@@ -79,5 +80,54 @@ if (! function_exists('ontario_render_success_tracking_code')) {
     function ontario_render_success_tracking_code(): string
     {
         return OSM_Plugin::instance()->current_site()->render_tracking_code('success');
+    }
+}
+
+if (! function_exists('ontario_current_language')) {
+    function ontario_current_language(): string
+    {
+        return OSM_Plugin::instance()->translations()->current_language();
+    }
+}
+
+if (! function_exists('ontario_available_languages')) {
+    function ontario_available_languages(): array
+    {
+        return array_values(OSM_Plugin::instance()->translations()->available_languages());
+    }
+}
+
+if (! function_exists('ontario_enabled_languages')) {
+    function ontario_enabled_languages(): array
+    {
+        return OSM_Plugin::instance()->translations()->enabled_languages();
+    }
+}
+
+if (! function_exists('ontario_language_switch_url')) {
+    function ontario_language_switch_url(string $language): string
+    {
+        return OSM_Plugin::instance()->translations()->language_switch_url($language);
+    }
+}
+
+if (! function_exists('ontario_phone_country_selector_enabled')) {
+    function ontario_phone_country_selector_enabled(): bool
+    {
+        return OSM_Plugin::instance()->translations()->phone_country_selector_enabled();
+    }
+}
+
+if (! function_exists('ontario_phone_countries')) {
+    function ontario_phone_countries(): array
+    {
+        return OSM_Plugin::instance()->translations()->phone_countries();
+    }
+}
+
+if (! function_exists('ontario_t')) {
+    function ontario_t(string $key, array $replacements = [], string $fallback = ''): string
+    {
+        return OSM_Plugin::instance()->translations()->translate($key, $replacements, $fallback);
     }
 }

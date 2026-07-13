@@ -33,7 +33,7 @@ final class OSM_Current_Site
         $preview_site = $this->resolve_preview_site();
 
         if ($preview_site !== []) {
-            $this->site = $preview_site;
+            $this->site = $this->with_localization_settings($preview_site);
             return $this->site;
         }
 
@@ -46,7 +46,7 @@ final class OSM_Current_Site
             if ($matched !== []) {
                 $matched['resolved_host'] = $raw_host !== '' ? $raw_host : $host;
                 $matched['resolved_host_normalized'] = $host;
-                $this->site = $matched;
+                $this->site = $this->with_localization_settings($matched);
                 return $this->site;
             }
         }
@@ -56,11 +56,11 @@ final class OSM_Current_Site
         if ($fallback !== []) {
             $fallback['resolved_host'] = $raw_host !== '' ? $raw_host : ($host !== '' ? $host : ($fallback['primary_domain'] ?? ''));
             $fallback['resolved_host_normalized'] = $host;
-            $this->site = $fallback;
+            $this->site = $this->with_localization_settings($fallback);
             return $this->site;
         }
 
-        $this->site = $this->defaults();
+        $this->site = $this->with_localization_settings($this->defaults());
 
         return $this->site;
     }
@@ -380,6 +380,30 @@ final class OSM_Current_Site
             'tracking_header_code' => '',
             'tracking_body_code' => '',
             'tracking_success_code' => '',
+            'language_configuration' => 'inherit',
+            'enabled_languages_raw' => [],
+            'default_language_raw' => '',
+            'phone_country_selector_mode' => 'inherit',
+            'enabled_languages' => ['en'],
+            'default_language' => 'en',
+            'phone_country_selector_enabled' => false,
         ];
+    }
+
+    private function with_localization_settings(array $site): array
+    {
+        if (! class_exists('OSM_Plugin')) {
+            return $site;
+        }
+
+        $plugin = OSM_Plugin::instance();
+
+        if (! method_exists($plugin, 'translations')) {
+            return $site;
+        }
+
+        $effective = $plugin->translations()->effective_settings($site);
+
+        return array_merge($site, $effective);
     }
 }

@@ -13,6 +13,7 @@ final class OSM_Plugin
     private OSM_Crypto $crypto;
     private OSM_Sites $sites;
     private OSM_Current_Site $current_site;
+    private OSM_Translations $translations;
     private OSM_Leads $leads;
     private OSM_Zoho_CRM $zoho;
     private OSM_Rest_Forms $rest_forms;
@@ -24,10 +25,11 @@ final class OSM_Plugin
         $this->crypto = new OSM_Crypto($this->logger);
         $this->sites = new OSM_Sites($this->crypto, $this->logger);
         $this->current_site = new OSM_Current_Site($this->sites, $this->logger);
+        $this->translations = new OSM_Translations($this->sites, $this->current_site);
         $this->leads = new OSM_Leads($this->logger);
         $this->zoho = new OSM_Zoho_CRM($this->logger);
-        $this->rest_forms = new OSM_Rest_Forms($this->current_site, $this->leads, $this->zoho, $this->logger);
-        $this->admin = new OSM_Admin($this->sites, $this->current_site, $this->leads, $this->logger);
+        $this->rest_forms = new OSM_Rest_Forms($this->current_site, $this->translations, $this->leads, $this->zoho, $this->logger);
+        $this->admin = new OSM_Admin($this->sites, $this->current_site, $this->translations, $this->leads, $this->logger);
 
         add_action('init', [$this, 'maybe_upgrade'], 40);
     }
@@ -54,6 +56,11 @@ final class OSM_Plugin
     public function current_site(): OSM_Current_Site
     {
         return $this->current_site;
+    }
+
+    public function translations(): OSM_Translations
+    {
+        return $this->translations;
     }
 
     public function maybe_upgrade(): void

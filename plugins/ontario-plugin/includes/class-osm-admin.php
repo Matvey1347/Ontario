@@ -9,13 +9,15 @@ final class OSM_Admin
 {
     private OSM_Sites $sites;
     private OSM_Current_Site $current_site;
+    private OSM_Translations $translations;
     private OSM_Leads $leads;
     private OSM_Logger $logger;
 
-    public function __construct(OSM_Sites $sites, OSM_Current_Site $current_site, OSM_Leads $leads, OSM_Logger $logger)
+    public function __construct(OSM_Sites $sites, OSM_Current_Site $current_site, OSM_Translations $translations, OSM_Leads $leads, OSM_Logger $logger)
     {
         $this->sites = $sites;
         $this->current_site = $current_site;
+        $this->translations = $translations;
         $this->leads = $leads;
         $this->logger = $logger;
 
@@ -45,12 +47,100 @@ final class OSM_Admin
 
         add_submenu_page(
             'edit.php?post_type=' . OSM_Sites::post_type(),
+            'Translations',
+            'Translations',
+            'manage_options',
+            'ontario-site-translations',
+            [$this, 'render_translations_page']
+        );
+
+        add_submenu_page(
+            'edit.php?post_type=' . OSM_Sites::post_type(),
             'Settings',
             'Settings',
             'manage_options',
             'ontario-site-settings',
             [$this, 'render_settings_page']
         );
+    }
+
+    public function render_translations_page(): void
+    {
+        if (! current_user_can('manage_options')) {
+            return;
+        }
+
+        if (
+            isset($_POST['osm_save_localization_settings'])
+            && check_admin_referer('osm_save_localization_settings_action', 'osm_save_localization_settings_nonce')
+        ) {
+            $this->translations->save_global_settings([
+                'enabled_languages' => isset($_POST['osm_enabled_languages']) && is_array($_POST['osm_enabled_languages']) ? array_map('wp_unslash', $_POST['osm_enabled_languages']) : [],
+                'default_language' => isset($_POST['osm_default_language']) ? wp_unslash((string) $_POST['osm_default_language']) : 'en',
+                'phone_country_selector_enabled' => isset($_POST['osm_phone_country_selector_enabled']) ? '1' : '0',
+            ]);
+
+            wp_safe_redirect(add_query_arg([
+                'post_type' => OSM_Sites::post_type(),
+                'page' => 'ontario-site-translations',
+                'settings_saved' => '1',
+            ], admin_url('edit.php')));
+            exit;
+        }
+
+        $settings = $this->translations->global_settings();
+        $languages = $this->translations->available_languages();
+
+        echo '<div class="wrap"><h1>Translations</h1>';
+        if (isset($_GET['settings_saved']) && $_GET['settings_saved'] === '1') {
+            echo '<div class="notice notice-success is-dismissible"><p>Translation settings saved.</p></div>';
+        }
+
+        echo '<form method="post" class="osm-translations-admin">';
+        wp_nonce_field('osm_save_localization_settings_action', 'osm_save_localization_settings_nonce');
+        echo '<input type="hidden" name="osm_save_localization_settings" value="1" />';
+        echo '<div class="osm-translations-admin__grid">';
+        echo '<section class="osm-translations-admin__card"><h2>Global language defaults</h2><p>Choose which languages are enabled by default across sites.</p><div class="osm-translations-admin__languages">';
+
+        foreach ($languages as $language) {
+            $enabled = in_array($language['code'], $settings['enabled_languages'], true);
+            echo '<label class="osm-translations-admin__language">';
+            echo '<input type="checkbox" name="osm_enabled_languages[]" value="' . esc_attr((string) $language['code']) . '" ' . checked($enabled, true, false) . ' />';
+            echo '<span class="osm-translations-admin__flag">' . esc_html((string) $language['flag']) . '</span>';
+            echo '<span><strong>' . esc_html((string) $language['native_name']) . '</strong></span>';
+            echo '</label>';
+        }
+
+        echo '</div><p><label for="osm_default_language"><strong>Default language</strong></label><br />';
+        echo '<select id="osm_default_language" name="osm_default_language" class="osm-language-select">';
+        foreach ($languages as $language) {
+            echo '<option value="' . esc_attr((string) $language['code']) . '"' . selected($settings['default_language'], (string) $language['code'], false) . '>' . esc_html((string) $language['flag'] . ' ' . $language['native_name']) . '</option>';
+        }
+        echo '</select></p></section>';
+
+        echo '<section class="osm-translations-admin__card"><h2>Phone input settings</h2>';
+        echo '<label><input type="checkbox" name="osm_phone_country_selector_enabled" value="1" ' . checked($settings['phone_country_selector_enabled'], '1', false) . ' /> Allow visitors to select a country in phone fields</label>';
+        echo '<p class="description">When enabled, phone fields display a country selector and submit the number with the selected international calling code. Individual sites can override this setting.</p>';
+        echo '</section>';
+        echo '</div>';
+        submit_button('Save settings');
+        echo '</form>';
+        $this->render_translations_admin_styles();
+        echo '</div>';
+    }
+
+    private function render_translations_admin_styles(): void
+    {
+        echo '<style>
+            .osm-translations-admin__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;max-width:1080px}
+            .osm-translations-admin__card{background:#fff;border:1px solid #dcdcde;border-radius:16px;padding:20px}
+            .osm-translations-admin__languages,.osm-language-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+            .osm-translations-admin__language,.osm-language-card{display:grid;grid-template-columns:28px 32px 1fr;column-gap:10px;align-items:center;padding:12px 16px;border:1px solid #dcdcde;border-radius:12px;background:#f8f9fa}
+            .osm-translations-admin__language input,.osm-language-card input{margin:0;justify-self:center}
+            .osm-translations-admin__flag,.osm-language-card__flag{font-size:20px;line-height:1}
+            .osm-language-select{min-width:240px;font-size:16px}
+            .screen-reader-text{position:absolute;left:-9999px}
+        </style>';
     }
 
     public function render_settings_page(): void

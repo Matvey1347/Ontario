@@ -121,6 +121,9 @@ final class OSM_Sites
             'zoho_api_domain' => 'https://www.zohoapis.eu',
             'default_lead_status' => 'Contact in Future',
             'notification_emails' => 'support@ontariorefunds.info',
+            'language_configuration' => 'inherit',
+            'default_language' => '',
+            'phone_country_selector_mode' => 'inherit',
         ];
 
         foreach ($defaults as $key => $value) {
@@ -193,7 +196,7 @@ final class OSM_Sites
         echo '<button type="button" class="button osm-tab-button is-active" data-osm-tab="domain" role="tab" aria-selected="true">Domain</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="brand" role="tab" aria-selected="false">Brand</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="meta" role="tab" aria-selected="false">Meta</button>';
-        echo '<button type="button" class="button osm-tab-button" data-osm-tab="display" role="tab" aria-selected="false">Display</button>';
+        echo '<button type="button" class="button osm-tab-button" data-osm-tab="translations" role="tab" aria-selected="false">Translations</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="pixel" role="tab" aria-selected="false">Tracking</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="crm" role="tab" aria-selected="false">CRM</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="notifications" role="tab" aria-selected="false">Notifications</button>';
@@ -221,18 +224,6 @@ final class OSM_Sites
         $this->render_text_row('phone_number', 'Phone number', $meta['phone_number']);
         $this->render_textarea_row('address', 'Full address', $meta['address']);
         $this->render_text_row('working_hours', 'Working hours', $meta['working_hours']);
-        echo '</tbody></table>';
-        echo '</div>';
-
-        echo '<div class="osm-tab-panel" data-osm-panel="meta" role="tabpanel" hidden>';
-        echo '<table class="form-table"><tbody>';
-        $this->render_text_row('meta_title', 'Meta title', $meta['meta_title'], '', true);
-        $this->render_textarea_row('meta_description', 'Meta description', $meta['meta_description']);
-        echo '</tbody></table>';
-        echo '</div>';
-
-        echo '<div class="osm-tab-panel" data-osm-panel="display" role="tabpanel" hidden>';
-        echo '<table class="form-table"><tbody>';
         $this->render_select_row('display_mode', 'Website display mode', $meta['display_mode'], [
             'full' => 'Full interactive design',
             'simple' => 'Always use simple design',
@@ -243,6 +234,17 @@ final class OSM_Sites
         $this->render_text_row('display_choice_simple_label', 'Simple design button label', $meta['display_choice_simple_label']);
         $this->render_text_row('display_choice_full_label', 'Full design button label', $meta['display_choice_full_label']);
         echo '</tbody></table>';
+        echo '</div>';
+
+        echo '<div class="osm-tab-panel" data-osm-panel="meta" role="tabpanel" hidden>';
+        echo '<table class="form-table"><tbody>';
+        $this->render_text_row('meta_title', 'Meta title', $meta['meta_title'], '', true);
+        $this->render_textarea_row('meta_description', 'Meta description', $meta['meta_description']);
+        echo '</tbody></table>';
+        echo '</div>';
+
+        echo '<div class="osm-tab-panel" data-osm-panel="translations" role="tabpanel" hidden>';
+        $this->render_translations_panel($meta);
         echo '</div>';
 
         echo '<div class="osm-tab-panel" data-osm-panel="pixel" role="tabpanel" hidden>';
@@ -335,6 +337,12 @@ final class OSM_Sites
 
             if ($config['type'] === 'checkbox') {
                 update_post_meta($post_id, $meta_key, $raw ? '1' : '0');
+                continue;
+            }
+
+             if ($config['type'] === 'multi_checkbox') {
+                $values = $config['sanitize'](is_array($raw) ? $raw : []);
+                update_post_meta($post_id, $meta_key, $values);
                 continue;
             }
 
@@ -471,6 +479,10 @@ final class OSM_Sites
             'zoho_owner_id' => $meta['zoho_owner_id'],
             'default_lead_status' => $meta['default_lead_status'] !== '' ? $meta['default_lead_status'] : $settings['default_lead_status'],
             'notification_emails' => $meta['notification_emails'] !== '' ? $meta['notification_emails'] : $settings['notification_emails'],
+            'language_configuration' => $meta['language_configuration'],
+            'enabled_languages_raw' => $meta['enabled_languages'],
+            'default_language_raw' => $meta['default_language'],
+            'phone_country_selector_mode' => $meta['phone_country_selector_mode'],
         ];
     }
 
@@ -712,6 +724,10 @@ final class OSM_Sites
             'zoho_owner_id' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'default_lead_status' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'notification_emails' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_textarea']],
+            'language_configuration' => ['type' => 'text', 'sanitize' => [$this, 'sanitize_language_configuration']],
+            'enabled_languages' => ['type' => 'multi_checkbox', 'sanitize' => [$this, 'sanitize_enabled_languages']],
+            'default_language' => ['type' => 'text', 'sanitize' => [$this, 'sanitize_language_code']],
+            'phone_country_selector_mode' => ['type' => 'text', 'sanitize' => [$this, 'sanitize_phone_country_selector_mode']],
         ];
     }
 
@@ -720,7 +736,11 @@ final class OSM_Sites
         $values = [];
 
         foreach (array_keys($this->fields()) as $key) {
-            $values[$key] = (string) get_post_meta($post_id, '_osm_' . $key, true);
+            $field = $this->fields()[$key];
+            $stored = get_post_meta($post_id, '_osm_' . $key, true);
+            $values[$key] = $field['type'] === 'multi_checkbox'
+                ? (is_array($stored) ? array_values($stored) : [])
+                : (string) $stored;
         }
 
         if ($values['meta_title'] === '') {
@@ -748,6 +768,18 @@ final class OSM_Sites
 
         if ($values['display_choice_full_label'] === '') {
             $values['display_choice_full_label'] = 'Continue with full design';
+        }
+
+        if (! is_array($values['enabled_languages'])) {
+            $values['enabled_languages'] = [];
+        }
+
+        if ($values['language_configuration'] === '') {
+            $values['language_configuration'] = 'inherit';
+        }
+
+        if ($values['phone_country_selector_mode'] === '') {
+            $values['phone_country_selector_mode'] = 'inherit';
         }
 
         return $values;
@@ -831,6 +863,56 @@ final class OSM_Sites
         echo '</div>';
         echo '<p class="description">Leave empty to keep the current value.</p>';
         echo '</td></tr>';
+    }
+
+    private function render_translations_panel(array $meta): void
+    {
+        $languages = function_exists('ontario_available_languages') ? ontario_available_languages() : [];
+        $global_settings = class_exists('OSM_Plugin')
+            ? OSM_Plugin::instance()->translations()->global_settings()
+            : [
+                'enabled_languages' => ['en'],
+                'default_language' => 'en',
+            ];
+        $selected_languages = $meta['enabled_languages'] !== []
+            ? $meta['enabled_languages']
+            : (array) ($global_settings['enabled_languages'] ?? ['en']);
+        $selected_default_language = (string) ($meta['default_language'] !== ''
+            ? $meta['default_language']
+            : ($global_settings['default_language'] ?? 'en'));
+
+        echo '<div class="osm-translation-section">';
+        echo '<h3 style="margin-top:0;">Language settings</h3>';
+        echo '<table class="form-table"><tbody>';
+        echo '<tr data-osm-translation-custom-row="enabled_languages"><th scope="row">Enabled languages for this site</th><td><div class="osm-language-grid osm-language-grid--stacked">';
+
+        foreach ($languages as $language) {
+            $checked = in_array($language['code'], $selected_languages, true);
+            echo '<label class="osm-language-card">';
+            echo '<input type="checkbox" name="osm[enabled_languages][]" value="' . esc_attr((string) $language['code']) . '" ' . checked($checked, true, false) . ' />';
+            echo '<span class="osm-language-card__flag">' . esc_html((string) $language['flag']) . '</span>';
+            echo '<span><strong>' . esc_html((string) $language['native_name']) . '</strong></span>';
+            echo '</label>';
+        }
+
+        echo '</div><p class="description">If no site-specific language values are saved yet, these fields start from the global settings. Any saved site value takes priority for this site.</p></td></tr>';
+        echo '<tr data-osm-field-row="default_language"><th scope="row"><label for="osm-default_language">Default language for this site</label></th><td>';
+        echo '<select id="osm-default_language" name="osm[default_language]" class="osm-language-select">';
+        foreach ($languages as $language) {
+            echo '<option value="' . esc_attr((string) $language['code']) . '"' . selected($selected_default_language, (string) $language['code'], false) . '>' . esc_html((string) $language['flag'] . ' ' . $language['native_name']) . '</option>';
+        }
+        echo '</select>';
+        echo '</td></tr>';
+        echo '<tr><th scope="row"><label for="osm-phone_country_selector_mode">Phone country selection</label></th><td>';
+        echo '<select id="osm-phone_country_selector_mode" name="osm[phone_country_selector_mode]">';
+        echo '<option value="inherit"' . selected((string) $meta['phone_country_selector_mode'], 'inherit', false) . '>Inherit global setting</option>';
+        echo '<option value="enabled"' . selected((string) $meta['phone_country_selector_mode'], 'enabled', false) . '>Enable for this site</option>';
+        echo '<option value="disabled"' . selected((string) $meta['phone_country_selector_mode'], 'disabled', false) . '>Disable for this site</option>';
+        echo '</select>';
+        echo '<p class="description">Overrides the global phone country selector setting for this site only.</p>';
+        echo '</td></tr>';
+        echo '</tbody></table>';
+        echo '</div>';
     }
 
     private function render_media_row(string $key, string $label, int $attachment_id): void
@@ -929,6 +1011,48 @@ final class OSM_Sites
         }
 
         return $value;
+    }
+
+    public function sanitize_language_configuration(string $value): string
+    {
+        $value = sanitize_key($value);
+
+        return $value === 'custom' ? 'custom' : 'inherit';
+    }
+
+    public function sanitize_enabled_languages(array $values): array
+    {
+        $available = function_exists('ontario_available_languages')
+            ? array_column(ontario_available_languages(), 'code')
+            : ['en'];
+        $sanitized = [];
+
+        foreach ($values as $value) {
+            $code = sanitize_key((string) $value);
+
+            if ($code !== '' && in_array($code, $available, true)) {
+                $sanitized[] = $code;
+            }
+        }
+
+        return array_values(array_unique($sanitized));
+    }
+
+    public function sanitize_language_code(string $value): string
+    {
+        $available = function_exists('ontario_available_languages')
+            ? array_column(ontario_available_languages(), 'code')
+            : ['en'];
+        $value = sanitize_key($value);
+
+        return in_array($value, $available, true) ? $value : '';
+    }
+
+    public function sanitize_phone_country_selector_mode(string $value): string
+    {
+        $value = sanitize_key($value);
+
+        return in_array($value, ['inherit', 'enabled', 'disabled'], true) ? $value : 'inherit';
     }
 
     public function normalize_host(string $host): string
@@ -1093,6 +1217,42 @@ final class OSM_Sites
 
           .osm-tab-panel[hidden] {
             display: none !important;
+          }
+
+          .osm-language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+          }
+
+          .osm-language-grid--stacked {
+            grid-template-columns: minmax(260px, 360px);
+          }
+
+          .osm-language-card {
+            display: grid;
+            grid-template-columns: 28px 32px 1fr;
+            column-gap: 10px;
+            align-items: center;
+            padding: 12px 16px;
+            border: 1px solid #dcdcde;
+            border-radius: 12px;
+            background: #f8f9fa;
+          }
+
+          .osm-language-card input {
+            margin: 0;
+            justify-self: center;
+          }
+
+          .osm-language-card__flag {
+            font-size: 20px;
+            line-height: 1;
+          }
+
+          .osm-language-select {
+            min-width: 240px;
+            font-size: 16px;
           }
         </style>
         <script>
