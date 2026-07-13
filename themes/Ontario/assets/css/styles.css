@@ -142,6 +142,7 @@ body.admin-bar .site-header {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+  position: relative;
 }
 
 .brand {
@@ -2233,20 +2234,27 @@ textarea.is-invalid,
 
   .nav.open .nav-links {
     position: absolute;
-    left: 20px;
-    right: 20px;
-    top: 78px;
+    left: 0;
+    right: 0;
+    top: calc(100% + 12px);
     display: grid;
     gap: 0;
     padding: 14px;
     border: 1px solid var(--line);
     border-radius: 20px;
-    background: rgba(7, 17, 31, 0.98);
+    background: rgba(7, 17, 31, 0.995);
     box-shadow: var(--shadow);
+    z-index: 20;
+    justify-items: stretch;
   }
 
   .nav.open .nav-links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
     padding: 14px 12px;
+    text-align: center;
     border-bottom: 1px solid rgba(126, 221, 255, 0.08);
   }
 
@@ -2275,24 +2283,36 @@ textarea.is-invalid,
 
   .nav {
     min-height: 72px;
+    gap: 12px;
+  }
+
+  .brand {
+    min-width: 0;
+    flex: 1 1 auto;
   }
 
   .brand img {
-    width: 150px;
+    width: clamp(120px, 42vw, 150px);
   }
 
   .nav-actions {
-    gap: 8px;
+    gap: 6px;
+    flex: 0 0 auto;
   }
 
   .language-switcher__button {
-    min-width: 46px;
-    min-height: 46px;
-    padding-inline: 10px;
+    min-width: 44px;
+    min-height: 44px;
+    padding-inline: 8px;
   }
 
   .nav-actions .btn {
     display: none;
+  }
+
+  .mobile-menu-btn {
+    width: 44px;
+    height: 44px;
   }
 
   .hero {

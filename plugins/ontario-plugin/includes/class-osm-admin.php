@@ -23,6 +23,7 @@ final class OSM_Admin
 
         add_action('admin_menu', [$this, 'register_menu']);
         add_action('admin_notices', [$this, 'render_notices']);
+        add_action('wp_ajax_osm_save_translation_settings', [$this, 'handle_save_translation_settings_ajax']);
     }
 
     public function register_menu(): void
@@ -96,7 +97,7 @@ final class OSM_Admin
             echo '<div class="notice notice-success is-dismissible"><p>Translation settings saved.</p></div>';
         }
 
-        echo '<form method="post" class="osm-translations-admin">';
+        echo '<form method="post" class="osm-translations-admin" id="osm-translations-form">';
         wp_nonce_field('osm_save_localization_settings_action', 'osm_save_localization_settings_nonce');
         echo '<input type="hidden" name="osm_save_localization_settings" value="1" />';
         echo '<div class="osm-translations-admin__grid">';
@@ -123,10 +124,32 @@ final class OSM_Admin
         echo '<p class="description">When enabled, phone fields display a country selector and submit the number with the selected international calling code. Individual sites can override this setting.</p>';
         echo '</section>';
         echo '</div>';
-        submit_button('Save settings');
+        submit_button('Save settings', 'primary', 'submit', true, ['id' => 'osm-translations-submit']);
         echo '</form>';
+        echo '<div id="osm-toast-stack" class="osm-toast-stack" aria-live="polite" aria-atomic="false"></div>';
         $this->render_translations_admin_styles();
+        $this->render_toast_styles();
+        $this->render_translations_page_script();
         echo '</div>';
+    }
+
+    public function handle_save_translation_settings_ajax(): void
+    {
+        if (! current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'You do not have permission to do that.'], 403);
+        }
+
+        check_ajax_referer('osm_save_localization_settings_action', 'osm_save_localization_settings_nonce');
+
+        $this->translations->save_global_settings([
+            'enabled_languages' => isset($_POST['osm_enabled_languages']) && is_array($_POST['osm_enabled_languages']) ? array_map('wp_unslash', $_POST['osm_enabled_languages']) : [],
+            'default_language' => isset($_POST['osm_default_language']) ? wp_unslash((string) $_POST['osm_default_language']) : 'en',
+            'phone_country_selector_enabled' => isset($_POST['osm_phone_country_selector_enabled']) ? '1' : '0',
+        ]);
+
+        wp_send_json_success([
+            'message' => 'Successfully saved.',
+        ]);
     }
 
     private function render_translations_admin_styles(): void
@@ -141,6 +164,82 @@ final class OSM_Admin
             .osm-language-select{min-width:240px;font-size:16px}
             .screen-reader-text{position:absolute;left:-9999px}
         </style>';
+    }
+
+    private function render_translations_page_script(): void
+    {
+        ?>
+        <script>
+        (() => {
+          const form = document.getElementById('osm-translations-form');
+          const submitButton = document.getElementById('osm-translations-submit');
+          const toastStack = document.getElementById('osm-toast-stack');
+
+          if (!form || !submitButton || !toastStack) {
+            return;
+          }
+
+          function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'osm-copy-toast' + (type === 'error' ? ' is-error' : '');
+            toast.innerHTML = '<span class="osm-copy-toast__text"></span><button type="button" class="osm-copy-toast__close" aria-label="Close alert">&times;</button>';
+            toast.querySelector('.osm-copy-toast__text').textContent = message;
+
+            const removeToast = () => {
+              if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+              }
+            };
+
+            toast.querySelector('.osm-copy-toast__close').addEventListener('click', removeToast);
+            toastStack.appendChild(toast);
+            window.setTimeout(removeToast, 2600);
+          }
+
+          form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const originalLabel = submitButton.value || submitButton.textContent;
+            const formData = new FormData(form);
+            formData.append('action', 'osm_save_translation_settings');
+
+            submitButton.disabled = true;
+
+            if ('value' in submitButton) {
+              submitButton.value = 'Saving...';
+            } else {
+              submitButton.textContent = 'Saving...';
+            }
+
+            try {
+              const response = await fetch(ajaxurl, {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: formData,
+              });
+
+              const result = await response.json();
+
+              if (!response.ok || !result || !result.success) {
+                throw new Error(result && result.data && result.data.message ? result.data.message : 'Unable to save settings.');
+              }
+
+              showToast(result.data && result.data.message ? result.data.message : 'Successfully saved.');
+            } catch (error) {
+              showToast(error instanceof Error ? error.message : 'Unable to save settings.', 'error');
+            } finally {
+              submitButton.disabled = false;
+
+              if ('value' in submitButton) {
+                submitButton.value = originalLabel;
+              } else {
+                submitButton.textContent = originalLabel;
+              }
+            }
+          });
+        })();
+        </script>
+        <?php
     }
 
     public function render_settings_page(): void
