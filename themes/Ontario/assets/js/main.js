@@ -349,7 +349,7 @@
   }
 
   function initCustomSelects() {
-    const selects = document.querySelectorAll('select');
+    const selects = document.querySelectorAll('select:not([data-phone-country])');
 
     if (typeof Choices === 'undefined') {
       document.body.classList.add('choices-fallback');
@@ -358,7 +358,7 @@
 
     selects.forEach((select) => {
       new Choices(select, {
-        searchEnabled: select.hasAttribute('data-phone-country'),
+        searchEnabled: false,
         shouldSort: false,
         itemSelectText: '',
         allowHTML: false,
@@ -367,6 +367,205 @@
           containerOuter: ['choices', 'custom-select']
         }
       });
+    });
+  }
+
+  function parsePhoneCountryOption(option) {
+    const label = String(option?.textContent || '').trim();
+    const match = label.match(/^(\S+)\s+(.+)$/);
+
+    return {
+      value: String(option?.value || ''),
+      dialCode: String(option?.dataset?.dialCode || ''),
+      flag: match ? match[1] : label,
+      code: match ? match[2] : ''
+    };
+  }
+
+  function initPhoneCountrySelects() {
+    const selects = document.querySelectorAll('select[data-phone-country]');
+    let activeDropdown = null;
+
+    selects.forEach((select, index) => {
+      if (select.dataset.phoneCountryEnhanced === '1') {
+        return;
+      }
+
+      const options = [...select.options].map(parsePhoneCountryOption).filter((option) => option.value !== '');
+
+      if (!options.length) {
+        return;
+      }
+
+      const container = document.createElement('div');
+      container.className = 'phone-country-dropdown';
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'phone-country-dropdown__button';
+      button.setAttribute('aria-haspopup', 'listbox');
+      button.setAttribute('aria-expanded', 'false');
+      button.setAttribute('aria-label', 'Select phone country');
+
+      const current = document.createElement('span');
+      current.className = 'phone-country-dropdown__current';
+      button.appendChild(current);
+
+      const caret = document.createElement('span');
+      caret.className = 'phone-country-dropdown__caret';
+      caret.setAttribute('aria-hidden', 'true');
+      button.appendChild(caret);
+
+      const list = document.createElement('div');
+      list.className = 'phone-country-dropdown__menu';
+      list.setAttribute('role', 'listbox');
+      list.hidden = true;
+
+      const listId = select.id ? `${select.id}-dropdown` : `phone-country-dropdown-${index}`;
+      list.id = listId;
+      button.setAttribute('aria-controls', listId);
+
+      function renderCurrent(option) {
+        current.innerHTML = `
+          <span class="phone-country-dropdown__flag">${option.flag}</span>
+          <span class="phone-country-dropdown__code">${option.code}</span>
+        `;
+      }
+
+      function closeMenu() {
+        container.classList.remove('is-open');
+        button.setAttribute('aria-expanded', 'false');
+        list.hidden = true;
+        if (activeDropdown === container) {
+          activeDropdown = null;
+        }
+      }
+
+      function openMenu() {
+        if (activeDropdown && activeDropdown !== container) {
+          activeDropdown.classList.remove('is-open');
+          const activeButton = activeDropdown.querySelector('.phone-country-dropdown__button');
+          const activeList = activeDropdown.querySelector('.phone-country-dropdown__menu');
+
+          if (activeButton) {
+            activeButton.setAttribute('aria-expanded', 'false');
+          }
+
+          if (activeList) {
+            activeList.hidden = true;
+          }
+        }
+
+        container.classList.add('is-open');
+        button.setAttribute('aria-expanded', 'true');
+        list.hidden = false;
+        activeDropdown = container;
+      }
+
+      function setSelected(value, shouldFocusButton = false) {
+        const next = options.find((option) => option.value === value) || options[0];
+        select.value = next.value;
+        renderCurrent(next);
+
+        [...list.querySelectorAll('.phone-country-dropdown__option')].forEach((item) => {
+          const selected = item.getAttribute('data-value') === next.value;
+          item.classList.toggle('is-selected', selected);
+          item.setAttribute('aria-selected', selected ? 'true' : 'false');
+        });
+
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+
+        if (shouldFocusButton) {
+          button.focus();
+        }
+      }
+
+      options.forEach((option) => {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'phone-country-dropdown__option';
+        item.setAttribute('role', 'option');
+        item.setAttribute('data-value', option.value);
+        item.innerHTML = `
+          <span class="phone-country-dropdown__flag">${option.flag}</span>
+          <span class="phone-country-dropdown__code">${option.code}</span>
+        `;
+        item.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          setSelected(option.value, true);
+          closeMenu();
+        });
+        list.appendChild(item);
+      });
+
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (container.classList.contains('is-open')) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+
+      button.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openMenu();
+          list.querySelector('.phone-country-dropdown__option.is-selected, .phone-country-dropdown__option')?.focus();
+        }
+      });
+
+      list.addEventListener('keydown', (event) => {
+        const items = [...list.querySelectorAll('.phone-country-dropdown__option')];
+        const currentIndex = items.indexOf(document.activeElement);
+
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          closeMenu();
+          button.focus();
+        }
+
+        if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          items[Math.min(currentIndex + 1, items.length - 1)]?.focus();
+        }
+
+        if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          if (currentIndex <= 0) {
+            button.focus();
+            return;
+          }
+
+          items[currentIndex - 1]?.focus();
+        }
+      });
+
+      list.addEventListener('click', () => {
+        closeMenu();
+      });
+
+      document.addEventListener('pointerdown', (event) => {
+        if (!container.contains(event.target)) {
+          closeMenu();
+        }
+      });
+
+      select.classList.add('phone-country-select__native');
+      select.setAttribute('tabindex', '-1');
+      select.setAttribute('aria-hidden', 'true');
+      select.dataset.phoneCountryEnhanced = '1';
+
+      const selectedOption = options.find((option) => option.value === select.value) || options[0];
+      setSelected(selectedOption.value);
+      closeMenu();
+
+      container.appendChild(button);
+      container.appendChild(list);
+      select.insertAdjacentElement('afterend', container);
     });
   }
 
@@ -872,6 +1071,7 @@
   });
 
   initCustomSelects();
+  initPhoneCountrySelects();
   initPhoneMask();
   initLanguageSwitcher();
   attachFieldValidation(form);

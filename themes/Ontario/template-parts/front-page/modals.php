@@ -44,7 +44,7 @@ if (! defined('ABSPATH')) {
               <label class="screen-reader-text" for="quickPhoneCountry"><?php echo esc_html(ontario_t('form.phone_country', [], 'Country')); ?></label>
               <select id="quickPhoneCountry" name="phoneCountry" data-phone-country>
                 <?php foreach (ontario_phone_countries() as $country) : ?>
-                  <option value="<?php echo esc_attr((string) $country['iso2']); ?>" data-dial-code="<?php echo esc_attr((string) $country['dial_code']); ?>"<?php selected((string) $country['iso2'], 'CA'); ?>><?php echo esc_html((string) $country['flag'] . ' ' . $country['name'] . ' ' . $country['dial_code']); ?></option>
+                  <option value="<?php echo esc_attr((string) $country['iso2']); ?>" data-dial-code="<?php echo esc_attr((string) $country['dial_code']); ?>"<?php selected((string) $country['iso2'], 'CA'); ?>><?php echo esc_html((string) $country['flag'] . ' ' . $country['dial_code']); ?></option>
                 <?php endforeach; ?>
               </select>
             </div>

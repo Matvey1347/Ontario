@@ -10,6 +10,7 @@ final class OSM_Sites
     private const POST_TYPE = 'ontario_site';
     private const SEED_OPTION = 'osm_seeded_default_site';
     private const SETTINGS_OPTION = 'osm_global_settings';
+    private const PHONE_SELECTOR_MIGRATION_OPTION = 'osm_phone_selector_mode_migrated_v1';
 
     private OSM_Crypto $crypto;
     private OSM_Logger $logger;
@@ -30,6 +31,7 @@ final class OSM_Sites
         add_action('admin_footer-post-new.php', [$this, 'render_media_script']);
         add_action('init', [$this, 'ensure_seed_site'], 30);
         add_action('init', [$this, 'normalize_default_sites'], 35);
+        add_action('init', [$this, 'normalize_phone_selector_modes'], 40);
     }
 
     public static function post_type(): string
@@ -170,6 +172,48 @@ final class OSM_Sites
             'keeper_id' => $keeper_id,
             'default_ids_before' => $default_ids,
         ]);
+    }
+
+    public function normalize_phone_selector_modes(): void
+    {
+        if (get_option(self::PHONE_SELECTOR_MIGRATION_OPTION, '') === '1') {
+            return;
+        }
+
+        $posts = get_posts([
+            'post_type' => self::POST_TYPE,
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'fields' => 'ids',
+        ]);
+
+        $updated = [];
+
+        foreach ($posts as $post_id) {
+            $mode = (string) get_post_meta((int) $post_id, '_osm_phone_country_selector_mode', true);
+
+            if ($mode !== 'enabled') {
+                continue;
+            }
+
+            $title = get_the_title((int) $post_id);
+            $is_default = get_post_meta((int) $post_id, '_osm_is_default', true) === '1';
+
+            if (! $is_default || $title !== 'Ontario Refunds') {
+                continue;
+            }
+
+            update_post_meta((int) $post_id, '_osm_phone_country_selector_mode', 'inherit');
+            $updated[] = (int) $post_id;
+        }
+
+        update_option(self::PHONE_SELECTOR_MIGRATION_OPTION, '1', true);
+
+        if ($updated !== []) {
+            $this->logger->log('Normalized legacy phone selector overrides', [
+                'post_ids' => $updated,
+            ]);
+        }
     }
 
     public function register_meta_boxes(): void

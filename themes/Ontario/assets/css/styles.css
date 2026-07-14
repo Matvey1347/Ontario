@@ -652,6 +652,16 @@ section {
   font-size: 16px;
 }
 
+.phone-input .phone-number-input {
+  background: none !important;
+  border: 0 !important;
+}
+
+.phone-country-dropdown__menu {
+  max-height: 200px;
+  overflow: auto;
+}
+
 .legal-content h2,
 .legal-content h3,
 .legal-content h4 {
@@ -1275,12 +1285,13 @@ textarea.is-invalid,
 }
 
 .phone-input--with-country {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  overflow: visible;
+  justify-content: flex-start;
   gap: 10px;
-  align-items: stretch;
-  min-height: 0;
-  padding: 12px;
+  align-items: center;
+  min-height: 50px;
+  padding: 0 14px;
 }
 
 .phone-input:focus-within {
@@ -1312,12 +1323,22 @@ textarea.is-invalid,
 }
 
 .phone-country-select {
-  width: 100%;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  flex: 0 0 auto;
+  position: relative;
+  width: 122px;
+  min-width: 122px;
+  padding-right: 12px;
+  border-right: 1px solid rgba(126, 221, 255, 0.16);
 }
 
 .phone-number-input {
   display: flex;
   align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
   min-height: 50px;
   padding: 0 14px;
   border: 1px solid rgba(126, 221, 255, 0.16);
@@ -1345,19 +1366,123 @@ textarea.is-invalid,
   outline: none !important;
 }
 
-.phone-input--with-country .choices {
+.phone-input--with-country .phone-number-input {
+  padding: 0 0 0 4px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.phone-country-select__native {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.phone-country-dropdown {
+  position: relative;
   width: 100%;
 }
 
-.phone-input--with-country .choices__inner {
-  min-height: 56px;
-  padding: 10px 44px 10px 14px;
-}
-
-.phone-input--with-country .choices__list--single .choices__item {
+.phone-country-dropdown__button {
+  all: unset;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  font-weight: 700;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 50px;
+  cursor: pointer;
+}
+
+.phone-country-dropdown__current {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: #e6f3ff;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.phone-country-dropdown__flag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(77, 227, 255, 0.22));
+}
+
+.phone-country-dropdown__code {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.phone-country-dropdown__caret {
+  flex: 0 0 auto;
+  width: 0;
+  height: 0;
+  margin-left: 10px;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 7px solid var(--cyan);
+  transition: transform 0.18s ease;
+}
+
+.phone-country-dropdown.is-open .phone-country-dropdown__caret {
+  transform: rotate(180deg);
+}
+
+.phone-country-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: -6px;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  min-width: 170px;
+  padding: 10px 0;
+  border: 1px solid rgba(201, 225, 245, 0.72);
+  border-radius: 24px;
+  background: rgba(10, 19, 32, 0.98);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+}
+
+.phone-country-dropdown__menu[hidden] {
+  display: none !important;
+}
+
+.phone-country-dropdown__option {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 22px;
+  cursor: pointer;
+  color: #d9e9f7;
+  font-weight: 800;
+  line-height: 1;
+  border-bottom: 1px solid rgba(126, 221, 255, 0.07);
+}
+
+.phone-country-dropdown__option:last-child {
+  border-bottom: 0;
+}
+
+.phone-country-dropdown__option:hover,
+.phone-country-dropdown__option:focus-visible,
+.phone-country-dropdown__option.is-selected {
+  color: #eef6ff;
+  background:
+    linear-gradient(90deg, rgba(77, 227, 255, 0.18), rgba(80, 255, 177, 0.1)),
+    rgba(12, 31, 50, 0.98);
+}
+
+.phone-country-dropdown__option.is-selected {
+  box-shadow: inset 3px 0 0 rgba(77, 227, 255, 0.85);
 }
 
 .phone-input input:focus,
