@@ -3,6 +3,7 @@
 !/.srv/custom.ini
 
 /plugins/wp-mail-smtp
+/plugins/clickcease-click-fraud-protection
 /themes/twentytwentythree
 /themes/twentytwentyfour
 /themes/twentytwentyfive

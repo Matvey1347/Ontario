@@ -21,6 +21,7 @@ require_once OSM_PLUGIN_PATH . 'includes/class-osm-logger.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-crypto.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-sites.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-current-site.php';
+require_once OSM_PLUGIN_PATH . 'includes/class-osm-clickcease.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-translations.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-leads.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-zoho-crm.php';

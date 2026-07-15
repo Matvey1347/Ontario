@@ -13,6 +13,7 @@ final class OSM_Plugin
     private OSM_Crypto $crypto;
     private OSM_Sites $sites;
     private OSM_Current_Site $current_site;
+    private OSM_Clickcease $clickcease;
     private OSM_Translations $translations;
     private OSM_Leads $leads;
     private OSM_Zoho_CRM $zoho;
@@ -27,6 +28,7 @@ final class OSM_Plugin
         $this->crypto = new OSM_Crypto($this->logger);
         $this->sites = new OSM_Sites($this->crypto, $this->logger);
         $this->current_site = new OSM_Current_Site($this->sites, $this->logger);
+        $this->clickcease = new OSM_Clickcease($this->current_site, $this->sites, $this->logger);
         $this->translations = new OSM_Translations($this->sites, $this->current_site);
         $this->leads = new OSM_Leads($this->logger);
         $this->zoho = new OSM_Zoho_CRM($this->logger);

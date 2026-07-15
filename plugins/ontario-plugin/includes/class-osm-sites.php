@@ -243,6 +243,7 @@ final class OSM_Sites
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="translations" role="tab" aria-selected="false">Translations</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="content" role="tab" aria-selected="false">Content</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="pixel" role="tab" aria-selected="false">Tracking</button>';
+        echo '<button type="button" class="button osm-tab-button" data-osm-tab="clickcease" role="tab" aria-selected="false">ClickCease</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="crm" role="tab" aria-selected="false">CRM</button>';
         echo '<button type="button" class="button osm-tab-button" data-osm-tab="notifications" role="tab" aria-selected="false">Notifications</button>';
         echo '</div>';
@@ -328,6 +329,26 @@ final class OSM_Sites
             ]
         );
         $this->render_text_row('default_lead_status', 'Default lead status', $meta['default_lead_status'], 'Contact in Future');
+        echo '</tbody></table>';
+        echo '</div>';
+
+        echo '<div class="osm-tab-panel" data-osm-panel="clickcease" role="tabpanel" hidden>';
+        echo '<table class="form-table"><tbody>';
+        $this->render_checkbox_row('clickcease_install_click_fraud', 'Install Click Fraud tracking', $meta['clickcease_install_click_fraud']);
+        $this->render_text_row('clickcease_api_key', 'ClickCease API key', $meta['clickcease_api_key']);
+        $this->render_text_row('clickcease_domain_key', 'ClickCease domain key', $meta['clickcease_domain_key']);
+        $this->render_secret_row('clickcease_secret_key', 'ClickCease secret key', $meta['clickcease_secret_key']);
+        $this->render_textarea_row('clickcease_whitelist', 'Whitelist IPs', $meta['clickcease_whitelist'], 'Up to 5 IP addresses. Use commas or one IP per line.');
+        echo '<tr><th scope="row">Authentication status</th><td>';
+        echo '<p><strong>' . ($meta['clickcease_bot_zapping_authenticated'] === '1' ? 'Authenticated' : 'Not authenticated') . '</strong></p>';
+        if ($meta['clickcease_client_id'] !== '') {
+            echo '<p class="description">Client ID: ' . esc_html($meta['clickcease_client_id']) . '</p>';
+        }
+        if ($meta['clickcease_invalid_secret'] === '1') {
+            echo '<p class="description" style="color:#b91c1c;">The current secret key did not validate successfully.</p>';
+        }
+        echo '<p class="description">Monitoring mode: ' . ($meta['clickcease_monitoring'] === '1' ? 'Enabled' : 'Disabled') . '</p>';
+        echo '</td></tr>';
         echo '</tbody></table>';
         echo '</div>';
 
@@ -541,6 +562,17 @@ final class OSM_Sites
             'zoho_owner_id' => $meta['zoho_owner_id'],
             'default_lead_status' => $meta['default_lead_status'] !== '' ? $meta['default_lead_status'] : $settings['default_lead_status'],
             'notification_emails' => $meta['notification_emails'] !== '' ? $meta['notification_emails'] : $settings['notification_emails'],
+            'clickcease_install_click_fraud' => $meta['clickcease_install_click_fraud'],
+            'clickcease_api_key' => $meta['clickcease_api_key'],
+            'clickcease_domain_key' => $meta['clickcease_domain_key'],
+            'clickcease_secret_key' => $this->crypto->decrypt($meta['clickcease_secret_key']),
+            'clickcease_whitelist' => $meta['clickcease_whitelist'],
+            'clickcease_bot_zapping_authenticated' => $meta['clickcease_bot_zapping_authenticated'],
+            'clickcease_client_id' => $meta['clickcease_client_id'],
+            'clickcease_monitoring' => $meta['clickcease_monitoring'],
+            'clickcease_invalid_secret' => $meta['clickcease_invalid_secret'],
+            'clickcease_active_domain_value' => $meta['clickcease_active_domain_value'],
+            'clickcease_active_domain_checked_at' => $meta['clickcease_active_domain_checked_at'],
             'language_configuration' => $meta['language_configuration'],
             'enabled_languages_raw' => $meta['enabled_languages'],
             'default_language_raw' => $meta['default_language'],
@@ -866,6 +898,17 @@ final class OSM_Sites
             'zoho_owner_id' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'default_lead_status' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'notification_emails' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_textarea']],
+            'clickcease_install_click_fraud' => ['type' => 'checkbox', 'sanitize' => 'sanitize_text_field'],
+            'clickcease_api_key' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
+            'clickcease_domain_key' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
+            'clickcease_secret_key' => ['type' => 'secret', 'sanitize' => 'sanitize_text_field'],
+            'clickcease_whitelist' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_clickcease_whitelist']],
+            'clickcease_bot_zapping_authenticated' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
+            'clickcease_client_id' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
+            'clickcease_monitoring' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
+            'clickcease_invalid_secret' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
+            'clickcease_active_domain_value' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
+            'clickcease_active_domain_checked_at' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'language_configuration' => ['type' => 'text', 'sanitize' => [$this, 'sanitize_language_configuration']],
             'enabled_languages' => ['type' => 'multi_checkbox', 'sanitize' => [$this, 'sanitize_enabled_languages']],
             'default_language' => ['type' => 'text', 'sanitize' => [$this, 'sanitize_language_code']],
@@ -1287,6 +1330,26 @@ final class OSM_Sites
         return trim((string) wp_unslash($value));
     }
 
+    public function sanitize_clickcease_whitelist(string $value): string
+    {
+        $parts = preg_split('/[\r\n,]+/', $value) ?: [];
+        $valid = [];
+
+        foreach ($parts as $part) {
+            $candidate = trim((string) $part);
+
+            if ($candidate === '' || ! filter_var($candidate, FILTER_VALIDATE_IP)) {
+                continue;
+            }
+
+            $valid[] = $candidate;
+        }
+
+        $valid = array_slice(array_values(array_unique($valid)), 0, 5);
+
+        return implode("\n", $valid);
+    }
+
     public function sanitize_display_mode(string $value): string
     {
         $value = sanitize_key($value);
@@ -1435,14 +1498,17 @@ final class OSM_Sites
 
           .osm-tab-nav {
             display: flex;
-            gap: 8px;
+            flex-wrap: wrap;
+            gap: 6px;
             margin-bottom: 18px;
             padding-bottom: 12px;
             border-bottom: 1px solid #dcdcde;
           }
 
           .osm-tab-button {
-            min-width: 120px;
+            min-width: 104px;
+            padding: 0 12px;
+            font-size: 13px;
             background: #fff;
             color: #2271b1;
           }
