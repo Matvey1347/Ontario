@@ -3,6 +3,10 @@
   const successUrl = osmConfig.successUrl || `${window.location.origin}/success/`;
   const effectiveDisplayMode = osmConfig.effectiveDisplayMode || 'full';
   const isSimpleDisplay = effectiveDisplayMode === 'simple';
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const supportsHoverEffects = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const enableDecorativeMotion = !isSimpleDisplay && !prefersReducedMotion;
+  const enablePointerEffects = enableDecorativeMotion && supportsHoverEffects;
   const i18n = osmConfig.i18n || {};
   const submissionState = {
     quickSubmitted: false,
@@ -99,12 +103,12 @@
     const elements = [...document.querySelectorAll(revealGroups.join(','))]
       .filter((element) => !element.closest('.modal'));
 
-    elements.forEach((element, index) => {
-      if (isSimpleDisplay) {
-        element.classList.add('is-visible');
-        return;
-      }
+    if (!enableDecorativeMotion) {
+      elements.forEach((element) => element.classList.add('is-visible'));
+      return;
+    }
 
+    elements.forEach((element, index) => {
       element.classList.add('reveal');
 
       if (element.matches('.hero-content, .scanner-panel, .process-copy-card')) {
@@ -147,7 +151,7 @@
   }
 
   function initPointerGlow() {
-    if (isSimpleDisplay) return;
+    if (!enablePointerEffects) return;
 
     document.querySelectorAll('.card, .strip-card').forEach((card) => {
       card.addEventListener('pointermove', (event) => {
@@ -157,7 +161,7 @@
   }
 
   function initHeroField() {
-    if (isSimpleDisplay) return;
+    if (!enablePointerEffects) return;
 
     const hero = document.querySelector('.hero');
     if (!hero) return;
@@ -351,10 +355,7 @@
   function initCustomSelects() {
     const selects = document.querySelectorAll('select:not([data-phone-country])');
 
-    if (typeof Choices === 'undefined') {
-      document.body.classList.add('choices-fallback');
-      return;
-    }
+    if (typeof Choices === 'undefined') return;
 
     selects.forEach((select) => {
       new Choices(select, {
@@ -1076,13 +1077,20 @@
   initLanguageSwitcher();
   attachFieldValidation(form);
   attachFieldValidation(document.getElementById('quickForm'));
-  initScrollReveal();
-  initPointerGlow();
-  initHeroField();
   initQuickContactModal();
   initSuccessModal();
   initWelcomeModal();
   updateForm();
+
+  const scheduleDecorativeWork = window.requestIdleCallback
+    ? window.requestIdleCallback.bind(window)
+    : (callback) => window.setTimeout(callback, 180);
+
+  scheduleDecorativeWork(() => {
+    initScrollReveal();
+    initPointerGlow();
+    initHeroField();
+  });
 
   window.addEventListener('pageshow', (event) => {
     if (!event.persisted) {

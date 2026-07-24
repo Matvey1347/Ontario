@@ -532,8 +532,10 @@ h1 {
 
 .hero-image-frame img {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+  object-position: center top;
 }
 
 .hero-image-frame::after {
@@ -605,6 +607,21 @@ h1 {
 
 section {
   padding: 76px 0;
+}
+
+#services,
+#scanner,
+#report,
+#process,
+#faq,
+.simple-services,
+.simple-scanner,
+.simple-report,
+.simple-process,
+.simple-faq,
+.simple-cta {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 900px;
 }
 
 #scanner {
@@ -2105,8 +2122,10 @@ textarea.is-invalid,
 
 .process-image-frame img {
   width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+  object-position: center top;
 }
 
 .process-image-frame::after {
@@ -2588,5 +2607,44 @@ textarea.is-invalid,
 @media (max-width: 782px) {
   body.admin-bar .site-header {
     top: 46px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce), (hover: none), (pointer: coarse) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  body::after,
+  .hero::before,
+  .hero::after {
+    animation: none;
+  }
+
+  .site-header,
+  .choices__list--dropdown,
+  .choices__list[aria-expanded] {
+    backdrop-filter: none;
+  }
+
+  .reveal,
+  .reveal.is-visible,
+  .reveal.from-left,
+  .reveal.from-right,
+  .reveal.from-left.is-visible,
+  .reveal.from-right.is-visible {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    transition: none;
+  }
+
+  .strip-card,
+  .card,
+  .btn,
+  .faq-question,
+  .hero-image-frame img,
+  .process-image-frame img {
+    transition: none;
   }
 }

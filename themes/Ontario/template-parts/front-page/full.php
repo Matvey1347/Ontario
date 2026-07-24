@@ -34,7 +34,15 @@ if (! defined('ABSPATH')) {
 
       <div class="hero-visual" aria-label="<?php echo esc_attr(ontario_t('hero.visual_aria', [], 'Forensic dashboard illustration')); ?>">
         <div class="hero-image-frame">
-          <img src="<?php echo esc_url($theme_uri . '/assets/images/hero-forensic-dashboard.png'); ?>" alt="<?php echo esc_attr(ontario_t('hero.visual_alt', [], 'Forensic blockchain tracing dashboard with wallet flow analysis')); ?>" />
+          <img
+            src="<?php echo esc_url($theme_uri . '/assets/images/hero-forensic-dashboard.png'); ?>"
+            alt="<?php echo esc_attr(ontario_t('hero.visual_alt', [], 'Forensic blockchain tracing dashboard with wallet flow analysis')); ?>"
+            width="1448"
+            height="1086"
+            fetchpriority="high"
+            loading="eager"
+            decoding="async"
+          />
         </div>
       </div>
     </div>
@@ -208,7 +216,14 @@ if (! defined('ABSPATH')) {
       </div>
 
       <div class="process-image-frame" aria-label="<?php echo esc_attr(ontario_t('process.visual_aria', [], 'Investigation process illustration')); ?>">
-        <img src="<?php echo esc_url($theme_uri . '/assets/images/process-pipeline.png'); ?>" alt="<?php echo esc_attr(ontario_t('process.visual_alt', [], 'Five-step investigation pipeline from case intake to next steps')); ?>" />
+        <img
+          src="<?php echo esc_url($theme_uri . '/assets/images/process-pipeline.png'); ?>"
+          alt="<?php echo esc_attr(ontario_t('process.visual_alt', [], 'Five-step investigation pipeline from case intake to next steps')); ?>"
+          width="1122"
+          height="1402"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
     </div>
   </section>

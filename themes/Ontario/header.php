@@ -7,6 +7,12 @@ if (! defined('ABSPATH')) {
 ?><!doctype html>
 <html <?php language_attributes(); ?> class="notranslate" translate="no">
 <head>
+  <?php
+  $effective_display_mode = function_exists('ontario_effective_display_mode') ? ontario_effective_display_mode() : 'full';
+  $hero_preload = $effective_display_mode === 'simple'
+      ? get_template_directory_uri() . '/assets/images/old-1.png'
+      : get_template_directory_uri() . '/assets/images/hero-forensic-dashboard.png';
+  ?>
   <?php echo ontario_render_tracking_code('head_open'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
   <meta charset="<?php bloginfo('charset'); ?>" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,8 +20,9 @@ if (! defined('ABSPATH')) {
   <meta name="googlebot" content="notranslate" />
   <meta name="translator" content="no" />
   <meta name="description" content="<?php echo esc_attr(ontario_site_field('meta_description', ontario_t('hero.copy', ['brand_name' => ontario_site_brand_name()], 'Ontario Refunds helps victims of online financial fraud trace digital assets, prepare evidence-based reports, and understand practical next steps.'))); ?>" />
-  <link rel="preconnect" href="<?php echo esc_url(home_url('/')); ?>" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <?php if (is_front_page()) : ?>
+    <link rel="preload" as="image" href="<?php echo esc_url($hero_preload); ?>" />
+  <?php endif; ?>
   <?php wp_head(); ?>
 </head>
 <body <?php body_class('notranslate'); ?> translate="no">

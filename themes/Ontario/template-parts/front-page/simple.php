@@ -31,7 +31,15 @@ if (! defined('ABSPATH')) {
       </div>
 
       <div class="simple-hero-visual">
-        <img src="<?php echo esc_url(ontario_simple_image_uri('hero')); ?>" alt="<?php echo esc_attr(ontario_t('simple.hero.alt', [], 'Consultant helping a couple review a financial fraud case')); ?>" />
+        <img
+          src="<?php echo esc_url(ontario_simple_image_uri('hero')); ?>"
+          alt="<?php echo esc_attr(ontario_t('simple.hero.alt', [], 'Consultant helping a couple review a financial fraud case')); ?>"
+          width="1448"
+          height="1086"
+          fetchpriority="high"
+          loading="eager"
+          decoding="async"
+        />
       </div>
     </div>
   </section>
@@ -81,7 +89,14 @@ if (! defined('ABSPATH')) {
         <div class="eyebrow"><?php echo esc_html(ontario_t('simple.scanner.badge', [], 'Free initial review')); ?></div>
         <h2><?php echo esc_html(ontario_t('simple.scanner.title', [], 'Submit your case in a clear and secure way.')); ?></h2>
         <p><?php echo esc_html(ontario_t('simple.scanner.copy', [], 'Prepare any wallet addresses, transaction hashes, screenshots, links, emails, payment records, and notes that explain what happened.')); ?></p>
-        <img src="<?php echo esc_url(ontario_simple_image_uri('scanner')); ?>" alt="<?php echo esc_attr(ontario_t('simple.scanner.alt', [], 'Secure case submission checklist')); ?>" />
+        <img
+          src="<?php echo esc_url(ontario_simple_image_uri('scanner')); ?>"
+          alt="<?php echo esc_attr(ontario_t('simple.scanner.alt', [], 'Secure case submission checklist')); ?>"
+          width="1448"
+          height="1086"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
 
       <?php include locate_template('template-parts/front-page/case-form.php'); ?>
@@ -131,7 +146,14 @@ if (! defined('ABSPATH')) {
   <section id="process" class="simple-process">
     <div class="container simple-process-grid">
       <div class="simple-process-visual">
-        <img src="<?php echo esc_url(ontario_simple_image_uri('process')); ?>" alt="<?php echo esc_attr(ontario_t('simple.process.alt', [], 'Five-step case review and investigation process')); ?>" />
+        <img
+          src="<?php echo esc_url(ontario_simple_image_uri('process')); ?>"
+          alt="<?php echo esc_attr(ontario_t('simple.process.alt', [], 'Five-step case review and investigation process')); ?>"
+          width="1122"
+          height="1402"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
       <div class="simple-process-copy">
         <div class="eyebrow"><?php echo esc_html(ontario_t('simple.process.badge', [], 'Simple process')); ?></div>
