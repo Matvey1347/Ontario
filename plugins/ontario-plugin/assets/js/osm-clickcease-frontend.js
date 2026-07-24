@@ -50,3 +50,40 @@ function addGetParameters(parameters, newUrl = window.location.href) {
   });
   return newUrl;
 }
+
+function injectScript(url, className) {
+  if (!url || document.querySelector('script[data-ontario-src="' + url + '"]')) {
+    return;
+  }
+
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = url;
+  script.dataset.ontarioSrc = url;
+
+  if (className) {
+    script.className = className;
+  }
+
+  document.head.appendChild(script);
+}
+
+function loadClickceaseScripts() {
+  const config = window.osmClickceaseLoader || {};
+
+  if (config.monitorScriptUrl) {
+    injectScript(config.monitorScriptUrl, '');
+  }
+
+  if (config.botzappingScriptUrl) {
+    injectScript(config.botzappingScriptUrl, 'ct_clicktrue');
+  }
+}
+
+if (document.readyState === 'complete') {
+  window.setTimeout(loadClickceaseScripts, 1200);
+} else {
+  window.addEventListener('load', function () {
+    window.setTimeout(loadClickceaseScripts, 1200);
+  }, { once: true });
+}

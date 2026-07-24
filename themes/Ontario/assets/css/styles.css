@@ -342,9 +342,9 @@ body.admin-bar .site-header {
   background-position: center, 8% 16%, 92% 8%, center;
   filter: blur(12px);
   opacity: 0.88;
-  transform: translate3d(var(--hero-shift-x), var(--hero-shift-y), 0);
-  animation: heroAurora 13s ease-in-out infinite alternate;
-  transition: transform 0.24s ease, background 0.2s ease;
+  transform: none;
+  animation: none;
+  transition: none;
 }
 
 .hero::after {
@@ -353,28 +353,9 @@ body.admin-bar .site-header {
     linear-gradient(115deg, transparent 0 46%, rgba(77, 227, 255, 0.2) 49%, transparent 52%),
     radial-gradient(circle, rgba(126, 221, 255, 0.18) 1px, transparent 1.6px);
   background-size: 260px 260px, 38px 38px;
-  animation: heroField 18s linear infinite;
-  mask-image: radial-gradient(circle at var(--hero-x) var(--hero-y), #000 0%, transparent 62%);
-}
-
-@keyframes heroAurora {
-  0% {
-    background-position: center, 0% 12%, 100% 4%, 50% 50%;
-    filter: blur(12px) hue-rotate(0deg);
-  }
-  50% {
-    background-position: center, 18% 30%, 78% 24%, 46% 56%;
-    filter: blur(16px) hue-rotate(8deg);
-  }
-  100% {
-    background-position: center, 28% 10%, 88% 38%, 54% 44%;
-    filter: blur(12px) hue-rotate(-6deg);
-  }
-}
-
-@keyframes heroField {
-  from { transform: translate3d(calc(-3% + var(--hero-shift-rx)), calc(-2% + var(--hero-shift-ry)), 0) rotate(0deg); }
-  to { transform: translate3d(calc(3% + var(--hero-shift-rx)), calc(2% + var(--hero-shift-ry)), 0) rotate(1deg); }
+  animation: none;
+  mask-image: none;
+  transform: none;
 }
 
 .hero-grid {
@@ -774,6 +755,35 @@ section {
   color: var(--cyan);
   font-size: 20px;
   font-weight: 900;
+}
+
+.icon-mapping {
+  position: relative;
+}
+
+.icon-mapping::before,
+.icon-mapping::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  border: 2px solid currentColor;
+}
+
+.icon-mapping::before {
+  width: 16px;
+  height: 16px;
+  left: 10px;
+  top: 13px;
+  opacity: 0.9;
+}
+
+.icon-mapping::after {
+  width: 10px;
+  height: 10px;
+  right: 10px;
+  top: 9px;
+  opacity: 0.55;
+  box-shadow: -8px 10px 0 -2px rgba(77, 227, 255, 0.42);
 }
 
 .card h3 {

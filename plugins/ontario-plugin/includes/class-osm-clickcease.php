@@ -150,12 +150,9 @@ final class OSM_Clickcease
                 'nonce' => wp_create_nonce('cc_ajax_nonce'),
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'ajaxAction' => 'validate_clickcease_response',
+                'monitorScriptUrl' => self::CLICKCEASE . '/monitor/stat.js',
             ]);
             wp_enqueue_script('osm-clickcease-frontend');
-
-            add_action('wp_head', static function (): void {
-                echo "<script async src='" . esc_url(self::CLICKCEASE . "/monitor/stat.js") . "'></script>\n";
-            }, 999);
         }
 
         if ($client_ip === '' || in_array($client_ip, $whitelist, true)) {
@@ -171,9 +168,10 @@ final class OSM_Clickcease
 
         $domain = $this->get_active_domain($site, $api_key);
 
-        add_action('wp_head', static function () use ($domain, $api_key): void {
-            echo "<script async src='" . esc_url($domain . '/i/' . $api_key . ".js") . "' class='ct_clicktrue'></script>\n";
-        }, 999);
+        wp_localize_script('osm-clickcease-frontend', 'osmClickceaseLoader', [
+            'monitorScriptUrl' => ((string) ($site['clickcease_install_click_fraud'] ?? '0') === '1') ? self::CLICKCEASE . '/monitor/stat.js' : '',
+            'botzappingScriptUrl' => $domain . '/i/' . $api_key . '.js',
+        ]);
     }
 
     public function render_noscript_tags(): void

@@ -86,8 +86,6 @@
 
   function initScrollReveal() {
     const revealGroups = [
-      '.hero-content',
-      '.hero-visual',
       '.strip-card',
       '.section-head',
       '.card',
@@ -102,6 +100,10 @@
     ];
     const elements = [...document.querySelectorAll(revealGroups.join(','))]
       .filter((element) => !element.closest('.modal'));
+
+    document.querySelectorAll('.hero-content, .hero-visual').forEach((element) => {
+      element.classList.add('is-visible');
+    });
 
     if (!enableDecorativeMotion) {
       elements.forEach((element) => element.classList.add('is-visible'));
