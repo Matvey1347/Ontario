@@ -202,6 +202,14 @@ final class OSM_Rest_Forms
             $payload[$field] = sanitize_textarea_field((string) $value);
         }
 
+        if (isset($params['zc_gad']) && is_scalar($params['zc_gad'])) {
+            $gclid = sanitize_text_field((string) $params['zc_gad']);
+
+            if ($gclid !== '') {
+                $payload['zc_gad'] = $gclid;
+            }
+        }
+
         return $payload;
     }
 

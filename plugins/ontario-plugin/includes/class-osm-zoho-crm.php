@@ -169,6 +169,10 @@ final class OSM_Zoho_CRM
             $lead['Scam_type'] = $this->sanitize_value((string) $payload['transferMethod']);
         }
 
+        if (! empty($payload['zc_gad'])) {
+            $lead['$gclid'] = $this->sanitize_value((string) $payload['zc_gad']);
+        }
+
         return array_filter($lead, static fn($value) => $value !== '');
     }
 

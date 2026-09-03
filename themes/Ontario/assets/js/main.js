@@ -727,7 +727,32 @@
       throw new Error(payload.message || t('submitError', 'Unable to submit the form right now.'));
     }
 
+    const gclid = String(formData.get('zc_gad') || '').trim();
+
+    if (gclid && payload.crm?.success) {
+      console.log(`[Ontario Zoho] GCLID field with value "${gclid}" was successfully sent to Zoho.`);
+    }
+
     return payload;
+  }
+
+  function addZohoGclid(formData, formElement) {
+    const formField = formElement?.querySelector('[name="zc_gad"]');
+
+    if (!formField) {
+      formData.delete('zc_gad');
+      return;
+    }
+
+    const populatedField = [...document.querySelectorAll('[name="zc_gad"]')]
+      .find((field) => String(field.value || '').trim() !== '');
+    const gclid = String(formField.value || populatedField?.value || '').trim();
+
+    if (gclid) {
+      formData.set('zc_gad', gclid);
+    } else {
+      formData.delete('zc_gad');
+    }
   }
 
   function updateForm() {
@@ -932,6 +957,7 @@
     }
 
     const formData = new FormData(form);
+    addZohoGclid(formData, form);
     const phone = formData.get('phone');
 
     if (phone && form) {
@@ -977,34 +1003,35 @@
         return;
       }
 
-    const formData = new FormData(quickForm);
-    const phone = formData.get('phone');
+      const formData = new FormData(quickForm);
+      addZohoGclid(formData, quickForm);
+      const phone = formData.get('phone');
 
-    if (phone && quickForm instanceof HTMLElement) {
-      formData.set('phone', buildPhonePayload(quickForm.querySelector('[name="phone"]')) || String(phone));
-    }
+      if (phone && quickForm instanceof HTMLElement) {
+        formData.set('phone', buildPhonePayload(quickForm.querySelector('[name="phone"]')) || String(phone));
+      }
 
-    formData.set('formType', 'quickForm');
-    submitButton.textContent = t('sending', 'Sending...');
-    submitButton.disabled = true;
-    setFormLoading(quickForm, true, t('sendingMessage', 'Sending your message...'));
+      formData.set('formType', 'quickForm');
+      submitButton.textContent = t('sending', 'Sending...');
+      submitButton.disabled = true;
+      setFormLoading(quickForm, true, t('sendingMessage', 'Sending your message...'));
 
-    submitLead(formData)
-      .then(() => {
-        submissionState.quickSubmitted = true;
-        setFormLoading(quickForm, false);
-        submitButton.textContent = t('submitted', 'Submitted');
-        resetFormState(quickForm);
-        submitButton.textContent = defaultSubmitLabel;
-        submitButton.disabled = false;
-        showSuccessModal();
-      })
-      .catch((error) => {
-        setFormLoading(quickForm, false);
-        submitButton.textContent = defaultSubmitLabel;
-        submitButton.disabled = false;
-        setFormMessage(quickForm, error.message || t('sendError', 'Unable to send the form.'), 'error');
-      });
+      submitLead(formData)
+        .then(() => {
+          submissionState.quickSubmitted = true;
+          setFormLoading(quickForm, false);
+          submitButton.textContent = t('submitted', 'Submitted');
+          resetFormState(quickForm);
+          submitButton.textContent = defaultSubmitLabel;
+          submitButton.disabled = false;
+          showSuccessModal();
+        })
+        .catch((error) => {
+          setFormLoading(quickForm, false);
+          submitButton.textContent = defaultSubmitLabel;
+          submitButton.disabled = false;
+          setFormMessage(quickForm, error.message || t('sendError', 'Unable to send the form.'), 'error');
+        });
     });
   });
 
