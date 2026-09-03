@@ -49,7 +49,7 @@ return [
         'success.back_home' => 'Retour à l\'accueil',
         'success.close' => 'Fermer',
 
-        'quick_contact.title' => 'Contact rapide',
+        'quick_contact.title' => 'Récupérez vos fonds perdus',
         'quick_contact.close_aria' => 'Fermer le formulaire de contact rapide',
         'quick_contact.send' => 'Envoyer le message',
 
@@ -63,6 +63,9 @@ return [
         'hero.trust.soc2' => 'SOC 2 Type II',
         'hero.visual_aria' => 'Illustration du tableau de bord médico-légal',
         'hero.visual_alt' => 'Tableau de bord de traçage blockchain avec analyse des flux de portefeuilles',
+        'hero.form_title' => 'Récupérez vos fonds perdus',
+        'hero.form_copy' => 'Expliquez-nous ce qui s’est passé pour une première évaluation gratuite.',
+        'hero.form_submit' => 'Obtenir une consultation gratuite',
 
         'strip.distinction_title' => 'Distinction importante',
         'strip.distinction_copy' => 'Nous n\'annulons pas les transactions blockchain et nous ne garantissons pas la récupération. Nous retraçons, documentons et orientons.',

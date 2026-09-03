@@ -67,5 +67,8 @@ if (ontario_site_display_mode() === 'choice') {
 }
 ?>
 <?php wp_footer(); ?>
+<script type="text/javascript"
+src='https://crm.zoho.eu/crm/javascript/zcga.js'> </script>
+<?php echo ontario_render_tracking_code('body_close'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 </body>
 </html>

@@ -32,22 +32,19 @@ if (! defined('ABSPATH')) {
         </div>
       </div>
 
-      <div class="hero-visual" aria-label="<?php echo esc_attr(ontario_t('hero.visual_aria', [], 'Forensic dashboard illustration')); ?>">
-        <div class="hero-image-frame">
-          <picture>
-            <source type="image/avif" srcset="<?php echo esc_url($theme_uri . '/assets/images/hero-forensic-dashboard.avif'); ?>" />
-            <source type="image/webp" srcset="<?php echo esc_url($theme_uri . '/assets/images/hero-forensic-dashboard.webp'); ?>" />
-            <img
-              src="<?php echo esc_url($theme_uri . '/assets/images/hero-forensic-dashboard.png'); ?>"
-              alt="<?php echo esc_attr(ontario_t('hero.visual_alt', [], 'Forensic blockchain tracing dashboard with wallet flow analysis')); ?>"
-              width="1448"
-              height="1086"
-              fetchpriority="high"
-              loading="eager"
-              decoding="async"
-            />
-          </picture>
-        </div>
+      <div class="hero-visual hero-form-wrap">
+        <form class="form-card hero-contact-form" id="heroQuickForm" data-quick-form novalidate>
+          <input type="hidden" name="formType" value="quickForm" />
+          <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" />
+          <div class="form-top"><div><strong><?php echo esc_html(ontario_t('hero.form_title', [], 'Recover Your Lost Funds')); ?></strong><span><?php echo esc_html(ontario_t('hero.form_copy', [], 'Tell us what happened for a free initial review.')); ?></span></div></div>
+          <div class="field"><label for="heroQuickName"><?php echo esc_html(ontario_t('form.quick_name', [], 'Name')); ?></label><input id="heroQuickName" name="name" type="text" placeholder="<?php echo esc_attr(ontario_t('form.quick_name_placeholder', [], 'Enter first name')); ?>" required data-label="<?php echo esc_attr(ontario_t('form.quick_name', [], 'Name')); ?>" /></div>
+          <div class="field"><label for="heroQuickPhone"><?php echo esc_html(ontario_t('form.phone', [], 'Phone number')); ?></label><div class="phone-input"><span class="phone-prefix" aria-hidden="true"><span class="phone-flag">🇨🇦</span> +1</span><div class="phone-number-input"><input id="heroQuickPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="<?php echo esc_attr(ontario_t('form.phone_placeholder_ca', [], '(506) 234-5678')); ?>" maxlength="14" required data-label="<?php echo esc_attr(ontario_t('form.phone', [], 'Phone number')); ?>" data-phone-mode="canada" /></div></div></div>
+          <div class="field"><label for="heroQuickEmail"><?php echo esc_html(ontario_t('form.email', [], 'Email address')); ?></label><input id="heroQuickEmail" name="email" type="email" placeholder="<?php echo esc_attr(ontario_t('form.quick_email_placeholder', [], 'Enter your email')); ?>" required data-label="<?php echo esc_attr(ontario_t('form.email', [], 'Email address')); ?>" /></div>
+          <div class="field"><label for="heroQuickMessage"><?php echo esc_html(ontario_t('form.quick_message', [], 'Message')); ?></label><textarea id="heroQuickMessage" name="message" placeholder="<?php echo esc_attr(ontario_t('form.quick_message_placeholder', [], 'Briefly describe what happened (amount, dates, platform or wallets)')); ?>" required data-label="<?php echo esc_attr(ontario_t('form.quick_message', [], 'Message')); ?>"></textarea></div>
+          <label class="checkbox-field" for="heroLossConfirm"><input id="heroLossConfirm" name="lossConfirm" type="checkbox" required data-label="<?php echo esc_attr(ontario_t('form.loss_confirm', [], 'I confirm my losses exceed $2,000')); ?>" /><span><?php echo esc_html(ontario_t('form.loss_confirm', [], 'I confirm my losses exceed $2,000')); ?></span></label>
+          <button class="btn btn-primary short-submit" type="submit"><?php echo esc_html(ontario_t('hero.form_submit', [], 'Get A Free Consultation')); ?></button>
+          <?php echo ontario_render_tracking_code('form'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+        </form>
       </div>
     </div>
   </section>

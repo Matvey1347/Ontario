@@ -27,7 +27,7 @@ if (! defined('ABSPATH')) {
       <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" />
       <div class="form-top">
         <div>
-          <strong id="quickContactTitle"><?php echo esc_html(ontario_t('quick_contact.title', [], 'Quick Contact')); ?></strong>
+          <strong id="quickContactTitle"><?php echo esc_html(ontario_t('quick_contact.title', [], 'Recover Your Lost Funds')); ?></strong>
         </div>
         <button class="modal-close" type="button" aria-label="<?php echo esc_attr(ontario_t('quick_contact.close_aria', [], 'Close quick contact form')); ?>" data-modal-close>x</button>
       </div>
@@ -69,6 +69,7 @@ if (! defined('ABSPATH')) {
         <span><?php echo esc_html(ontario_t('form.loss_confirm', [], 'I confirm my losses exceed $2,000')); ?></span>
       </label>
       <button class="btn btn-primary short-submit" type="submit"><?php echo esc_html(ontario_t('quick_contact.send', [], 'Send Message')); ?></button>
+      <?php echo ontario_render_tracking_code('form'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
     </form>
   </div>
 </div>

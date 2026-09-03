@@ -289,6 +289,21 @@ final class OSM_Admin
         echo '<p class="description">This value is used for Zoho Lead Status when a specific site does not have its own Default lead status set.</p>';
         echo '</td>';
         echo '</tr>';
+        echo '<tr><th scope="row">Global tracking</th><td>';
+        $global_tracking_fields = [
+            'tracking_head_open_code' => ['Head open tracking code', 'Immediately after the opening &lt;head&gt; tag.'],
+            'tracking_header_code' => ['Header tracking code', 'Inside &lt;head&gt;.'],
+            'tracking_body_code' => ['Body tracking code', 'Immediately after &lt;body&gt; opens.'],
+            'tracking_body_close_code' => ['Body close tracking code', 'Immediately before &lt;/body&gt;.'],
+            'tracking_form_html' => ['Custom HTML inside all forms', 'Inserted into every public lead form.'],
+            'tracking_success_code' => ['Success page tracking code', 'Only on the success page.'],
+        ];
+        foreach ($global_tracking_fields as $key => [$label, $help]) {
+            echo '<p><label for="osm_' . esc_attr($key) . '"><strong>' . esc_html($label) . '</strong></label><br />';
+            echo '<textarea class="large-text code" rows="5" id="osm_' . esc_attr($key) . '" name="osm_' . esc_attr($key) . '">' . esc_textarea((string) ($settings[$key] ?? '')) . '</textarea>';
+            echo '<span class="description">' . wp_kses_post($help) . '</span></p>';
+        }
+        echo '<p class="description">Global snippets are output on every site before its site-specific snippets.</p></td></tr>';
         echo '</tbody></table>';
         $this->render_global_content_section($settings);
         submit_button('Save settings', 'primary', 'submit', true, ['id' => 'osm-global-settings-submit']);
@@ -655,6 +670,12 @@ final class OSM_Admin
         $this->sites->save_global_settings([
             'notification_emails' => isset($_POST['osm_notification_emails']) ? wp_unslash((string) $_POST['osm_notification_emails']) : '',
             'default_lead_status' => isset($_POST['osm_default_lead_status']) ? wp_unslash((string) $_POST['osm_default_lead_status']) : '',
+            'tracking_head_open_code' => isset($_POST['osm_tracking_head_open_code']) ? wp_unslash((string) $_POST['osm_tracking_head_open_code']) : '',
+            'tracking_header_code' => isset($_POST['osm_tracking_header_code']) ? wp_unslash((string) $_POST['osm_tracking_header_code']) : '',
+            'tracking_body_code' => isset($_POST['osm_tracking_body_code']) ? wp_unslash((string) $_POST['osm_tracking_body_code']) : '',
+            'tracking_body_close_code' => isset($_POST['osm_tracking_body_close_code']) ? wp_unslash((string) $_POST['osm_tracking_body_close_code']) : '',
+            'tracking_form_html' => isset($_POST['osm_tracking_form_html']) ? wp_unslash((string) $_POST['osm_tracking_form_html']) : '',
+            'tracking_success_code' => isset($_POST['osm_tracking_success_code']) ? wp_unslash((string) $_POST['osm_tracking_success_code']) : '',
             'content_overrides' => $content_overrides,
         ]);
     }

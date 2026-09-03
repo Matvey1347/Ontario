@@ -49,7 +49,7 @@ return [
         'success.back_home' => 'Back To Home',
         'success.close' => 'Close',
 
-        'quick_contact.title' => 'Quick Contact',
+        'quick_contact.title' => 'Recover Your Lost Funds',
         'quick_contact.close_aria' => 'Close quick contact form',
         'quick_contact.send' => 'Send Message',
 
@@ -63,6 +63,9 @@ return [
         'hero.trust.soc2' => 'SOC 2 Type II',
         'hero.visual_aria' => 'Forensic dashboard illustration',
         'hero.visual_alt' => 'Forensic blockchain tracing dashboard with wallet flow analysis',
+        'hero.form_title' => 'Recover Your Lost Funds',
+        'hero.form_copy' => 'Tell us what happened for a free initial review.',
+        'hero.form_submit' => 'Get A Free Consultation',
 
         'strip.distinction_title' => 'Important distinction',
         'strip.distinction_copy' => 'We do not reverse blockchain transactions or guarantee recovery. We trace, document, and guide.',

@@ -158,11 +158,17 @@ final class OSM_Current_Site
         $field = match ($location) {
             'head_open' => 'tracking_head_open_code',
             'body' => 'tracking_body_code',
+            'body_close' => 'tracking_body_close_code',
+            'form' => 'tracking_form_html',
             'success' => 'tracking_success_code',
             default => 'tracking_header_code',
         };
 
-        return trim((string) ($site[$field] ?? ''));
+        $global_settings = $this->sites->get_global_settings();
+        $global_code = trim((string) ($global_settings[$field] ?? ''));
+        $site_code = trim((string) ($site[$field] ?? ''));
+
+        return implode("\n", array_filter([$global_code, $site_code], static fn (string $code): bool => $code !== ''));
     }
 
     public function render_tracking_code(string $location = 'head'): string
@@ -379,6 +385,8 @@ final class OSM_Current_Site
             'tracking_head_open_code' => '',
             'tracking_header_code' => '',
             'tracking_body_code' => '',
+            'tracking_body_close_code' => '',
+            'tracking_form_html' => '',
             'tracking_success_code' => '',
             'clickcease_install_click_fraud' => '0',
             'clickcease_api_key' => '',

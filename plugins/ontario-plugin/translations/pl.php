@@ -49,7 +49,7 @@ return [
         'success.back_home' => 'Powrót do strony głównej',
         'success.close' => 'Zamknij',
 
-        'quick_contact.title' => 'Szybki kontakt',
+        'quick_contact.title' => 'Odzyskaj utracone środki',
         'quick_contact.close_aria' => 'Zamknij formularz szybkiego kontaktu',
         'quick_contact.send' => 'Wyślij wiadomość',
 
@@ -63,6 +63,9 @@ return [
         'hero.trust.soc2' => 'SOC 2 Type II',
         'hero.visual_aria' => 'Ilustracja panelu śledczego',
         'hero.visual_alt' => 'Panel śledzenia blockchain z analizą przepływów portfeli',
+        'hero.form_title' => 'Odzyskaj utracone środki',
+        'hero.form_copy' => 'Opisz, co się wydarzyło, aby uzyskać bezpłatną wstępną ocenę.',
+        'hero.form_submit' => 'Uzyskaj bezpłatną konsultację',
 
         'strip.distinction_title' => 'Ważne rozróżnienie',
         'strip.distinction_copy' => 'Nie cofamy transakcji blockchain i nie gwarantujemy odzyskania środków. Śledzimy, dokumentujemy i wskazujemy dalsze kroki.',

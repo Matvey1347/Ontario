@@ -21,6 +21,9 @@ final class OSM_Translations
                 'hero.trust.encrypted',
                 'hero.trust.pipeda',
                 'hero.trust.soc2',
+                'hero.form_title',
+                'hero.form_copy',
+                'hero.form_submit',
             ],
         ],
         'simple_hero' => [

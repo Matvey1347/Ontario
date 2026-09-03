@@ -302,6 +302,8 @@ final class OSM_Sites
         $this->render_textarea_row('tracking_head_open_code', 'Head open tracking code', $meta['tracking_head_open_code'], 'Rendered immediately after the opening <head> tag. Use this for Google tag installs that require top-of-head placement.');
         $this->render_textarea_row('tracking_header_code', 'Header tracking code', $meta['tracking_header_code'], 'Rendered inside <head>. Paste full pixel / tag manager / analytics code here.');
         $this->render_textarea_row('tracking_body_code', 'Body tracking code', $meta['tracking_body_code'], 'Rendered right after <body> opens. Useful for noscript pixels or body snippets.');
+        $this->render_textarea_row('tracking_body_close_code', 'Body close tracking code', $meta['tracking_body_close_code'], 'Rendered immediately before the closing </body> tag.');
+        $this->render_textarea_row('tracking_form_html', 'Custom HTML inside all forms', $meta['tracking_form_html'], 'Inserted inside every public lead form. Scripts and HTML are supported.');
         $this->render_textarea_row('tracking_success_code', 'Success page tracking code', $meta['tracking_success_code'], 'Rendered only on the /success/ page after a successful form submission.');
         echo '</tbody></table>';
         echo '</div>';
@@ -552,6 +554,8 @@ final class OSM_Sites
             'tracking_head_open_code' => $meta['tracking_head_open_code'],
             'tracking_header_code' => $meta['tracking_header_code'],
             'tracking_body_code' => $meta['tracking_body_code'],
+            'tracking_body_close_code' => $meta['tracking_body_close_code'],
+            'tracking_form_html' => $meta['tracking_form_html'],
             'tracking_success_code' => $meta['tracking_success_code'],
             'zoho_enabled' => $meta['zoho_enabled'],
             'zoho_accounts_url' => $meta['zoho_accounts_url'],
@@ -596,6 +600,12 @@ final class OSM_Sites
         return [
             'notification_emails' => $notification_emails,
             'default_lead_status' => $default_lead_status,
+            'tracking_head_open_code' => $this->sanitize_tracking_code((string) ($stored['tracking_head_open_code'] ?? '')),
+            'tracking_header_code' => $this->sanitize_tracking_code((string) ($stored['tracking_header_code'] ?? '')),
+            'tracking_body_code' => $this->sanitize_tracking_code((string) ($stored['tracking_body_code'] ?? '')),
+            'tracking_body_close_code' => $this->sanitize_tracking_code((string) ($stored['tracking_body_close_code'] ?? '')),
+            'tracking_form_html' => $this->sanitize_tracking_code((string) ($stored['tracking_form_html'] ?? '')),
+            'tracking_success_code' => $this->sanitize_tracking_code((string) ($stored['tracking_success_code'] ?? '')),
             'content_overrides' => class_exists('OSM_Plugin')
                 ? OSM_Plugin::instance()->translations()->sanitize_content_overrides((array) ($stored['content_overrides'] ?? []))
                 : [],
@@ -607,6 +617,12 @@ final class OSM_Sites
         update_option(self::SETTINGS_OPTION, [
             'notification_emails' => $this->sanitize_textarea((string) ($settings['notification_emails'] ?? '')),
             'default_lead_status' => sanitize_text_field((string) ($settings['default_lead_status'] ?? 'Contact in Future')),
+            'tracking_head_open_code' => $this->sanitize_tracking_code((string) ($settings['tracking_head_open_code'] ?? '')),
+            'tracking_header_code' => $this->sanitize_tracking_code((string) ($settings['tracking_header_code'] ?? '')),
+            'tracking_body_code' => $this->sanitize_tracking_code((string) ($settings['tracking_body_code'] ?? '')),
+            'tracking_body_close_code' => $this->sanitize_tracking_code((string) ($settings['tracking_body_close_code'] ?? '')),
+            'tracking_form_html' => $this->sanitize_tracking_code((string) ($settings['tracking_form_html'] ?? '')),
+            'tracking_success_code' => $this->sanitize_tracking_code((string) ($settings['tracking_success_code'] ?? '')),
             'content_overrides' => class_exists('OSM_Plugin')
                 ? OSM_Plugin::instance()->translations()->sanitize_content_overrides((array) ($settings['content_overrides'] ?? []))
                 : [],
@@ -888,6 +904,8 @@ final class OSM_Sites
             'tracking_head_open_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
             'tracking_header_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
             'tracking_body_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
+            'tracking_body_close_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
+            'tracking_form_html' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
             'tracking_success_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
             'zoho_enabled' => ['type' => 'checkbox', 'sanitize' => 'sanitize_text_field'],
             'zoho_accounts_url' => ['type' => 'text', 'sanitize' => 'esc_url_raw'],

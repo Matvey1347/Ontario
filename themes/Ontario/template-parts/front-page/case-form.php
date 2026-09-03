@@ -89,4 +89,5 @@ if (! defined('ABSPATH')) {
   <p class="form-note">
     🔒 <?php echo esc_html(ontario_t('form.note', [], 'Encrypted in transit & at rest · PIPEDA compliant · SOC 2 Type II')); ?>
   </p>
+  <?php echo ontario_render_tracking_code('form'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 </form>

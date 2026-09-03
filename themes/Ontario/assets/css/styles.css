@@ -474,6 +474,17 @@ h1 {
   isolation: isolate;
 }
 
+.hero-contact-form {
+  position: relative;
+  max-width: 600px;
+  margin-left: auto;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.45), 0 0 54px rgba(77, 227, 255, 0.09);
+}
+
+.hero-contact-form textarea {
+  min-height: 96px;
+}
+
 .hero-visual::before,
 .hero-visual::after {
   content: "";

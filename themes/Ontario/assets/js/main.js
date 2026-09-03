@@ -230,6 +230,18 @@
       button.addEventListener('click', openModal);
     });
 
+    window.setTimeout(() => {
+      const tryOpen = () => {
+        if (submissionState.quickSubmitted || modal.classList.contains('is-open')) return;
+        if (document.querySelector('.modal.is-open')) {
+          window.setTimeout(tryOpen, 500);
+          return;
+        }
+        openModal();
+      };
+      tryOpen();
+    }, 5000);
+
     closeButtons.forEach((button) => {
       button.addEventListener('click', closeModal);
     });
@@ -945,29 +957,31 @@
       });
   });
 
-  document.getElementById('quickForm')?.addEventListener('submit', (event) => {
-    event.preventDefault();
+  document.querySelectorAll('[data-quick-form], #quickForm').forEach((quickFormElement) => {
+    quickFormElement.addEventListener('submit', (event) => {
+      event.preventDefault();
 
-    if (submissionState.quickSubmitted) {
-      showSuccessModal();
-      return;
-    }
+      if (submissionState.quickSubmitted) {
+        showSuccessModal();
+        return;
+      }
 
-    const quickForm = event.currentTarget;
-    const submitButton = quickForm.querySelector('button[type="submit"]');
-    startValidation(quickForm);
+      const quickForm = event.currentTarget;
+      const submitButton = quickForm.querySelector('button[type="submit"]');
+      const defaultSubmitLabel = submitButton.textContent;
+      startValidation(quickForm);
 
-    const quickFields = [...quickForm.querySelectorAll('input, select, textarea')];
+      const quickFields = [...quickForm.querySelectorAll('input, select, textarea')];
 
-    if (!validateFields(quickFields)) {
-      return;
-    }
+      if (!validateFields(quickFields)) {
+        return;
+      }
 
     const formData = new FormData(quickForm);
     const phone = formData.get('phone');
 
     if (phone && quickForm instanceof HTMLElement) {
-      formData.set('phone', buildPhonePayload(quickForm.querySelector('#quickPhone')) || String(phone));
+      formData.set('phone', buildPhonePayload(quickForm.querySelector('[name="phone"]')) || String(phone));
     }
 
     formData.set('formType', 'quickForm');
@@ -981,16 +995,17 @@
         setFormLoading(quickForm, false);
         submitButton.textContent = t('submitted', 'Submitted');
         resetFormState(quickForm);
-        submitButton.textContent = t('sendMessage', 'Send Message');
+        submitButton.textContent = defaultSubmitLabel;
         submitButton.disabled = false;
         showSuccessModal();
       })
       .catch((error) => {
         setFormLoading(quickForm, false);
-        submitButton.textContent = t('sendMessage', 'Send Message');
+        submitButton.textContent = defaultSubmitLabel;
         submitButton.disabled = false;
         setFormMessage(quickForm, error.message || t('sendError', 'Unable to send the form.'), 'error');
       });
+    });
   });
 
   prevBtn?.addEventListener('click', () => {
@@ -1078,7 +1093,7 @@
   initPhoneMask();
   initLanguageSwitcher();
   attachFieldValidation(form);
-  attachFieldValidation(document.getElementById('quickForm'));
+  document.querySelectorAll('[data-quick-form], #quickForm').forEach(attachFieldValidation);
   initQuickContactModal();
   initSuccessModal();
   initWelcomeModal();
