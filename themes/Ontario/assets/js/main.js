@@ -240,7 +240,7 @@
         openModal();
       };
       tryOpen();
-    }, 5000);
+    }, 10000);
 
     closeButtons.forEach((button) => {
       button.addEventListener('click', closeModal);
