@@ -372,6 +372,7 @@ final class OSM_Current_Site
             'resolved_host_normalized' => $this->get_request_host(),
             'primary_domain' => 'ontariorefunds.info',
             'meta_title' => 'Ontario Refunds',
+            'dynamic_headline_parameter' => 'keyword',
             'company_name' => 'Ontario Refunds',
             'logo_url' => 'https://ontariorefunds.info/wp-content/uploads/2026/02/Ontario-Refunds-logo-color.png',
             'favicon_url' => content_url('themes/Ontario/assets/images/fav.png'),

@@ -19,6 +19,71 @@
     return typeof i18n[key] === 'string' && i18n[key] ? i18n[key] : fallback;
   }
 
+  function getDynamicHeadlineValue() {
+    const parameter = typeof osmConfig.dynamicHeadlineParameter === 'string'
+      ? osmConfig.dynamicHeadlineParameter.trim()
+      : '';
+
+    if (!/^[A-Za-z0-9_-]{1,64}$/.test(parameter)) {
+      return '';
+    }
+
+    try {
+      const url = new URL(window.location.href);
+      const queryParts = url.search.length > 1 ? url.search.slice(1).split('&') : [];
+      let value = null;
+
+      for (const queryPart of queryParts) {
+        const separatorIndex = queryPart.indexOf('=');
+        const rawName = separatorIndex === -1 ? queryPart : queryPart.slice(0, separatorIndex);
+        let decodedName = '';
+
+        try {
+          decodedName = decodeURIComponent(rawName.replace(/\+/g, ' '));
+        } catch (error) {
+          continue;
+        }
+
+        if (decodedName !== parameter) {
+          continue;
+        }
+
+        const rawValue = separatorIndex === -1 ? '' : queryPart.slice(separatorIndex + 1);
+        value = decodeURIComponent(rawValue.replace(/\+/g, ' '));
+        break;
+      }
+
+      const headline = typeof value === 'string' ? value.trim() : '';
+
+      if (
+        !headline ||
+        headline.length > 200 ||
+        headline.includes('\uFFFD') ||
+        /^\{[^{}]+\}$/.test(headline)
+      ) {
+        return '';
+      }
+
+      return headline;
+    } catch (error) {
+      return '';
+    }
+  }
+
+  function initDynamicHeadline() {
+    const headline = getDynamicHeadlineValue();
+
+    if (!headline) {
+      return;
+    }
+
+    document.querySelectorAll('[data-keyword-headline]').forEach((element) => {
+      element.textContent = headline;
+    });
+  }
+
+  initDynamicHeadline();
+
   menuBtn?.addEventListener('click', () => {
     const isOpen = nav.classList.toggle('open');
     menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
@@ -201,10 +266,26 @@
     const openButtons = document.querySelectorAll('[data-modal-open]');
     const closeButtons = modal.querySelectorAll('[data-modal-close]');
     const firstField = modal.querySelector('input, textarea, button');
+    const mainForm = document.getElementById('caseForm');
     let lastFocusedElement = null;
+    let autoOpenCancelled = false;
+    let autoOpenTimer = null;
+
+    function cancelAutoOpen() {
+      autoOpenCancelled = true;
+
+      if (autoOpenTimer !== null) {
+        window.clearTimeout(autoOpenTimer);
+        autoOpenTimer = null;
+      }
+    }
 
     function openModal(event) {
       event?.preventDefault();
+      if (event) {
+        cancelAutoOpen();
+      }
+
       if (submissionState.quickSubmitted) {
         showSuccessModal();
         return;
@@ -230,9 +311,12 @@
       button.addEventListener('click', openModal);
     });
 
-    window.setTimeout(() => {
+    mainForm?.addEventListener('focusin', cancelAutoOpen);
+
+    autoOpenTimer = window.setTimeout(() => {
+      autoOpenTimer = null;
       const tryOpen = () => {
-        if (submissionState.quickSubmitted || modal.classList.contains('is-open')) return;
+        if (autoOpenCancelled || submissionState.quickSubmitted || modal.classList.contains('is-open')) return;
         if (document.querySelector('.modal.is-open')) {
           window.setTimeout(tryOpen, 500);
           return;
@@ -240,7 +324,7 @@
         openModal();
       };
       tryOpen();
-    }, 10000);
+    }, 5000);
 
     closeButtons.forEach((button) => {
       button.addEventListener('click', closeModal);

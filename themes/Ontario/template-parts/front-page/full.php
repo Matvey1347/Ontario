@@ -10,7 +10,7 @@ if (! defined('ABSPATH')) {
     <div class="container hero-grid">
       <div class="hero-content">
         <div class="eyebrow"><?php echo esc_html(ontario_t('hero.badge', [], 'Private blockchain intelligence for fraud victims')); ?></div>
-        <h1>
+        <h1 data-keyword-headline>
           <?php echo wp_kses_post(ontario_t('hero.title', [], 'Trace lost digital assets with <span class="gradient-text">forensic precision.</span>')); ?>
         </h1>
         <p class="hero-copy">

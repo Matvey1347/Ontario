@@ -618,6 +618,7 @@ JS;
         'restEndpoint' => esc_url_raw($rest_endpoint),
         'successUrl' => esc_url_raw(ontario_success_page_url()),
         'brandName' => function_exists('ontario_site_brand_name') ? ontario_site_brand_name() : get_bloginfo('name'),
+        'dynamicHeadlineParameter' => function_exists('ontario_site_field') ? ontario_site_field('dynamic_headline_parameter', 'keyword') : 'keyword',
         'siteId' => (int) ($current_site['id'] ?? 0),
         'siteHost' => (string) ($current_site['resolved_host'] ?? ''),
         'isPreview' => ! empty($current_site['is_preview']),

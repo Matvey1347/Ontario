@@ -108,6 +108,7 @@ final class OSM_Sites
             'primary_domain' => is_string($host) ? $host : 'ontariorefunds.info',
             'domain_aliases' => "localhost\n127.0.0.1",
             'meta_title' => 'Ontario Refunds',
+            'dynamic_headline_parameter' => 'keyword',
             'company_name' => 'Ontario Refunds',
             'public_email' => 'support@ontariorefunds.info',
             'phone_number' => '+1 647 478 0877',
@@ -286,6 +287,14 @@ final class OSM_Sites
         echo '<table class="form-table"><tbody>';
         $this->render_text_row('meta_title', 'Meta title', $meta['meta_title'], '', true);
         $this->render_textarea_row('meta_description', 'Meta description', $meta['meta_description']);
+        $this->render_text_row(
+            'dynamic_headline_parameter',
+            'Homepage headline URL parameter',
+            $meta['dynamic_headline_parameter'],
+            'keyword',
+            false,
+            ['help' => 'The value of this URL parameter replaces the homepage headline. Only letters, numbers, hyphens, and underscores are allowed.']
+        );
         echo '</tbody></table>';
         echo '</div>';
 
@@ -537,6 +546,7 @@ final class OSM_Sites
             'primary_domain' => $this->normalize_host($meta['primary_domain']),
             'domain_aliases' => $this->parse_aliases($meta['domain_aliases']),
             'meta_title' => $meta['meta_title'],
+            'dynamic_headline_parameter' => $meta['dynamic_headline_parameter'],
             'company_name' => $meta['company_name'],
             'logo_id' => (int) $meta['logo_id'],
             'favicon_id' => (int) $meta['favicon_id'],
@@ -888,6 +898,7 @@ final class OSM_Sites
             'primary_domain' => ['type' => 'text', 'sanitize' => [$this, 'sanitize_domain']],
             'domain_aliases' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_textarea']],
             'meta_title' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
+            'dynamic_headline_parameter' => ['type' => 'text', 'sanitize' => [$this, 'sanitize_dynamic_headline_parameter']],
             'company_name' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'logo_id' => ['type' => 'text', 'sanitize' => 'absint', 'reference' => 'attachment'],
             'favicon_id' => ['type' => 'text', 'sanitize' => 'absint', 'reference' => 'attachment'],
@@ -951,6 +962,10 @@ final class OSM_Sites
             $values['meta_title'] = $legacy_title !== '' ? $legacy_title : $this->default_meta_title(get_post($post_id));
         }
 
+        if ($values['dynamic_headline_parameter'] === '') {
+            $values['dynamic_headline_parameter'] = 'keyword';
+        }
+
         if ($values['tracking_header_code'] === '') {
             $values['tracking_header_code'] = (string) get_post_meta($post_id, '_osm_tracking_head_code', true);
         }
@@ -1006,6 +1021,17 @@ final class OSM_Sites
         }
 
         return $title;
+    }
+
+    private function sanitize_dynamic_headline_parameter(string $value): string
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return '';
+        }
+
+        return preg_match('/^[A-Za-z0-9_-]{1,64}$/', $value) === 1 ? $value : '';
     }
 
     private function render_text_row(string $key, string $label, string $value, string $placeholder = '', bool $required = false, array $options = []): void
