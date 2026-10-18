@@ -489,19 +489,31 @@ h1 {
   width: 100%;
   max-width: 600px;
   margin: 16px 0 0 auto;
-  padding: 18px 20px 14px;
+  padding: 16px 20px 12px;
   border: 1px solid var(--line);
   border-radius: 20px;
   background: rgba(7, 17, 31, 0.72);
   box-shadow: 0 18px 54px rgba(0, 0, 0, 0.22);
 }
 
-.testimonial-carousel__slide {
-  min-height: 122px;
+.testimonial-carousel__viewport {
+  overflow: hidden;
+  touch-action: pan-y;
 }
 
-.testimonial-carousel__slide[hidden] {
-  display: none;
+.testimonial-carousel__track {
+  display: flex;
+  will-change: transform;
+  transition: transform 0.42s cubic-bezier(0.22, 0.8, 0.25, 1);
+}
+
+.testimonial-carousel__track.is-dragging {
+  transition: none;
+}
+
+.testimonial-carousel__slide {
+  flex: 0 0 100%;
+  min-width: 0;
 }
 
 .testimonial-carousel blockquote {
@@ -542,7 +554,7 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 .testimonial-carousel__button {
@@ -2474,6 +2486,13 @@ textarea.is-invalid,
     grid-template-columns: 1fr;
   }
 
+  .hero-grid > *,
+  .scanner > *,
+  .split > *,
+  .process-layout > * {
+    min-width: 0;
+  }
+
   .scanner-panel {
     grid-row: auto;
   }
@@ -2632,10 +2651,6 @@ textarea.is-invalid,
     padding: 16px 18px 12px;
   }
 
-  .testimonial-carousel__slide {
-    min-height: 140px;
-  }
-
   .grid-4,
   .grid-3,
   .strip-inner {
@@ -2700,6 +2715,10 @@ textarea.is-invalid,
 }
 
 @media (max-width: 380px) {
+  .container {
+    width: calc(100% - 20px);
+  }
+
   .nav {
     gap: 10px;
   }
@@ -2731,6 +2750,107 @@ textarea.is-invalid,
     width: 100%;
     justify-content: center;
     text-align: center;
+  }
+
+  .hero {
+    padding: 34px 0 38px;
+  }
+
+  .hero-grid {
+    gap: 26px;
+  }
+
+  h1 {
+    font-size: clamp(32px, 11vw, 40px);
+  }
+
+  .hero-visual,
+  .hero-contact-form,
+  .hero-testimonials {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin-left: 0;
+  }
+
+  .form-card {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .form-top {
+    gap: 10px;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+  }
+
+  .form-top strong {
+    font-size: 20px;
+  }
+
+  .field,
+  .checkbox-field,
+  .phone-input,
+  .phone-number-input,
+  .hero-testimonials,
+  .testimonial-carousel__slide {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    min-width: 0;
+    max-width: 100%;
+    padding-inline: 12px;
+  }
+
+  .phone-input {
+    gap: 7px;
+    padding-inline: 10px;
+  }
+
+  .phone-number-input {
+    padding-inline: 8px;
+  }
+
+  .checkbox-field {
+    align-items: start;
+    font-size: 14px;
+  }
+
+  .checkbox-field span,
+  .testimonial-carousel blockquote p,
+  .testimonial-carousel footer span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .btn {
+    min-width: 0;
+    padding-inline: 14px;
+    white-space: normal;
+    line-height: 1.2;
+  }
+
+  .hero-testimonials {
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .testimonial-carousel blockquote p {
+    font-size: 14px;
+  }
+
+  .testimonial-carousel footer {
+    margin-top: 10px;
+  }
+
+  .testimonial-carousel__controls {
+    gap: 10px;
+    margin-top: 8px;
   }
 }
 

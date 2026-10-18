@@ -86,35 +86,66 @@
 
   function initTestimonialCarousels() {
     document.querySelectorAll('[data-testimonial-carousel]').forEach((carousel) => {
+      const track = carousel.querySelector('[data-testimonial-track]');
       const slides = [...carousel.querySelectorAll('[data-testimonial-slide]')];
       const dots = [...carousel.querySelectorAll('[data-testimonial-dot]')];
       const previousButton = carousel.querySelector('[data-testimonial-previous]');
       const nextButton = carousel.querySelector('[data-testimonial-next]');
 
-      if (slides.length < 2) {
+      if (!track || slides.length < 2) {
         return;
       }
 
       let activeIndex = slides.findIndex((slide) => slide.classList.contains('is-active'));
       let timer = null;
-      let isPaused = false;
+      let currentTrackIndex = 1;
+      let dragStartX = null;
+      let dragOffsetX = 0;
 
       if (activeIndex < 0) {
         activeIndex = 0;
       }
 
-      function showSlide(index) {
-        activeIndex = (index + slides.length) % slides.length;
+      const firstClone = slides[0].cloneNode(true);
+      const lastClone = slides[slides.length - 1].cloneNode(true);
+      firstClone.setAttribute('aria-hidden', 'true');
+      lastClone.setAttribute('aria-hidden', 'true');
+      firstClone.removeAttribute('data-testimonial-slide');
+      lastClone.removeAttribute('data-testimonial-slide');
+      track.prepend(lastClone);
+      track.append(firstClone);
 
+      function moveTrack(index, animate = true, offset = 0) {
+        track.classList.toggle('is-dragging', !animate);
+        track.style.transform = `translate3d(calc(${-index * 100}% + ${offset}px), 0, 0)`;
+      }
+
+      function updateActiveSlide() {
         slides.forEach((slide, slideIndex) => {
           const isActive = slideIndex === activeIndex;
           slide.classList.toggle('is-active', isActive);
-          slide.hidden = !isActive;
+          slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
         });
 
         dots.forEach((dot, dotIndex) => {
           dot.classList.toggle('is-active', dotIndex === activeIndex);
         });
+      }
+
+      function showSlide(index, direction = 0) {
+        const nextIndex = (index + slides.length) % slides.length;
+
+        if (direction > 0 && activeIndex === slides.length - 1 && nextIndex === 0) {
+          currentTrackIndex = slides.length + 1;
+        } else if (direction < 0 && activeIndex === 0 && nextIndex === slides.length - 1) {
+          currentTrackIndex = 0;
+        } else {
+          currentTrackIndex = nextIndex + 1;
+        }
+
+        activeIndex = nextIndex;
+        updateActiveSlide();
+        moveTrack(currentTrackIndex);
       }
 
       function stopAutoplay() {
@@ -125,23 +156,23 @@
       }
 
       function startAutoplay() {
-        if (prefersReducedMotion || isPaused || timer !== null) {
+        if (prefersReducedMotion || timer !== null) {
           return;
         }
 
-        timer = window.setInterval(() => showSlide(activeIndex + 1), 6500);
+        timer = window.setInterval(() => showSlide(activeIndex + 1, 1), 1000);
       }
 
       function showPrevious() {
-        isPaused = true;
         stopAutoplay();
-        showSlide(activeIndex - 1);
+        showSlide(activeIndex - 1, -1);
+        startAutoplay();
       }
 
       function showNext() {
-        isPaused = true;
         stopAutoplay();
-        showSlide(activeIndex + 1);
+        showSlide(activeIndex + 1, 1);
+        startAutoplay();
       }
 
       previousButton?.addEventListener('click', showPrevious);
@@ -155,7 +186,62 @@
         }
       });
 
-      showSlide(activeIndex);
+      carousel.addEventListener('pointerdown', (event) => {
+        if (event.target.closest('button')) {
+          return;
+        }
+
+        dragStartX = event.clientX;
+        dragOffsetX = 0;
+        stopAutoplay();
+        carousel.setPointerCapture?.(event.pointerId);
+      });
+
+      carousel.addEventListener('pointermove', (event) => {
+        if (dragStartX === null) {
+          return;
+        }
+
+        dragOffsetX = event.clientX - dragStartX;
+        moveTrack(currentTrackIndex, false, dragOffsetX);
+      });
+
+      function finishDrag(event) {
+        if (dragStartX === null) {
+          return;
+        }
+
+        const swipeThreshold = 40;
+        const offset = dragOffsetX;
+        dragStartX = null;
+        dragOffsetX = 0;
+        carousel.releasePointerCapture?.(event.pointerId);
+
+        if (offset <= -swipeThreshold) {
+          showSlide(activeIndex + 1, 1);
+        } else if (offset >= swipeThreshold) {
+          showSlide(activeIndex - 1, -1);
+        } else {
+          moveTrack(currentTrackIndex);
+        }
+
+        startAutoplay();
+      }
+
+      carousel.addEventListener('pointerup', finishDrag);
+      carousel.addEventListener('pointercancel', finishDrag);
+      track.addEventListener('transitionend', () => {
+        if (currentTrackIndex === 0) {
+          currentTrackIndex = slides.length;
+          moveTrack(currentTrackIndex, false);
+        } else if (currentTrackIndex === slides.length + 1) {
+          currentTrackIndex = 1;
+          moveTrack(currentTrackIndex, false);
+        }
+      });
+
+      updateActiveSlide();
+      moveTrack(currentTrackIndex, false);
       startAutoplay();
     });
   }
