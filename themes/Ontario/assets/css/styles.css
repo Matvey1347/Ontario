@@ -2600,14 +2600,18 @@ textarea.is-invalid,
     line-height: 1.45;
   }
 
-  /* Telegram for iOS draws its address controls over the WebView instead of
-     reserving layout space. Keep both the notice and sticky nav reachable. */
+  /* Telegram for iOS changes its visual viewport while scrolling. A sticky
+     header is therefore unstable there; keep the header in normal flow. */
+  html.is-ios-webkit .top-notice,
   html.is-telegram-webview .top-notice {
-    padding-top: calc(8px + max(env(safe-area-inset-top, 0px), 64px));
+    display: none;
   }
 
+  html.is-ios-webkit .site-header,
   html.is-telegram-webview .site-header {
-    top: max(env(safe-area-inset-top, 0px), 72px);
+    position: relative;
+    top: auto;
+    padding-top: 0;
   }
 
   .nav {

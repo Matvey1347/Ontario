@@ -18,12 +18,18 @@ if (! defined('ABSPATH')) {
     // Telegram's in-app iOS browser overlays its address controls over the
     // layout viewport. Mark it before the page renders so mobile CSS can keep
     // the sticky navigation below those controls.
-    if (
+    const isTelegramWebView =
       /(?:Telegram|TgWebView)/i.test(navigator.userAgent)
       || typeof window.TelegramWebviewProxy !== 'undefined'
-      || (window.Telegram && typeof window.Telegram.WebApp !== 'undefined')
-    ) {
+      || (window.Telegram && typeof window.Telegram.WebApp !== 'undefined');
+    const isIOS = /iP(?:ad|hone|od)/.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    if (isTelegramWebView) {
       document.documentElement.classList.add('is-telegram-webview');
+    }
+    if (isIOS) {
+      document.documentElement.classList.add('is-ios-webkit');
     }
   </script>
   <meta name="google" content="notranslate" />

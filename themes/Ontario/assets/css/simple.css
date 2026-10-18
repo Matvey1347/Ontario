@@ -25,6 +25,15 @@
   border-bottom: 1px solid rgba(132, 179, 212, 0.12);
 }
 
+@media (max-width: 720px) {
+  html.is-ios-webkit .ontario-display-simple .site-header,
+  html.is-telegram-webview .ontario-display-simple .site-header {
+    position: relative;
+    top: auto;
+    padding-top: 0;
+  }
+}
+
 .ontario-display-simple .nav {
   min-height: 82px;
 }
