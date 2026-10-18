@@ -721,6 +721,7 @@ add_action('template_redirect', static function (): void {
         $patterns = [
             '#<script\\b(?=[^>]*\\bsrc=["\']https?://[^"\']*clickcease\\.com/[^"\']*["\'])[^>]*>\\s*</script>#i',
             '#<script\\b(?=[^>]*\\bsrc=["\']https?://[^"\']*/i/[^"\']+\\.js[^"\']*["\'])(?=[^>]*\\bclass=["\'][^"\']*\\bct_clicktrue\\b[^"\']*["\'])[^>]*>\\s*</script>#i',
+            '#<script\\b(?=[^>]*\\bsrc=["\']https?://crm\\.zoho\\.eu/crm/javascript/zcga\\.js[^"\']*["\'])[^>]*>\\s*</script>#i',
         ];
 
         $deferred = false;

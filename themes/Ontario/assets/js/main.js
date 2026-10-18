@@ -376,26 +376,10 @@
     const openButtons = document.querySelectorAll('[data-modal-open]');
     const closeButtons = modal.querySelectorAll('[data-modal-close]');
     const firstField = modal.querySelector('input, textarea, button');
-    const leadForms = [...document.querySelectorAll('#caseForm, [data-quick-form]')]
-      .filter((formElement) => !modal.contains(formElement));
     let lastFocusedElement = null;
-    let autoOpenCancelled = false;
-    let autoOpenTimer = null;
-
-    function cancelAutoOpen() {
-      autoOpenCancelled = true;
-
-      if (autoOpenTimer !== null) {
-        window.clearTimeout(autoOpenTimer);
-        autoOpenTimer = null;
-      }
-    }
 
     function openModal(event) {
       event?.preventDefault();
-      if (event) {
-        cancelAutoOpen();
-      }
 
       if (submissionState.quickSubmitted) {
         showSuccessModal();
@@ -421,26 +405,6 @@
     openButtons.forEach((button) => {
       button.addEventListener('click', openModal);
     });
-
-    leadForms.forEach((formElement) => {
-      formElement.addEventListener('pointerdown', cancelAutoOpen);
-      formElement.addEventListener('focusin', cancelAutoOpen);
-      formElement.addEventListener('input', cancelAutoOpen);
-      formElement.addEventListener('change', cancelAutoOpen);
-    });
-
-    autoOpenTimer = window.setTimeout(() => {
-      autoOpenTimer = null;
-      const tryOpen = () => {
-        if (autoOpenCancelled || submissionState.quickSubmitted || modal.classList.contains('is-open')) return;
-        if (document.querySelector('.modal.is-open')) {
-          window.setTimeout(tryOpen, 500);
-          return;
-        }
-        openModal();
-      };
-      tryOpen();
-    }, 5000);
 
     closeButtons.forEach((button) => {
       button.addEventListener('click', closeModal);
@@ -563,24 +527,10 @@
       }
     });
 
-    // Keep the first viewport stable while it is being painted. If the
-    // visitor starts another form or opens a contact modal, never interrupt
-    // that action with the automatic notice.
-    let welcomeTimer = window.setTimeout(() => {
-      welcomeTimer = null;
-      openModal(welcomeModal);
-    }, 5000);
-    const cancelAutomaticWelcome = () => {
-      if (welcomeTimer === null) return;
-      window.clearTimeout(welcomeTimer);
-      welcomeTimer = null;
-    };
-
-    document.querySelectorAll('#caseForm, [data-quick-form], [data-modal-open]').forEach((element) => {
-      element.addEventListener('pointerdown', cancelAutomaticWelcome, { once: true });
-      element.addEventListener('focusin', cancelAutomaticWelcome, { once: true });
-      element.addEventListener('input', cancelAutomaticWelcome, { once: true });
-    });
+    // Do not open a full-screen dialog automatically. It disrupts people who
+    // are reading or completing a form and makes the initial viewport change
+    // after it has rendered. The eligibility notice remains visible above the
+    // header, while every contact form remains available on demand.
   }
 
   function initCustomSelects() {
