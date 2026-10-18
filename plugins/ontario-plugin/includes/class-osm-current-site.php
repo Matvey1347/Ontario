@@ -21,7 +21,6 @@ final class OSM_Current_Site
         add_filter('pre_get_document_title', [$this, 'filter_document_title']);
         add_filter('the_content', [$this, 'filter_content_tokens'], 20);
         add_action('send_headers', [$this, 'disable_dynamic_headline_cache']);
-        add_action('template_redirect', [$this, 'start_frontend_output_buffer'], 0);
         add_action('wp_head', [$this, 'render_head_assets'], 1);
         add_action('wp_body_open', [$this, 'render_body_assets'], 1);
     }
@@ -319,11 +318,26 @@ final class OSM_Current_Site
   };
 
   const schedule = () => {
-    if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(loadDeferredTracking, { timeout: 3500 });
-      return;
-    }
-    window.setTimeout(loadDeferredTracking, 1200);
+    let loaded = false;
+    const loadNow = () => {
+      if (loaded) return;
+      loaded = true;
+      loadDeferredTracking();
+    };
+    const interactionEvents = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
+    const removeInteractionListeners = () => {
+      interactionEvents.forEach((eventName) => window.removeEventListener(eventName, loadOnInteraction));
+    };
+    const loadOnInteraction = () => {
+      removeInteractionListeners();
+      loadNow();
+    };
+
+    interactionEvents.forEach((eventName) => window.addEventListener(eventName, loadOnInteraction, { once: true, passive: true }));
+    window.setTimeout(() => {
+      removeInteractionListeners();
+      loadNow();
+    }, 5000);
   };
 
   if (document.readyState === 'complete') {
@@ -340,39 +354,6 @@ HTML;
         }
 
         return $code . $loader;
-    }
-
-    /**
-     * Some installed vendor plugins print their scripts directly during
-     * wp_head, so they cannot be intercepted through the site's tracking
-     * fields. Buffer only public HTML and apply the same safe deferral to
-     * those tags after every plugin has rendered its output.
-     */
-    public function start_frontend_output_buffer(): void
-    {
-        if (is_admin() || wp_doing_ajax() || is_feed() || is_robots()) {
-            return;
-        }
-
-        ob_start([$this, 'optimize_frontend_html']);
-    }
-
-    public function optimize_frontend_html(string $html): string
-    {
-        if (! str_contains($html, '<html')) {
-            return $html;
-        }
-
-        // The Ontario templates do not use Gutenberg block styles. Removing
-        // these core-generated defaults saves parsing work in the critical
-        // document without changing the page appearance.
-        $html = preg_replace(
-            '#<style id=["\'](?:global-styles-inline-css|wp-img-auto-sizes-contain-inline-css)["\'][^>]*>.*?</style>#is',
-            '',
-            $html
-        ) ?? $html;
-
-        return $this->defer_non_critical_tracking($html);
     }
 
     public function filter_document_title(string $title): string
