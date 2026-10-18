@@ -199,6 +199,7 @@ final class OSM_Current_Site
     {
         $replacements = [
             '{company_name}' => $this->get_brand_name(),
+            '{brand_name}' => $this->get_brand_name(),
             '{domain}' => $this->get_domain(),
             '{email}' => $this->get_field('public_email'),
             '{phone}' => $this->get_field('phone_number'),
@@ -358,6 +359,10 @@ HTML;
 
     public function filter_document_title(string $title): string
     {
+        if (function_exists('ontario_is_newsite_page') && ontario_is_newsite_page()) {
+            return $this->translations_title('newsite.meta_title', 'Online Scam Case Assessment | {brand_name}');
+        }
+
         $site_title = $this->get_field('meta_title', get_bloginfo('name'));
 
         if (is_front_page() || is_home()) {
@@ -376,6 +381,13 @@ HTML;
         }
 
         return $site_title;
+    }
+
+    private function translations_title(string $key, string $fallback): string
+    {
+        $translations = OSM_Plugin::instance()->translations();
+
+        return $translations->translate($key, ['brand_name' => $this->get_brand_name()], $fallback);
     }
 
     public function disable_dynamic_headline_cache(): void

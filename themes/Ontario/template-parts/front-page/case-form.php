@@ -8,6 +8,12 @@ if (! defined('ABSPATH')) {
 <?php $phone_selector_enabled = ontario_phone_country_selector_enabled(); ?>
 <form class="form-card" id="caseForm" novalidate>
   <input type="hidden" name="formType" value="caseForm" />
+  <input type="hidden" name="zc_gad" value="" />
+  <input type="hidden" name="utm_source" value="" />
+  <input type="hidden" name="utm_medium" value="" />
+  <input type="hidden" name="utm_campaign" value="" />
+  <input type="hidden" name="utm_term" value="" />
+  <input type="hidden" name="utm_content" value="" />
   <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" />
   <div class="form-top">
     <div>

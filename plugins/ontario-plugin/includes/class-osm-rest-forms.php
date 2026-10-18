@@ -210,6 +210,18 @@ final class OSM_Rest_Forms
             }
         }
 
+        foreach (['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as $field) {
+            if (! isset($params[$field]) || ! is_scalar($params[$field])) {
+                continue;
+            }
+
+            $value = sanitize_text_field((string) $params[$field]);
+
+            if ($value !== '') {
+                $payload[$field] = $value;
+            }
+        }
+
         return $payload;
     }
 

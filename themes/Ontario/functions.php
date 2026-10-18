@@ -506,6 +506,23 @@ add_action('template_redirect', static function (): void {
         return;
     }
 
+    // The campaign page is a virtual route, so WordPress's normal trailing
+    // slash canonicalization does not run for it. Keep its only public URL
+    // canonical without affecting any other route or query-string attribution.
+    $request_path_with_slash = (string) wp_parse_url($request_uri, PHP_URL_PATH);
+
+    if ($request_path === 'newsite' && $request_path_with_slash !== '' && ! str_ends_with($request_path_with_slash, '/')) {
+        $query = (string) wp_parse_url($request_uri, PHP_URL_QUERY);
+        $canonical_url = home_url('/newsite/');
+
+        if ($query !== '') {
+            $canonical_url .= '?' . $query;
+        }
+
+        wp_safe_redirect($canonical_url, 301);
+        exit;
+    }
+
     global $wp_query;
 
     if ($wp_query instanceof WP_Query) {
@@ -538,7 +555,16 @@ add_action('wp_head', static function (): void {
         return;
     }
 
-    echo '<link rel="canonical" href="' . esc_url(home_url('/newsite/')) . '" />' . "\n";
+    $brand_name = ontario_site_brand_name();
+    $title = ontario_t('newsite.meta_title', ['brand_name' => $brand_name], 'Online Scam Case Assessment | {brand_name}');
+    $description = ontario_t('newsite.meta_description', ['brand_name' => $brand_name], 'Request a professional assessment for an online scam or cybercrime case.');
+    $canonical_url = home_url('/newsite/');
+
+    echo '<link rel="canonical" href="' . esc_url($canonical_url) . '" />' . "\n";
+    echo '<meta property="og:type" content="website" />' . "\n";
+    echo '<meta property="og:title" content="' . esc_attr($title) . '" />' . "\n";
+    echo '<meta property="og:description" content="' . esc_attr($description) . '" />' . "\n";
+    echo '<meta property="og:url" content="' . esc_url($canonical_url) . '" />' . "\n";
 }, 1);
 
 add_action('wp_enqueue_scripts', static function (): void {

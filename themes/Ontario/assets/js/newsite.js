@@ -11,6 +11,23 @@
 
   const t = (key, fallback) => (typeof i18n[key] === 'string' && i18n[key]) || fallback;
 
+  function preserveAttribution() {
+    if (!form) return;
+    const fields = ['gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+    const params = new URLSearchParams(window.location.search);
+    fields.forEach((key) => {
+      const value = params.get(key);
+      const storageKey = `ontarioAttribution:${key}`;
+      let preserved = value || '';
+      try {
+        if (value) window.sessionStorage.setItem(storageKey, value);
+        if (!preserved) preserved = window.sessionStorage.getItem(storageKey) || '';
+      } catch (error) {}
+      const field = form.querySelector(`[name="${key === 'gclid' ? 'zc_gad' : key}"]`);
+      if (field && preserved) field.value = preserved;
+    });
+  }
+
   function initMenu() {
     const nav = document.getElementById('nav');
     const button = document.getElementById('menuBtn');
@@ -56,6 +73,7 @@
     container.classList.remove('has-error');
     field.closest('.phone-input')?.classList.remove('has-error');
     field.classList.remove('is-invalid');
+    field.removeAttribute('aria-invalid');
     container.querySelector('.field-error')?.remove();
   }
   function showError(field, message) {
@@ -64,8 +82,9 @@
     container.classList.add('has-error');
     field.closest('.phone-input')?.classList.add('has-error');
     field.classList.add('is-invalid');
+    field.setAttribute('aria-invalid', 'true');
     let error = container.querySelector('.field-error');
-    if (!error) { error = document.createElement('div'); error.className = 'field-error'; container.append(error); }
+    if (!error) { error = document.createElement('div'); error.className = 'field-error'; error.setAttribute('role', 'alert'); container.append(error); }
     error.textContent = message;
   }
   function fieldError(field) {
@@ -88,7 +107,7 @@
   }
   function setStatus(message) {
     let status = form.querySelector('.form-status');
-    if (!status) { status = document.createElement('div'); status.className = 'form-status'; form.append(status); }
+    if (!status) { status = document.createElement('div'); status.className = 'form-status'; status.setAttribute('role', 'status'); form.append(status); }
     status.textContent = message;
   }
   function update() {
@@ -136,5 +155,5 @@
     submit();
   });
   previous?.addEventListener('click', () => { if (step) { step -= 1; update(); } });
-  initMenu(); initLanguageSwitcher(); update();
+  preserveAttribution(); initMenu(); initLanguageSwitcher(); update();
 })();
