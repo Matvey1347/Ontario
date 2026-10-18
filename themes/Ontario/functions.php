@@ -243,15 +243,24 @@ if (! function_exists('ontario_site_display_choice_full_label')) {
 if (! function_exists('ontario_simple_image_uri')) {
     function ontario_simple_image_uri(string $name): string
     {
-        $theme_uri = get_template_directory_uri();
+        $theme_uri = ontario_theme_asset_uri();
         $map = [
-            'hero' => '/assets/images/old-1.png',
-            'scanner' => '/assets/images/old-2.png',
-            'report' => '/assets/images/old-1.png',
-            'process' => '/assets/images/old-3.png',
+            'hero' => '/assets/images/old-1.webp',
+            'scanner' => '/assets/images/old-2.webp',
+            'report' => '/assets/images/old-1.webp',
+            'process' => '/assets/images/old-3.webp',
         ];
 
         return isset($map[$name]) ? $theme_uri . $map[$name] : '';
+    }
+}
+
+if (! function_exists('ontario_theme_asset_uri')) {
+    function ontario_theme_asset_uri(string $path = ''): string
+    {
+        $base = home_url('/wp-content/themes/' . get_template());
+
+        return $path === '' ? $base : $base . '/' . ltrim($path, '/');
     }
 }
 
@@ -489,7 +498,7 @@ add_action('template_redirect', static function (): void {
 add_action('wp_enqueue_scripts', static function (): void {
     $theme = wp_get_theme();
     $version = $theme->get('Version') ?: '1.0.0';
-    $theme_uri = get_template_directory_uri();
+    $theme_uri = ontario_theme_asset_uri();
     $theme_dir = get_template_directory();
     $is_front_page = is_front_page();
     $current_site = function_exists('ontario_current_site') ? ontario_current_site() : [];
@@ -507,25 +516,22 @@ add_action('wp_enqueue_scripts', static function (): void {
     }
 
     if ($is_front_page) {
-        wp_register_style('ontario-theme', false, [], $version);
-        wp_enqueue_style('ontario-theme');
-
         $theme_css_path = $theme_dir . '/assets/css/styles.css';
-        if (file_exists($theme_css_path)) {
-            $theme_css = file_get_contents($theme_css_path);
-            if (is_string($theme_css) && $theme_css !== '') {
-                wp_add_inline_style('ontario-theme', $theme_css);
-            }
-        }
+        wp_enqueue_style(
+            'ontario-theme',
+            $theme_uri . '/assets/css/styles.css',
+            [],
+            file_exists($theme_css_path) ? (string) filemtime($theme_css_path) : $version
+        );
 
         if ($site_display_mode !== 'full') {
             $simple_css_path = $theme_dir . '/assets/css/simple.css';
-            if (file_exists($simple_css_path)) {
-                $simple_css = file_get_contents($simple_css_path);
-                if (is_string($simple_css) && $simple_css !== '') {
-                    wp_add_inline_style('ontario-theme', $simple_css);
-                }
-            }
+            wp_enqueue_style(
+                'ontario-theme-simple',
+                $theme_uri . '/assets/css/simple.css',
+                ['ontario-theme'],
+                file_exists($simple_css_path) ? (string) filemtime($simple_css_path) : $version
+            );
         }
     } else {
         wp_enqueue_style(
@@ -673,6 +679,11 @@ add_action('wp_enqueue_scripts', static function (): void {
         return;
     }
 
+    wp_dequeue_style('wp-block-library');
+    wp_dequeue_style('wp-block-library-theme');
+    wp_dequeue_style('global-styles');
+    wp_dequeue_style('classic-theme-styles');
+
     wp_dequeue_script('clickceaseFrontEnd');
     wp_deregister_script('clickceaseFrontEnd');
 
@@ -710,6 +721,10 @@ add_action('init', static function (): void {
     remove_action('admin_print_scripts', 'print_emoji_detection_script');
     remove_action('wp_print_styles', 'print_emoji_styles');
     remove_action('admin_print_styles', 'print_emoji_styles');
+    remove_action('wp_head', 'rsd_link');
+    remove_action('wp_head', 'wlwmanifest_link');
+    remove_action('wp_head', 'wp_oembed_add_discovery_links');
+    remove_action('wp_head', 'rest_output_link_wp_head');
 });
 
 add_filter('emoji_svg_url', '__return_false');

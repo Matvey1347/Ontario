@@ -145,7 +145,13 @@ final class OSM_Clickcease
         $whitelist = $this->normalize_whitelist((string) ($site['clickcease_whitelist'] ?? ''));
 
         if ((string) ($site['clickcease_install_click_fraud'] ?? '0') === '1') {
-            wp_register_script('osm-clickcease-frontend', OSM_PLUGIN_URL . 'assets/js/osm-clickcease-frontend.js', [], OSM_PLUGIN_VERSION, true);
+            wp_register_script(
+                'osm-clickcease-frontend',
+                home_url('/wp-content/plugins/ontario-plugin/assets/js/osm-clickcease-frontend.js'),
+                [],
+                OSM_PLUGIN_VERSION,
+                true
+            );
             wp_localize_script('osm-clickcease-frontend', 'osmClickcease', [
                 'nonce' => wp_create_nonce('cc_ajax_nonce'),
                 'ajaxUrl' => admin_url('admin-ajax.php'),

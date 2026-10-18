@@ -253,7 +253,9 @@ $dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynami
 
       <div class="process-image-frame" aria-label="<?php echo esc_attr(ontario_t('process.visual_aria', [], 'Investigation process illustration')); ?>">
         <img
-          src="<?php echo esc_url($theme_uri . '/assets/images/process-pipeline.png'); ?>"
+          src="<?php echo esc_url($theme_uri . '/assets/images/process-pipeline.webp'); ?>"
+          srcset="<?php echo esc_attr($theme_uri . '/assets/images/process-pipeline-480.webp'); ?> 480w, <?php echo esc_attr($theme_uri . '/assets/images/process-pipeline-768.webp'); ?> 768w, <?php echo esc_attr($theme_uri . '/assets/images/process-pipeline.webp'); ?> 1122w"
+          sizes="(max-width: 720px) calc(100vw - 40px), 50vw"
           alt="<?php echo esc_attr(ontario_t('process.visual_alt', [], 'Five-step investigation pipeline from case intake to next steps')); ?>"
           width="1122"
           height="1402"

@@ -141,12 +141,12 @@ final class OSM_Current_Site
             $url = wp_get_attachment_image_url($logo_id, 'full');
 
             if (is_string($url) && $url !== '') {
-                return $url;
+                return $this->use_current_origin_for_local_asset($url);
             }
         }
 
         if (! empty($site['logo_url'])) {
-            return (string) $site['logo_url'];
+            return $this->use_current_origin_for_local_asset((string) $site['logo_url']);
         }
 
         $default_site = $this->sites->get_default_site();
@@ -156,17 +156,17 @@ final class OSM_Current_Site
             $url = wp_get_attachment_image_url($default_logo_id, 'full');
 
             if (is_string($url) && $url !== '') {
-                return $url;
+                return $this->use_current_origin_for_local_asset($url);
             }
         }
 
         if (! empty($default_site['logo_url'])) {
-            return (string) $default_site['logo_url'];
+            return $this->use_current_origin_for_local_asset((string) $default_site['logo_url']);
         }
 
         $defaults = $this->defaults();
 
-        return (string) ($defaults['logo_url'] ?? '');
+        return $this->use_current_origin_for_local_asset((string) ($defaults['logo_url'] ?? ''));
     }
 
     public function get_brand_name(): string
@@ -230,6 +230,20 @@ final class OSM_Current_Site
     public function render_tracking_code(string $location = 'head'): string
     {
         $code = $this->get_tracking_code($location);
+
+        if (
+            $location === 'head' &&
+            (string) ($this->get_site()['clickcease_install_click_fraud'] ?? '0') === '1'
+        ) {
+            $code = preg_replace(
+                [
+                    '#<script\\b(?=[^>]*\\bsrc=["\'][^"\']*clickcease\\.com[^"\']*["\'])[^>]*>\\s*</script>#i',
+                    '#<script\\b(?=[^>]*\\bclass=["\'][^"\']*\\bct_clicktrue\\b[^"\']*["\'])[^>]*>.*?</script>#is',
+                ],
+                '',
+                $code
+            ) ?? $code;
+        }
 
         return $code !== '' ? $code . "\n" : '';
     }
@@ -391,12 +405,12 @@ final class OSM_Current_Site
             $favicon = wp_get_attachment_image_url($favicon_id, 'full');
 
             if (is_string($favicon) && $favicon !== '') {
-                return $favicon;
+                return $this->use_current_origin_for_local_asset($favicon);
             }
         }
 
         if (! empty($site['favicon_url'])) {
-            return (string) $site['favicon_url'];
+            return $this->use_current_origin_for_local_asset((string) $site['favicon_url']);
         }
 
         $default_site = $this->sites->get_default_site();
@@ -406,17 +420,40 @@ final class OSM_Current_Site
             $favicon = wp_get_attachment_image_url($default_favicon_id, 'full');
 
             if (is_string($favicon) && $favicon !== '') {
-                return $favicon;
+                return $this->use_current_origin_for_local_asset($favicon);
             }
         }
 
         if (! empty($default_site['favicon_url'])) {
-            return (string) $default_site['favicon_url'];
+            return $this->use_current_origin_for_local_asset((string) $default_site['favicon_url']);
         }
 
         $defaults = $this->defaults();
 
-        return (string) ($defaults['favicon_url'] ?? '');
+        return $this->use_current_origin_for_local_asset((string) ($defaults['favicon_url'] ?? ''));
+    }
+
+    private function use_current_origin_for_local_asset(string $url): string
+    {
+        $parts = wp_parse_url($url);
+
+        if (! is_array($parts) || empty($parts['path']) || ! str_starts_with((string) $parts['path'], '/wp-content/')) {
+            return $url;
+        }
+
+        $host = $this->get_request_host_raw();
+
+        if ($host === '') {
+            return $url;
+        }
+
+        $local_url = $this->get_request_scheme() . '://' . $host . $parts['path'];
+
+        if (! empty($parts['query'])) {
+            $local_url .= '?' . $parts['query'];
+        }
+
+        return $local_url;
     }
 
     private function get_request_host_raw(): string

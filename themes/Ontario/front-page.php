@@ -5,7 +5,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-$theme_uri = get_template_directory_uri();
+$theme_uri = function_exists('ontario_theme_asset_uri') ? ontario_theme_asset_uri() : get_template_directory_uri();
 $brand_name = ontario_site_brand_name();
 $phone_number = ontario_site_field('phone_number');
 $working_hours = ontario_site_field('working_hours');
