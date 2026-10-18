@@ -6,11 +6,11 @@ if (! defined('ABSPATH')) {
 }
 
 $theme_uri = function_exists('ontario_theme_asset_uri') ? ontario_theme_asset_uri() : get_template_directory_uri();
-$brand_name = ontario_site_brand_name();
-$phone_number = ontario_site_field('phone_number');
-$working_hours = ontario_site_field('working_hours');
-$address = ontario_site_field('address');
-$display_mode = ontario_effective_display_mode();
+$brand_name = function_exists('ontario_site_brand_name') ? ontario_site_brand_name() : get_bloginfo('name');
+$phone_number = function_exists('ontario_site_field') ? ontario_site_field('phone_number') : '';
+$working_hours = function_exists('ontario_site_field') ? ontario_site_field('working_hours') : '';
+$address = function_exists('ontario_site_field') ? ontario_site_field('address') : '';
+$display_mode = function_exists('ontario_effective_display_mode') ? ontario_effective_display_mode() : 'full';
 
 get_header();
 
