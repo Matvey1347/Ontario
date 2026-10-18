@@ -513,7 +513,14 @@ add_action('template_redirect', static function (): void {
     }
 
     status_header(200);
-    nocache_headers();
+
+    // The thank-you page is intentionally private, but the public campaign
+    // landing page must remain eligible for the host/CDN cache. Its lead form
+    // sends attribution and GCLID directly to the REST endpoint, so caching
+    // this document does not remove attribution from a submitted lead.
+    if ($request_path === 'success') {
+        nocache_headers();
+    }
     include get_template_directory() . ($request_path === 'newsite' ? '/page-newsite.php' : '/page-success.php');
     exit;
 });
@@ -553,13 +560,21 @@ add_action('wp_enqueue_scripts', static function (): void {
         ], $rest_endpoint);
     }
 
-    if ($is_front_page) {
+    if ($is_front_page || $is_newsite_page) {
         $theme_css_path = $theme_dir . '/assets/css/styles.css';
         wp_register_style('ontario-theme', false, [], $version);
         wp_enqueue_style('ontario-theme');
 
         if (is_readable($theme_css_path)) {
             wp_add_inline_style('ontario-theme', (string) file_get_contents($theme_css_path));
+        }
+
+        if ($is_newsite_page) {
+            $newsite_css_path = $theme_dir . '/assets/css/newsite.css';
+
+            if (is_readable($newsite_css_path)) {
+                wp_add_inline_style('ontario-theme', (string) file_get_contents($newsite_css_path));
+            }
         }
 
         if ($site_display_mode !== 'full') {
@@ -589,20 +604,14 @@ add_action('wp_enqueue_scripts', static function (): void {
         }
     }
 
-    if ($is_newsite_page) {
-        wp_enqueue_style(
-            'ontario-newsite',
-            $theme_uri . '/assets/css/newsite.css',
-            ['ontario-theme'],
-            file_exists($theme_dir . '/assets/css/newsite.css') ? (string) filemtime($theme_dir . '/assets/css/newsite.css') : $version
-        );
-    }
+    $script_handle = $is_newsite_page ? 'ontario-newsite' : 'ontario-theme';
+    $script_file = $is_newsite_page ? '/assets/js/newsite.js' : '/assets/js/main.js';
 
     wp_enqueue_script(
-        'ontario-theme',
-        $theme_uri . '/assets/js/main.js',
+        $script_handle,
+        $theme_uri . $script_file,
         [],
-        file_exists($theme_dir . '/assets/js/main.js') ? (string) filemtime($theme_dir . '/assets/js/main.js') : $version,
+        file_exists($theme_dir . $script_file) ? (string) filemtime($theme_dir . $script_file) : $version,
         true
     );
 
@@ -621,7 +630,7 @@ add_action('wp_enqueue_scripts', static function (): void {
     }
 
     if (function_exists('wp_script_add_data')) {
-        wp_script_add_data('ontario-theme', 'defer', true);
+        wp_script_add_data($script_handle, 'defer', true);
     }
 
     if ($site_display_mode === 'choice') {
@@ -667,7 +676,7 @@ JS;
         wp_add_inline_script('ontario-display-mode', $early_display_script, 'before');
     }
 
-    wp_localize_script('ontario-theme', 'ontarioSiteManager', [
+    wp_localize_script($script_handle, 'ontarioSiteManager', [
         'restEndpoint' => esc_url_raw($rest_endpoint),
         'siteId' => (int) ($current_site['id'] ?? 0),
         'effectiveDisplayMode' => $effective_display_mode,
@@ -714,7 +723,7 @@ JS;
 });
 
 add_action('wp_enqueue_scripts', static function (): void {
-    if (is_admin() || ! is_front_page()) {
+    if (is_admin() || (! is_front_page() && ! ontario_is_newsite_page())) {
         return;
     }
 
