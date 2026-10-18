@@ -21,6 +21,7 @@ final class OSM_Current_Site
         add_filter('pre_get_document_title', [$this, 'filter_document_title']);
         add_filter('the_content', [$this, 'filter_content_tokens'], 20);
         add_action('send_headers', [$this, 'disable_dynamic_headline_cache']);
+        add_action('template_redirect', [$this, 'start_frontend_output_buffer'], 0);
         add_action('wp_head', [$this, 'render_head_assets'], 1);
         add_action('wp_body_open', [$this, 'render_body_assets'], 1);
     }
@@ -268,10 +269,11 @@ final class OSM_Current_Site
             return '';
         }
 
-        $vendor_pattern = '(?:googletagmanager\.com|googleadservices\.com|doubleclick\.net|travenicora\.com)';
+        $has_deferred_loader = str_contains($code, '__ontarioDeferredTrackingScheduled');
+        $vendor_pattern = '(?:googletagmanager\.com|googleadservices\.com|doubleclick\.net|travenicora\.com|clickcease\.com|crm\.zoho\.eu)';
 
         $code = preg_replace_callback(
-            '#<script\b(?=[^>]*\bsrc=["\'][^"\']*' . $vendor_pattern . '[^"\']*["\'])[^>]*>\s*</script>#i',
+            '#<script\b(?![^>]*\bdata-ontario-deferred-tracking\b)(?=[^>]*\bsrc=["\'][^"\']*' . $vendor_pattern . '[^"\']*["\'])[^>]*>\s*</script>#i',
             static function (array $match): string {
                 $tag = $match[0];
                 $tag = preg_replace('#\s+async(?:=["\'][^"\']*["\'])?#i', '', $tag) ?? $tag;
@@ -292,13 +294,16 @@ final class OSM_Current_Site
             $code
         ) ?? $code;
 
-        if (! str_contains($code, 'data-ontario-deferred-tracking')) {
+        if (! str_contains($code, 'data-ontario-deferred-tracking') || $has_deferred_loader) {
             return $code;
         }
 
-        return $code . <<<'HTML'
+        $loader = <<<'HTML'
 <script>
 (() => {
+  if (window.__ontarioDeferredTrackingScheduled) return;
+  window.__ontarioDeferredTrackingScheduled = true;
+
   const loadDeferredTracking = () => {
     document.querySelectorAll('script[data-ontario-deferred-tracking]').forEach((source) => {
       const script = document.createElement('script');
@@ -329,6 +334,45 @@ final class OSM_Current_Site
 })();
 </script>
 HTML;
+
+        if (stripos($code, '</head>') !== false) {
+            return preg_replace('#</head>#i', $loader . '</head>', $code, 1) ?? ($code . $loader);
+        }
+
+        return $code . $loader;
+    }
+
+    /**
+     * Some installed vendor plugins print their scripts directly during
+     * wp_head, so they cannot be intercepted through the site's tracking
+     * fields. Buffer only public HTML and apply the same safe deferral to
+     * those tags after every plugin has rendered its output.
+     */
+    public function start_frontend_output_buffer(): void
+    {
+        if (is_admin() || wp_doing_ajax() || is_feed() || is_robots()) {
+            return;
+        }
+
+        ob_start([$this, 'optimize_frontend_html']);
+    }
+
+    public function optimize_frontend_html(string $html): string
+    {
+        if (! str_contains($html, '<html')) {
+            return $html;
+        }
+
+        // The Ontario templates do not use Gutenberg block styles. Removing
+        // these core-generated defaults saves parsing work in the critical
+        // document without changing the page appearance.
+        $html = preg_replace(
+            '#<style id=["\'](?:global-styles-inline-css|wp-img-auto-sizes-contain-inline-css)["\'][^>]*>.*?</style>#is',
+            '',
+            $html
+        ) ?? $html;
+
+        return $this->defer_non_critical_tracking($html);
     }
 
     public function filter_document_title(string $title): string

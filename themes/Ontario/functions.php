@@ -505,8 +505,6 @@ add_action('wp_enqueue_scripts', static function (): void {
     $site_display_mode = ontario_site_display_mode();
     $effective_display_mode = ontario_effective_display_mode();
     $rest_endpoint = home_url('/wp-json/ontario-site-manager/v1/lead');
-    $phone_selector_enabled = ontario_phone_country_selector_enabled();
-    $enabled_languages = ontario_enabled_languages();
 
     if (! empty($current_site['is_preview']) && ! empty($current_site['id'])) {
         $rest_endpoint = add_query_arg([
@@ -622,19 +620,9 @@ JS;
 
     wp_localize_script('ontario-theme', 'ontarioSiteManager', [
         'restEndpoint' => esc_url_raw($rest_endpoint),
-        'successUrl' => esc_url_raw(ontario_success_page_url()),
-        'brandName' => function_exists('ontario_site_brand_name') ? ontario_site_brand_name() : get_bloginfo('name'),
         'siteId' => (int) ($current_site['id'] ?? 0),
-        'siteHost' => (string) ($current_site['resolved_host'] ?? ''),
-        'isPreview' => ! empty($current_site['is_preview']),
-        'siteDisplayMode' => $site_display_mode,
         'effectiveDisplayMode' => $effective_display_mode,
         'showWelcomeModal' => $effective_display_mode === 'full',
-        'showDisplayChoiceModal' => ontario_should_show_display_choice_modal(),
-        'currentLanguage' => ontario_current_language(),
-        'enabledLanguages' => $enabled_languages,
-        'phoneCountrySelectorEnabled' => $phone_selector_enabled,
-        'phoneCountries' => ontario_phone_countries(),
         'i18n' => [
             'required' => ontario_t('validation.required', [], 'This field is required.'),
             'invalidEmail' => ontario_t('validation.invalid_email', [], 'Enter a valid email address.'),
