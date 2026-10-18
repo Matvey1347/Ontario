@@ -529,6 +529,14 @@ h1 {
   line-height: 1.55;
 }
 
+.testimonial-carousel__rating {
+  margin-top: 10px;
+  color: #ffd56a;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
 .testimonial-carousel footer {
   display: flex;
   align-items: baseline;
@@ -542,6 +550,10 @@ h1 {
   font-size: 13px;
   font-style: normal;
   font-weight: 800;
+}
+
+.testimonial-carousel cite em {
+  font-style: italic;
 }
 
 .testimonial-carousel footer span {
@@ -2586,6 +2598,16 @@ textarea.is-invalid,
     padding: 8px 0;
     font-size: 11px;
     line-height: 1.45;
+  }
+
+  /* Telegram for iOS draws its address controls over the WebView instead of
+     reserving layout space. Keep both the notice and sticky nav reachable. */
+  html.is-telegram-webview .top-notice {
+    padding-top: calc(8px + max(env(safe-area-inset-top, 0px), 64px));
+  }
+
+  html.is-telegram-webview .site-header {
+    top: max(env(safe-area-inset-top, 0px), 72px);
   }
 
   .nav {

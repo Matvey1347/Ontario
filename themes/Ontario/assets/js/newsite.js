@@ -180,6 +180,7 @@
       const dots = [...carousel.querySelectorAll('[data-testimonial-dot]')];
       if (slides.length < 2) return;
       let active = 0;
+      let timer = null;
       const show = (index) => {
         active = (index + slides.length) % slides.length;
         slides.forEach((slide, slideIndex) => {
@@ -189,8 +190,28 @@
         });
         dots.forEach((dot, dotIndex) => dot.classList.toggle('is-active', dotIndex === active));
       };
-      carousel.querySelector('[data-testimonial-previous]')?.addEventListener('click', () => show(active - 1));
-      carousel.querySelector('[data-testimonial-next]')?.addEventListener('click', () => show(active + 1));
+      const stopAutoplay = () => {
+        if (timer !== null) {
+          window.clearInterval(timer);
+          timer = null;
+        }
+      };
+      const startAutoplay = () => {
+        if (timer !== null || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        timer = window.setInterval(() => show(active + 1), 3000);
+      };
+      const restartAutoplay = () => { stopAutoplay(); startAutoplay(); };
+
+      carousel.querySelector('[data-testimonial-previous]')?.addEventListener('click', () => { show(active - 1); restartAutoplay(); });
+      carousel.querySelector('[data-testimonial-next]')?.addEventListener('click', () => { show(active + 1); restartAutoplay(); });
+      carousel.addEventListener('pointerenter', stopAutoplay);
+      carousel.addEventListener('pointerleave', startAutoplay);
+      carousel.addEventListener('focusin', stopAutoplay);
+      carousel.addEventListener('focusout', () => {
+        if (!carousel.contains(document.activeElement)) startAutoplay();
+      });
+      document.addEventListener('visibilitychange', () => document.hidden ? stopAutoplay() : startAutoplay());
+      startAutoplay();
     });
   }
 

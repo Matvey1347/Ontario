@@ -98,7 +98,6 @@
 
       let activeIndex = slides.findIndex((slide) => slide.classList.contains('is-active'));
       let timer = null;
-      let autoplayStarted = false;
       let currentTrackIndex = 1;
       let dragStartX = null;
       let dragOffsetX = 0;
@@ -161,19 +160,8 @@
           return;
         }
 
-        const begin = () => {
-          autoplayStarted = true;
-          timer = window.setInterval(() => showSlide(activeIndex + 1, 1), 1000);
-        };
-
-        // Avoid changing the initial viewport while it is still being painted.
-        // Once started, the carousel retains its one-second cadence.
-        if (autoplayStarted || startImmediately) {
-          begin();
-          return;
-        }
-
-        timer = window.setTimeout(begin, 5000);
+        // The first and every subsequent change occur after three seconds.
+        timer = window.setInterval(() => showSlide(activeIndex + 1, 1), 3000);
       }
 
       function showPrevious() {

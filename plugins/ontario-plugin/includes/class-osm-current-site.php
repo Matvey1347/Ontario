@@ -612,6 +612,7 @@ HTML;
             'address' => '10-40 WEST WILMOT ST., RICHMOND HILL ON L4B 1H8',
             'working_hours' => '11AM-7PM ET',
             'meta_description' => 'Ontario Refunds helps victims of online financial fraud trace digital assets, prepare evidence-based reports, and understand practical next steps.',
+            'homepage_design' => 'classic',
             'notification_emails' => 'support@ontariorefunds.info',
             'tracking_head_open_code' => '',
             'tracking_header_code' => '',

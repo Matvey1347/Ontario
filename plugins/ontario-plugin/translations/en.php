@@ -35,6 +35,9 @@ return [
         'newsite.hero.cta' => 'Request a Case Assessment',
         'newsite.hero.secondary_cta' => 'How We Can Help',
         'newsite.hero.disclosure' => 'Independent private assistance. Recovery outcomes depend on individual circumstances.',
+        'newsite.hero.benefit_1' => 'No upfront fees',
+        'newsite.hero.benefit_2' => 'Case review before acceptance',
+        'newsite.hero.benefit_3' => 'Fee charged only after successful recovery',
         'newsite.hero.panel_aria' => 'Case assessment overview',
         'newsite.hero.panel_title' => 'Start with the facts you have',
         'newsite.hero.panel_1' => 'A clear account of what happened',
@@ -148,6 +151,8 @@ return [
         'hero.form_submit' => 'Get A Free Consultation',
 
         'testimonials.aria_label' => 'Client testimonials',
+        'testimonials.quote_open' => '“', 'testimonials.quote_close' => '”',
+        'testimonials.stars' => '⭐⭐⭐⭐⭐', 'testimonials.rating' => 'Five stars', 'testimonials.name_prefix' => '—',
         'testimonials.previous' => 'Show previous testimonial',
         'testimonials.next' => 'Show next testimonial',
         'testimonials.quote_1' => 'They tracked where my money went and gave me a clear path forward. Fast, professional, and incredibly helpful.',

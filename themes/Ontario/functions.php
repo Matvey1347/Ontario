@@ -154,6 +154,21 @@ if (! function_exists('ontario_is_newsite_page')) {
     }
 }
 
+if (! function_exists('ontario_uses_newsite_design')) {
+    function ontario_uses_newsite_design(): bool
+    {
+        if (ontario_is_newsite_page()) {
+            return true;
+        }
+
+        if (! is_front_page()) {
+            return false;
+        }
+
+        return ontario_site_field('homepage_design', '') === 'newsite';
+    }
+}
+
 if (! function_exists('ontario_site_display_mode')) {
     function ontario_site_display_mode(): string
     {
@@ -480,7 +495,7 @@ add_filter('body_class', static function (array $classes): array {
         $classes[] = 'ontario-display-choice-pending';
     }
 
-    if (ontario_is_newsite_page()) {
+    if (ontario_uses_newsite_design()) {
         $classes[] = 'ontario-newsite';
     }
 
@@ -573,7 +588,7 @@ add_action('wp_enqueue_scripts', static function (): void {
     $theme_uri = ontario_theme_asset_uri();
     $theme_dir = get_template_directory();
     $is_front_page = is_front_page();
-    $is_newsite_page = ontario_is_newsite_page();
+    $is_newsite_page = ontario_uses_newsite_design();
     $current_site = function_exists('ontario_current_site') ? ontario_current_site() : [];
     $site_display_mode = ontario_site_display_mode();
     $effective_display_mode = ontario_effective_display_mode();

@@ -12,6 +12,11 @@ $working_hours = function_exists('ontario_site_field') ? ontario_site_field('wor
 $address = function_exists('ontario_site_field') ? ontario_site_field('address') : '';
 $display_mode = function_exists('ontario_effective_display_mode') ? ontario_effective_display_mode() : 'full';
 
+if (function_exists('ontario_uses_newsite_design') && ontario_uses_newsite_design()) {
+    include get_template_directory() . '/page-newsite.php';
+    return;
+}
+
 get_header();
 
 if ($display_mode === 'simple') {

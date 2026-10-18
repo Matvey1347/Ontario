@@ -12,6 +12,187 @@ if (! defined('ABSPATH')) {
 
 const ONTARIO_BOOTSTRAP_VERSION = '1.1.0';
 
+/**
+ * A small full-page cache for public landing pages.
+ *
+ * This runs while must-use plugins are loaded, before regular plugins and
+ * their remote anti-fraud checks.  It is deliberately limited to the root
+ * landing page and anonymous visitors: previews, logged-in users, display
+ * preferences and functional query strings always use WordPress normally.
+ * Attribution parameters are not rendered server-side, so they can share the
+ * canonical cached document; the form reads them from location.search.
+ */
+const ONTARIO_PAGE_CACHE_TTL = 300;
+
+function ontario_page_cache_directory(): string
+{
+    return WP_CONTENT_DIR . '/cache/ontario-page-cache';
+}
+
+function ontario_page_cache_request_key(): string
+{
+    if (
+        PHP_SAPI === 'cli'
+        || (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET')
+        || ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'off'
+    ) {
+        return '';
+    }
+
+    $request_uri = isset($_SERVER['REQUEST_URI']) ? (string) $_SERVER['REQUEST_URI'] : '/';
+    // Use PHP's parser here: this code runs before WordPress has loaded all
+    // of its normal utility functions.
+    $path = (string) parse_url($request_uri, PHP_URL_PATH);
+
+    if ($path !== '' && $path !== '/') {
+        return '';
+    }
+
+    $cookies = (string) ($_SERVER['HTTP_COOKIE'] ?? '');
+    if (preg_match('/(?:^|;\\s*)(?:wordpress_logged_in_|wordpress_sec_|wp-postpass_|comment_author_|ontario_display_preference)/i', $cookies) === 1) {
+        return '';
+    }
+
+    $query = (string) parse_url($request_uri, PHP_URL_QUERY);
+    $language = '';
+
+    if ($query !== '') {
+        parse_str($query, $parameters);
+        $attribution_parameters = [
+            'dclid', 'fbclid', 'gclid', 'gbraid', 'gad_source', 'mc_cid',
+            'mc_eid', 'msclkid', 'ttclid', 'wbraid', 'yclid',
+        ];
+
+        foreach ($parameters as $name => $value) {
+            $name = strtolower((string) $name);
+
+            if ($name === 'ontario_lang' && is_string($value) && preg_match('/^[a-z]{2}$/', $value) === 1) {
+                $language = $value;
+                continue;
+            }
+
+            if (str_starts_with($name, 'utm_') || in_array($name, $attribution_parameters, true)) {
+                continue;
+            }
+
+            return '';
+        }
+    }
+
+    $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
+    $host = preg_replace('/[^a-z0-9.-]/', '', $host) ?? '';
+
+    if ($host === '') {
+        return '';
+    }
+
+    return hash('sha256', $host . '|/|' . $language);
+}
+
+function ontario_page_cache_file(string $key): string
+{
+    return ontario_page_cache_directory() . '/' . $key . '.html';
+}
+
+function ontario_page_cache_send_headers(string $body): void
+{
+    header('Cache-Control: public, max-age=60, stale-while-revalidate=300');
+    header('Vary: Accept-Encoding');
+    header('X-Ontario-Page-Cache: HIT');
+    header('ETag: "' . md5($body) . '"');
+}
+
+function ontario_page_cache_serve(): void
+{
+    $key = ontario_page_cache_request_key();
+
+    if ($key === '') {
+        return;
+    }
+
+    $file = ontario_page_cache_file($key);
+
+    if (! is_readable($file) || filemtime($file) < time() - ONTARIO_PAGE_CACHE_TTL) {
+        return;
+    }
+
+    $body = file_get_contents($file);
+
+    if (! is_string($body) || $body === '') {
+        return;
+    }
+
+    ontario_page_cache_send_headers($body);
+    echo $body;
+    exit;
+}
+
+function ontario_page_cache_purge(): void
+{
+    $directory = ontario_page_cache_directory();
+
+    if (! is_dir($directory)) {
+        return;
+    }
+
+    foreach (glob($directory . '/*.html') ?: [] as $file) {
+        if (is_file($file)) {
+            unlink($file);
+        }
+    }
+}
+
+// Serve before normal plugins (including ClickCease) are initialized.
+ontario_page_cache_serve();
+
+add_action('template_redirect', static function (): void {
+    $key = ontario_page_cache_request_key();
+
+    if ($key === '') {
+        return;
+    }
+
+    ob_start(static function (string $body) use ($key): string {
+        if ($body === '' || http_response_code() !== 200 || headers_sent()) {
+            return $body;
+        }
+
+        // A response that establishes a visitor-specific cookie (for example
+        // ClickCease RTI) must stay dynamic and continue through that vendor.
+        foreach (headers_list() as $header) {
+            if (str_starts_with(strtolower($header), 'set-cookie:')) {
+                return $body;
+            }
+        }
+
+        $directory = ontario_page_cache_directory();
+        if (! is_dir($directory) && ! wp_mkdir_p($directory)) {
+            return $body;
+        }
+
+        $file = ontario_page_cache_file($key);
+        $temporary_file = $file . '.' . wp_generate_password(12, false, false) . '.tmp';
+
+        if (@file_put_contents($temporary_file, $body, LOCK_EX) !== false) {
+            @rename($temporary_file, $file);
+        }
+
+        if (is_file($temporary_file)) {
+            @unlink($temporary_file);
+        }
+
+        header('Cache-Control: public, max-age=60, stale-while-revalidate=300');
+        header('Vary: Accept-Encoding');
+        header('X-Ontario-Page-Cache: MISS');
+
+        return $body;
+    });
+}, -999999);
+
+add_action('save_post_ontario_site', 'ontario_page_cache_purge', 5);
+add_action('update_option_osm_global_settings', 'ontario_page_cache_purge', 5);
+add_action('update_option_osm_localization_settings', 'ontario_page_cache_purge', 5);
+
 function ontario_bootstrap_legal_pages(): void
 {
     $pages = [

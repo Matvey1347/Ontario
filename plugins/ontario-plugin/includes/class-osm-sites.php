@@ -271,6 +271,10 @@ final class OSM_Sites
         $this->render_text_row('phone_number', 'Phone number', $meta['phone_number']);
         $this->render_textarea_row('address', 'Full address', $meta['address']);
         $this->render_text_row('working_hours', 'Working hours', $meta['working_hours']);
+        $this->render_select_row('homepage_design', 'Homepage design', $meta['homepage_design'], [
+            'classic' => 'Classic Ontario design',
+            'newsite' => 'New conversion landing design',
+        ]);
         $this->render_select_row('display_mode', 'Website display mode', $meta['display_mode'], [
             'full' => 'Full interactive design',
             'simple' => 'Always use simple design',
@@ -556,6 +560,7 @@ final class OSM_Sites
             'address' => $meta['address'],
             'working_hours' => $meta['working_hours'],
             'meta_description' => $meta['meta_description'],
+            'homepage_design' => $meta['homepage_design'],
             'display_mode' => $meta['display_mode'] !== '' ? $meta['display_mode'] : 'full',
             'display_choice_title' => $meta['display_choice_title'] !== '' ? $meta['display_choice_title'] : 'Choose how you would like to view this website',
             'display_choice_description' => $meta['display_choice_description'] !== '' ? $meta['display_choice_description'] : 'You can continue with the full interactive design or switch to a simpler version with larger text and a calmer layout.',
@@ -907,6 +912,7 @@ final class OSM_Sites
             'address' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_textarea']],
             'working_hours' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'meta_description' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_textarea']],
+            'homepage_design' => ['type' => 'text', 'sanitize' => [$this, 'sanitize_homepage_design']],
             'display_mode' => ['type' => 'text', 'sanitize' => [$this, 'sanitize_display_mode']],
             'display_choice_title' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
             'display_choice_description' => ['type' => 'textarea', 'sanitize' => 'sanitize_textarea_field'],
@@ -971,6 +977,11 @@ final class OSM_Sites
         }
 
         $values['display_mode'] = $this->sanitize_display_mode($values['display_mode']);
+        $values['homepage_design'] = $this->sanitize_homepage_design($values['homepage_design']);
+
+        if ($values['homepage_design'] === 'classic' && $this->normalize_host($values['primary_domain']) === 'ontariorefunds.org') {
+            $values['homepage_design'] = 'newsite';
+        }
 
         if ($values['display_choice_title'] === '') {
             $values['display_choice_title'] = 'Choose how you would like to view this website';
@@ -1403,6 +1414,11 @@ final class OSM_Sites
         }
 
         return $value;
+    }
+
+    public function sanitize_homepage_design(string $value): string
+    {
+        return sanitize_key($value) === 'newsite' ? 'newsite' : 'classic';
     }
 
     public function sanitize_language_configuration(string $value): string

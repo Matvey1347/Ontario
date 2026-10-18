@@ -60,9 +60,10 @@ $dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynami
               <?php for ($testimonial_index = 1; $testimonial_index <= 5; $testimonial_index++) : ?>
                 <article class="testimonial-carousel__slide<?php echo $testimonial_index === 1 ? ' is-active' : ''; ?>" data-testimonial-slide aria-hidden="<?php echo $testimonial_index === 1 ? 'false' : 'true'; ?>">
                   <blockquote>
-                    <p><?php echo esc_html(ontario_t('testimonials.quote_' . $testimonial_index, [], '')); ?></p>
+                    <p><?php echo esc_html(ontario_t('testimonials.quote_open', [], '“')); ?><?php echo esc_html(ontario_t('testimonials.quote_' . $testimonial_index, [], '')); ?><?php echo esc_html(ontario_t('testimonials.quote_close', [], '”')); ?></p>
+                    <div class="testimonial-carousel__rating" aria-label="<?php echo esc_attr(ontario_t('testimonials.rating', [], 'Five stars')); ?>"><?php echo esc_html(ontario_t('testimonials.stars', [], '⭐⭐⭐⭐⭐')); ?></div>
                     <footer>
-                      <cite><?php echo esc_html(ontario_t('testimonials.name_' . $testimonial_index, [], '')); ?></cite>
+                      <cite><em><?php echo esc_html(ontario_t('testimonials.name_prefix', [], '—')); ?> <?php echo esc_html(ontario_t('testimonials.name_' . $testimonial_index, [], '')); ?></em></cite>
                       <span><?php echo esc_html(ontario_t('testimonials.case_' . $testimonial_index, [], '')); ?></span>
                     </footer>
                   </blockquote>

@@ -13,7 +13,19 @@ if (! defined('ABSPATH')) {
   ?>
   <?php echo ontario_render_tracking_code('head_open'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
   <meta charset="<?php bloginfo('charset'); ?>" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <script>
+    // Telegram's in-app iOS browser overlays its address controls over the
+    // layout viewport. Mark it before the page renders so mobile CSS can keep
+    // the sticky navigation below those controls.
+    if (
+      /(?:Telegram|TgWebView)/i.test(navigator.userAgent)
+      || typeof window.TelegramWebviewProxy !== 'undefined'
+      || (window.Telegram && typeof window.Telegram.WebApp !== 'undefined')
+    ) {
+      document.documentElement.classList.add('is-telegram-webview');
+    }
+  </script>
   <meta name="google" content="notranslate" />
   <meta name="googlebot" content="notranslate" />
   <meta name="translator" content="no" />
@@ -32,7 +44,7 @@ $phone_href = ontario_site_field('phone_href');
 $phone_number = ontario_site_field('phone_number');
 $enabled_languages = ontario_enabled_languages();
 $current_language = ontario_current_language();
-$is_newsite_page = ontario_is_newsite_page();
+$is_newsite_page = function_exists('ontario_uses_newsite_design') ? ontario_uses_newsite_design() : ontario_is_newsite_page();
 ?>
 <?php if (! $is_newsite_page) : ?>
   <div class="top-notice">
