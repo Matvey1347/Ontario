@@ -591,7 +591,51 @@ HTML;
             return 'https';
         }
 
-        return 'http';
+        /*
+         * The public sites sit behind a TLS-terminating proxy. PHP can therefore
+         * receive an HTTP connection even when the visitor opened an HTTPS URL.
+         * Do not use the backend connection scheme when generating public asset
+         * URLs: browsers block stylesheets and scripts served that way as mixed
+         * content.
+         */
+        $forwarded_proto = isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
+            ? strtolower(trim(explode(',', (string) wp_unslash($_SERVER['HTTP_X_FORWARDED_PROTO']))[0]))
+            : '';
+
+        if ($forwarded_proto === 'https') {
+            return 'https';
+        }
+
+        $forwarded_ssl = isset($_SERVER['HTTP_X_FORWARDED_SSL'])
+            ? strtolower(trim((string) wp_unslash($_SERVER['HTTP_X_FORWARDED_SSL'])))
+            : '';
+        $front_end_https = isset($_SERVER['HTTP_FRONT_END_HTTPS'])
+            ? strtolower(trim((string) wp_unslash($_SERVER['HTTP_FRONT_END_HTTPS'])))
+            : '';
+
+        if (in_array($forwarded_ssl, ['on', '1', 'true'], true) || in_array($front_end_https, ['on', '1', 'true'], true)) {
+            return 'https';
+        }
+
+        if ((string) ($_SERVER['SERVER_PORT'] ?? '') === '443') {
+            return 'https';
+        }
+
+        // All configured visitor-facing domains are HTTPS-only. Keep HTTP only
+        // for local development where no TLS endpoint exists.
+        return $this->is_local_request_host($this->get_request_host_raw()) ? 'http' : 'https';
+    }
+
+    private function is_local_request_host(string $host): bool
+    {
+        $host = strtolower(trim($host));
+        $host = preg_replace('/:\\d+$/', '', $host) ?: $host;
+
+        if (in_array($host, ['', 'localhost', '::1', '127.0.0.1'], true) || str_ends_with($host, '.localhost') || str_ends_with($host, '.test')) {
+            return true;
+        }
+
+        return filter_var($host, FILTER_VALIDATE_IP) !== false;
     }
 
     private function defaults(): array
