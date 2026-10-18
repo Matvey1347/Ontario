@@ -11,8 +11,8 @@
 
   const t = (key, fallback) => (typeof i18n[key] === 'string' && i18n[key]) || fallback;
 
-  function preserveAttribution() {
-    if (!form) return;
+  function preserveAttribution(target) {
+    if (!target) return;
     const fields = ['gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
     const params = new URLSearchParams(window.location.search);
     fields.forEach((key) => {
@@ -23,7 +23,7 @@
         if (value) window.sessionStorage.setItem(storageKey, value);
         if (!preserved) preserved = window.sessionStorage.getItem(storageKey) || '';
       } catch (error) {}
-      const field = form.querySelector(`[name="${key === 'gclid' ? 'zc_gad' : key}"]`);
+      const field = target.querySelector(`[name="${key === 'gclid' ? 'zc_gad' : key}"]`);
       if (field && preserved) field.value = preserved;
     });
   }
@@ -105,9 +105,9 @@
     invalid?.focus();
     return !invalid;
   }
-  function setStatus(message) {
-    let status = form.querySelector('.form-status');
-    if (!status) { status = document.createElement('div'); status.className = 'form-status'; status.setAttribute('role', 'status'); form.append(status); }
+  function setStatus(target, message) {
+    let status = target.querySelector('.form-status');
+    if (!status) { status = document.createElement('div'); status.className = 'form-status'; status.setAttribute('role', 'status'); target.append(status); }
     status.textContent = message;
   }
   function update() {
@@ -138,8 +138,60 @@
       if (!response.ok || !payload.success) throw new Error(payload.message || t('submitError', 'Unable to submit the form right now.'));
       window.location.href = `${window.location.origin}/success/`;
     } catch (error) {
-      next.disabled = false; next.textContent = t('submitCase', 'Submit Your Case'); setStatus(error.message || t('submitError', 'Unable to submit the form right now.'));
+      next.disabled = false; next.textContent = t('submitCase', 'Submit Your Case'); setStatus(form, error.message || t('submitError', 'Unable to submit the form right now.'));
     }
+  }
+
+  function initQuickForm() {
+    const quickForm = document.getElementById('newsiteQuickForm');
+    if (!quickForm) return;
+    preserveAttribution(quickForm);
+    quickForm.querySelectorAll('input, textarea').forEach((field) => field.addEventListener(field.type === 'checkbox' ? 'change' : 'input', () => {
+      const error = fieldError(field);
+      error ? showError(field, error) : clearError(field);
+    }));
+    quickForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const fields = [...quickForm.querySelectorAll('input, textarea')].filter((field) => field.name !== 'website' && field.type !== 'hidden');
+      if (!validate(fields)) return;
+      const button = quickForm.querySelector('button[type="submit"]');
+      const defaultButtonText = button.textContent;
+      const data = new FormData(quickForm);
+      const phone = quickForm.querySelector('[name="phone"]');
+      if (phone?.value) data.set('phone', phonePayload(phone));
+      button.disabled = true;
+      button.textContent = t('submitting', 'Submitting...');
+      try {
+        const response = await fetch(config.restEndpoint, { method: 'POST', body: data });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok || !payload.success) throw new Error(payload.message || t('submitError', 'Unable to submit the form right now.'));
+        window.location.href = `${window.location.origin}/success/`;
+      } catch (error) {
+        button.disabled = false;
+        button.textContent = defaultButtonText;
+        setStatus(quickForm, error.message || t('submitError', 'Unable to submit the form right now.'));
+      }
+    });
+  }
+
+  function initTestimonialCarousels() {
+    document.querySelectorAll('[data-testimonial-carousel]').forEach((carousel) => {
+      const slides = [...carousel.querySelectorAll('[data-testimonial-slide]')];
+      const dots = [...carousel.querySelectorAll('[data-testimonial-dot]')];
+      if (slides.length < 2) return;
+      let active = 0;
+      const show = (index) => {
+        active = (index + slides.length) % slides.length;
+        slides.forEach((slide, slideIndex) => {
+          const isActive = slideIndex === active;
+          slide.classList.toggle('is-active', isActive);
+          slide.setAttribute('aria-hidden', String(!isActive));
+        });
+        dots.forEach((dot, dotIndex) => dot.classList.toggle('is-active', dotIndex === active));
+      };
+      carousel.querySelector('[data-testimonial-previous]')?.addEventListener('click', () => show(active - 1));
+      carousel.querySelector('[data-testimonial-next]')?.addEventListener('click', () => show(active + 1));
+    });
   }
 
   document.querySelectorAll('input[type="tel"]').forEach((input) => input.addEventListener('input', () => {
@@ -155,5 +207,5 @@
     submit();
   });
   previous?.addEventListener('click', () => { if (step) { step -= 1; update(); } });
-  preserveAttribution(); initMenu(); initLanguageSwitcher(); update();
+  preserveAttribution(form); initQuickForm(); initTestimonialCarousels(); initMenu(); initLanguageSwitcher(); update();
 })();
