@@ -28,8 +28,9 @@
 @media (max-width: 720px) {
   html.is-ios-webkit .ontario-display-simple .site-header,
   html.is-telegram-webview .ontario-display-simple .site-header {
-    position: relative;
-    top: auto;
+    position: absolute;
+    top: 0;
+    z-index: 150;
     padding-top: 0;
   }
 }

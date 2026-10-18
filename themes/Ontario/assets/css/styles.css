@@ -2609,9 +2609,15 @@ textarea.is-invalid,
 
   html.is-ios-webkit .site-header,
   html.is-telegram-webview .site-header {
-    position: relative;
-    top: auto;
+    position: absolute;
+    top: 0;
+    z-index: 150;
     padding-top: 0;
+  }
+
+  html.is-ios-webkit body,
+  html.is-telegram-webview body {
+    padding-top: 72px;
   }
 
   .nav {
