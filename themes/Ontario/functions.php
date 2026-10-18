@@ -704,6 +704,76 @@ add_action('wp_enqueue_scripts', static function (): void {
     wp_dequeue_script('jquery-migrate');
 }, 999);
 
+/**
+ * Some deployments still have the legacy ClickCease plugin enabled. It prints
+ * vendor tags directly in wp_head, so WordPress cannot dequeue them and their
+ * 200+ KiB of JavaScript competes with the first paint. Rewrite only those
+ * known anti-fraud script tags before the response is sent. The small loader
+ * retains the tags and starts them after the first interaction, or after five
+ * seconds for visitors who do not interact.
+ */
+add_action('template_redirect', static function (): void {
+    if (is_admin() || wp_doing_ajax() || wp_doing_cron() || is_feed() || is_robots()) {
+        return;
+    }
+
+    ob_start(static function (string $html): string {
+        $patterns = [
+            '#<script\\b(?=[^>]*\\bsrc=["\']https?://[^"\']*clickcease\\.com/[^"\']*["\'])[^>]*>\\s*</script>#i',
+            '#<script\\b(?=[^>]*\\bsrc=["\']https?://[^"\']*/i/[^"\']+\\.js[^"\']*["\'])(?=[^>]*\\bclass=["\'][^"\']*\\bct_clicktrue\\b[^"\']*["\'])[^>]*>\\s*</script>#i',
+        ];
+
+        $deferred = false;
+        $html = preg_replace_callback(
+            $patterns,
+            static function (array $match) use (&$deferred): string {
+                $deferred = true;
+                $tag = $match[0];
+                $tag = preg_replace('#\\s+async(?:=["\'][^"\']*["\'])?#i', '', $tag) ?? $tag;
+
+                return preg_replace('#<script\\b#i', '<script type="text/plain" data-ontario-deferred-clickcease', $tag, 1) ?? $tag;
+            },
+            $html
+        ) ?? $html;
+
+        if (! $deferred || str_contains($html, '__ontarioDeferredClickceaseScheduled')) {
+            return $html;
+        }
+
+        $loader = <<<'HTML'
+<script>
+(() => {
+  if (window.__ontarioDeferredClickceaseScheduled) return;
+  window.__ontarioDeferredClickceaseScheduled = true;
+  let loaded = false;
+  const events = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
+  const load = () => {
+    if (loaded) return;
+    loaded = true;
+    events.forEach((event) => window.removeEventListener(event, load));
+    document.querySelectorAll('script[data-ontario-deferred-clickcease]').forEach((source) => {
+      const script = document.createElement('script');
+      [...source.attributes].forEach((attribute) => {
+        if (attribute.name !== 'type' && attribute.name !== 'data-ontario-deferred-clickcease') script.setAttribute(attribute.name, attribute.value);
+      });
+      script.async = true;
+      source.replaceWith(script);
+    });
+  };
+  const schedule = () => {
+    events.forEach((event) => window.addEventListener(event, load, { once: true, passive: true }));
+    window.setTimeout(load, 5000);
+  };
+  if (document.readyState === 'complete') schedule();
+  else window.addEventListener('load', schedule, { once: true });
+})();
+</script>
+HTML;
+
+        return str_ireplace('</head>', $loader . '</head>', $html);
+    });
+}, 0);
+
 add_action('init', static function (): void {
     remove_action('wp_head', 'print_emoji_detection_script', 7);
     remove_action('admin_print_scripts', 'print_emoji_detection_script');

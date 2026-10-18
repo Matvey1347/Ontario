@@ -7,6 +7,13 @@ if (! defined('ABSPATH')) {
 
 final class OSM_Clickcease
 {
+    /**
+     * The RTI service is a security enhancement, not a dependency that may
+     * hold up rendering.  auth_with_rti() deliberately fails open on a
+     * transport error, so keep that fallback prompt when its upstream is
+     * slow or unavailable.
+     */
+    private const RTI_TIMEOUT_SECONDS = 0.75;
     private const BLOCKED_CODES = [3, 9, 17, 16, 7, 6, 11, 10, 25, 18, 2];
     private const MAX_WHITELIST_IPS = 5;
     private const RTI_SERVER_EUROPE = 'https://rti-eu-west-1.cheqzone.com/v1/realtime-interception';
@@ -333,7 +340,7 @@ final class OSM_Clickcease
     {
         $request = [
             'method' => 'POST',
-            'timeout' => 2,
+            'timeout' => self::RTI_TIMEOUT_SECONDS,
             'redirection' => 10,
             'httpversion' => '1.1',
             'body' => $this->build_rti_request_params($api_key, $request_url, $event_type, $tag_hash),

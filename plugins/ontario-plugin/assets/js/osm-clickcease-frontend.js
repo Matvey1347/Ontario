@@ -80,10 +80,33 @@ function loadClickceaseScripts() {
   }
 }
 
+function scheduleClickceaseScripts() {
+  let loaded = false;
+  const events = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
+
+  function loadOnce() {
+    if (loaded) {
+      return;
+    }
+
+    loaded = true;
+    events.forEach(function (eventName) {
+      window.removeEventListener(eventName, loadOnce);
+    });
+    loadClickceaseScripts();
+  }
+
+  events.forEach(function (eventName) {
+    window.addEventListener(eventName, loadOnce, { once: true, passive: true });
+  });
+
+  // Preserve tracking for visitors who read without interacting, while
+  // keeping the large vendor bundles outside the initial render window.
+  window.setTimeout(loadOnce, 5000);
+}
+
 if (document.readyState === 'complete') {
-  window.setTimeout(loadClickceaseScripts, 1200);
+  scheduleClickceaseScripts();
 } else {
-  window.addEventListener('load', function () {
-    window.setTimeout(loadClickceaseScripts, 1200);
-  }, { once: true });
+  window.addEventListener('load', scheduleClickceaseScripts, { once: true });
 }

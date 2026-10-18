@@ -44,7 +44,7 @@ $current_language = ontario_current_language();
     <nav class="nav" id="nav">
       <a class="brand" href="<?php echo esc_url(home_url('/')); ?>" aria-label="<?php echo esc_attr(ontario_t('site.brand_home', ['brand_name' => $brand_name], $brand_name . ' home')); ?>">
         <?php if ($logo_url !== '') : ?>
-          <img src="<?php echo esc_url($logo_url); ?>" width="300" height="35" alt="<?php echo esc_attr($brand_name); ?>" />
+          <img src="<?php echo esc_url($logo_url); ?>" width="300" height="35" fetchpriority="high" decoding="async" alt="<?php echo esc_attr($brand_name); ?>" />
         <?php else : ?>
           <span><?php echo esc_html($brand_name); ?></span>
         <?php endif; ?>
