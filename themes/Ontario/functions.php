@@ -515,21 +515,21 @@ add_action('wp_enqueue_scripts', static function (): void {
 
     if ($is_front_page) {
         $theme_css_path = $theme_dir . '/assets/css/styles.css';
-        wp_enqueue_style(
-            'ontario-theme',
-            $theme_uri . '/assets/css/styles.css',
-            [],
-            file_exists($theme_css_path) ? (string) filemtime($theme_css_path) : $version
-        );
+        wp_register_style('ontario-theme', false, [], $version);
+        wp_enqueue_style('ontario-theme');
+
+        if (is_readable($theme_css_path)) {
+            wp_add_inline_style('ontario-theme', (string) file_get_contents($theme_css_path));
+        }
 
         if ($site_display_mode !== 'full') {
             $simple_css_path = $theme_dir . '/assets/css/simple.css';
-            wp_enqueue_style(
-                'ontario-theme-simple',
-                $theme_uri . '/assets/css/simple.css',
-                ['ontario-theme'],
-                file_exists($simple_css_path) ? (string) filemtime($simple_css_path) : $version
-            );
+            wp_register_style('ontario-theme-simple', false, ['ontario-theme'], $version);
+            wp_enqueue_style('ontario-theme-simple');
+
+            if (is_readable($simple_css_path)) {
+                wp_add_inline_style('ontario-theme-simple', (string) file_get_contents($simple_css_path));
+            }
         }
     } else {
         wp_enqueue_style(

@@ -98,6 +98,7 @@
 
       let activeIndex = slides.findIndex((slide) => slide.classList.contains('is-active'));
       let timer = null;
+      let autoplayStarted = false;
       let currentTrackIndex = 1;
       let dragStartX = null;
       let dragOffsetX = 0;
@@ -155,34 +156,46 @@
         }
       }
 
-      function startAutoplay() {
+      function startAutoplay(startImmediately = false) {
         if (prefersReducedMotion || timer !== null) {
           return;
         }
 
-        timer = window.setInterval(() => showSlide(activeIndex + 1, 1), 1000);
+        const begin = () => {
+          autoplayStarted = true;
+          timer = window.setInterval(() => showSlide(activeIndex + 1, 1), 1000);
+        };
+
+        // Avoid changing the initial viewport while it is still being painted.
+        // Once started, the carousel retains its one-second cadence.
+        if (autoplayStarted || startImmediately) {
+          begin();
+          return;
+        }
+
+        timer = window.setTimeout(begin, 5000);
       }
 
       function showPrevious() {
         stopAutoplay();
         showSlide(activeIndex - 1, -1);
-        startAutoplay();
+        startAutoplay(true);
       }
 
       function showNext() {
         stopAutoplay();
         showSlide(activeIndex + 1, 1);
-        startAutoplay();
+        startAutoplay(true);
       }
 
       previousButton?.addEventListener('click', showPrevious);
       nextButton?.addEventListener('click', showNext);
       carousel.addEventListener('pointerenter', stopAutoplay);
-      carousel.addEventListener('pointerleave', startAutoplay);
+      carousel.addEventListener('pointerleave', () => startAutoplay(true));
       carousel.addEventListener('focusin', stopAutoplay);
       carousel.addEventListener('focusout', () => {
         if (!carousel.contains(document.activeElement)) {
-          startAutoplay();
+          startAutoplay(true);
         }
       });
 
@@ -225,7 +238,7 @@
           moveTrack(currentTrackIndex);
         }
 
-        startAutoplay();
+        startAutoplay(true);
       }
 
       carousel.addEventListener('pointerup', finishDrag);
@@ -550,7 +563,24 @@
       }
     });
 
-    window.setTimeout(() => openModal(welcomeModal), 220);
+    // Keep the first viewport stable while it is being painted. If the
+    // visitor starts another form or opens a contact modal, never interrupt
+    // that action with the automatic notice.
+    let welcomeTimer = window.setTimeout(() => {
+      welcomeTimer = null;
+      openModal(welcomeModal);
+    }, 5000);
+    const cancelAutomaticWelcome = () => {
+      if (welcomeTimer === null) return;
+      window.clearTimeout(welcomeTimer);
+      welcomeTimer = null;
+    };
+
+    document.querySelectorAll('#caseForm, [data-quick-form], [data-modal-open]').forEach((element) => {
+      element.addEventListener('pointerdown', cancelAutomaticWelcome, { once: true });
+      element.addEventListener('focusin', cancelAutomaticWelcome, { once: true });
+      element.addEventListener('input', cancelAutomaticWelcome, { once: true });
+    });
   }
 
   function initCustomSelects() {
