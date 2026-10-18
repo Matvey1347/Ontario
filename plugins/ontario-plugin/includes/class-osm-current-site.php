@@ -138,7 +138,11 @@ final class OSM_Current_Site
         $logo_id = (int) ($site['logo_id'] ?? 0);
 
         if ($logo_id > 0) {
-            $url = wp_get_attachment_image_url($logo_id, 'full');
+            // The logo is rendered at 178px (150px on mobile).  Serving the
+            // original upload here was sending a 1333px PNG for every page
+            // view, even though WordPress already provides an appropriate
+            // responsive derivative.
+            $url = wp_get_attachment_image_url($logo_id, 'medium');
 
             if (is_string($url) && $url !== '') {
                 return $this->use_current_origin_for_local_asset($url);
@@ -153,7 +157,7 @@ final class OSM_Current_Site
         $default_logo_id = (int) ($default_site['logo_id'] ?? 0);
 
         if ($default_logo_id > 0) {
-            $url = wp_get_attachment_image_url($default_logo_id, 'full');
+            $url = wp_get_attachment_image_url($default_logo_id, 'medium');
 
             if (is_string($url) && $url !== '') {
                 return $this->use_current_origin_for_local_asset($url);
@@ -232,7 +236,7 @@ final class OSM_Current_Site
         $code = $this->get_tracking_code($location);
 
         if (
-            $location === 'head' &&
+            in_array($location, ['head', 'head_open'], true) &&
             (string) ($this->get_site()['clickcease_install_click_fraud'] ?? '0') === '1'
         ) {
             $code = preg_replace(
@@ -245,7 +249,86 @@ final class OSM_Current_Site
             ) ?? $code;
         }
 
+        if (in_array($location, ['head', 'head_open'], true)) {
+            $code = $this->defer_non_critical_tracking($code);
+        }
+
         return $code !== '' ? $code . "\n" : '';
+    }
+
+    /**
+     * Keeps advertising and anti-fraud vendors installed while ensuring they
+     * cannot delay the first visible render.  Their scripts are started after
+     * the load event, during idle time (with a bounded fallback), so normal
+     * page-view and conversion tracking remains available.
+     */
+    private function defer_non_critical_tracking(string $code): string
+    {
+        if ($code === '') {
+            return '';
+        }
+
+        $vendor_pattern = '(?:googletagmanager\.com|googleadservices\.com|doubleclick\.net|travenicora\.com)';
+
+        $code = preg_replace_callback(
+            '#<script\b(?=[^>]*\bsrc=["\'][^"\']*' . $vendor_pattern . '[^"\']*["\'])[^>]*>\s*</script>#i',
+            static function (array $match): string {
+                $tag = $match[0];
+                $tag = preg_replace('#\s+async(?:=["\'][^"\']*["\'])?#i', '', $tag) ?? $tag;
+                $tag = preg_replace('#<script\b#i', '<script type="text/plain" data-ontario-deferred-tracking', $tag, 1) ?? $tag;
+
+                return $tag;
+            },
+            $code
+        ) ?? $code;
+
+        // The GTM bootstrap is inline but injects gtm.js immediately. Defer
+        // it together with the external vendor scripts above.
+        $code = preg_replace_callback(
+            '#<script\b(?![^>]*\b(?:src|data-ontario-deferred-tracking)\b)[^>]*>.*?googletagmanager\.com/gtm\.js.*?</script>#is',
+            static function (array $match): string {
+                return preg_replace('#<script\b#i', '<script type="text/plain" data-ontario-deferred-tracking', $match[0], 1) ?? $match[0];
+            },
+            $code
+        ) ?? $code;
+
+        if (! str_contains($code, 'data-ontario-deferred-tracking')) {
+            return $code;
+        }
+
+        return $code . <<<'HTML'
+<script>
+(() => {
+  const loadDeferredTracking = () => {
+    document.querySelectorAll('script[data-ontario-deferred-tracking]').forEach((source) => {
+      const script = document.createElement('script');
+      [...source.attributes].forEach((attribute) => {
+        if (attribute.name !== 'type' && attribute.name !== 'data-ontario-deferred-tracking') {
+          script.setAttribute(attribute.name, attribute.value);
+        }
+      });
+      script.async = true;
+      script.text = source.textContent || '';
+      source.replaceWith(script);
+    });
+  };
+
+  const schedule = () => {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(loadDeferredTracking, { timeout: 3500 });
+      return;
+    }
+    window.setTimeout(loadDeferredTracking, 1200);
+  };
+
+  if (document.readyState === 'complete') {
+    schedule();
+  } else {
+    window.addEventListener('load', schedule, { once: true });
+  }
+})();
+</script>
+HTML;
     }
 
     public function filter_document_title(string $title): string

@@ -155,6 +155,7 @@ body.admin-bar .site-header {
 .brand img {
   width: 178px;
   height: auto;
+  aspect-ratio: 300 / 35;
   filter: drop-shadow(0 8px 26px rgba(77, 227, 255, 0.12));
 }
 
@@ -2387,6 +2388,8 @@ textarea.is-invalid,
 
 .footer-brand img {
   width: 180px;
+  height: auto;
+  aspect-ratio: 300 / 35;
   margin-bottom: 16px;
 }
 

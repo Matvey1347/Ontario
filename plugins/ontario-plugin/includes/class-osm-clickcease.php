@@ -149,7 +149,7 @@ final class OSM_Clickcease
                 'osm-clickcease-frontend',
                 home_url('/wp-content/plugins/ontario-plugin/assets/js/osm-clickcease-frontend.js'),
                 [],
-                OSM_PLUGIN_VERSION,
+                (string) filemtime(OSM_PLUGIN_DIR . 'assets/js/osm-clickcease-frontend.js'),
                 true
             );
             wp_localize_script('osm-clickcease-frontend', 'osmClickcease', [

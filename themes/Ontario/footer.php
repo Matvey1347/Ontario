@@ -19,7 +19,7 @@ $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== ''
     <div class="footer-grid">
       <div class="footer-brand">
         <?php if ($logo_url !== '') : ?>
-          <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($brand_name); ?>" />
+          <img src="<?php echo esc_url($logo_url); ?>" width="300" height="35" alt="<?php echo esc_attr($brand_name); ?>" />
         <?php endif; ?>
         <p>
           <?php echo esc_html(ontario_t('footer.description', ['brand_name' => $brand_name], $brand_name . ' provides private blockchain intelligence and forensic case analysis for victims of online financial fraud.')); ?>
