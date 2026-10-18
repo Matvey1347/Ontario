@@ -86,8 +86,10 @@ if (! defined('ABSPATH')) {
     <button class="btn btn-primary" type="button" id="nextBtn"><?php echo esc_html(ontario_t('form.next', [], 'Next Step')); ?></button>
   </div>
 
-  <p class="form-note">
-    🔒 <?php echo esc_html(ontario_t('form.note', [], 'Encrypted in transit & at rest · PIPEDA compliant · SOC 2 Type II')); ?>
-  </p>
+  <?php if (! function_exists('ontario_is_newsite_page') || ! ontario_is_newsite_page()) : ?>
+    <p class="form-note">
+      🔒 <?php echo esc_html(ontario_t('form.note', [], 'Encrypted in transit & at rest · PIPEDA compliant · SOC 2 Type II')); ?>
+    </p>
+  <?php endif; ?>
   <?php echo ontario_render_tracking_code('form'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 </form>

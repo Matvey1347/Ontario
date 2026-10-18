@@ -12,6 +12,7 @@ $phone_href = ontario_site_field('phone_href');
 $phone_number = ontario_site_field('phone_number');
 $working_hours = ontario_site_field('working_hours');
 $public_email = ontario_site_field('public_email');
+$is_newsite_page = function_exists('ontario_is_newsite_page') && ontario_is_newsite_page();
 $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== '' && $phone_number !== '') || $working_hours !== '' || $public_email !== '';
 ?>
 <footer class="site-footer">
@@ -43,7 +44,9 @@ $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== ''
           <?php if ($public_email !== '') : ?>
             <a href="mailto:<?php echo esc_attr($public_email); ?>"><?php echo esc_html($public_email); ?></a>
           <?php endif; ?>
-          <span>🔒 <?php echo esc_html(ontario_t('footer.security', [], 'Encrypted in transit & at rest · PIPEDA compliant · SOC 2 Type II')); ?></span>
+          <?php if (! $is_newsite_page) : ?>
+            <span>🔒 <?php echo esc_html(ontario_t('footer.security', [], 'Encrypted in transit & at rest · PIPEDA compliant · SOC 2 Type II')); ?></span>
+          <?php endif; ?>
         </div>
       <?php endif; ?>
     </div>

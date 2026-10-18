@@ -34,11 +34,13 @@ $enabled_languages = ontario_enabled_languages();
 $current_language = ontario_current_language();
 $is_newsite_page = ontario_is_newsite_page();
 ?>
-<div class="top-notice">
-  <div class="container">
-    <?php echo esc_html(ontario_t('site.notice', [], 'Only cases with losses from $2,000+ • Free consultation • We do not accept US citizens • Not a government agency')); ?>
+<?php if (! $is_newsite_page) : ?>
+  <div class="top-notice">
+    <div class="container">
+      <?php echo esc_html(ontario_t('site.notice', [], 'Only cases with losses from $2,000+ • Free consultation • We do not accept US citizens • Not a government agency')); ?>
+    </div>
   </div>
-</div>
+<?php endif; ?>
 
 <header class="site-header">
   <div class="container">
@@ -52,8 +54,8 @@ $is_newsite_page = ontario_is_newsite_page();
       </a>
 
       <div class="nav-links" aria-label="<?php echo esc_attr(ontario_t('site.primary_navigation', [], 'Primary navigation')); ?>">
-        <a href="#services"><?php echo esc_html(ontario_t('nav.services', [], 'Services')); ?></a>
-        <a href="<?php echo esc_url($is_newsite_page ? '#scam-types' : '#scanner'); ?>"><?php echo esc_html(ontario_t($is_newsite_page ? 'newsite.nav.scam_types' : 'nav.case_review', [], $is_newsite_page ? 'Scam types' : 'Case Review')); ?></a>
+        <a href="<?php echo esc_url($is_newsite_page ? '#professional-assistance' : '#services'); ?>"><?php echo esc_html(ontario_t('nav.services', [], 'Services')); ?></a>
+        <a href="<?php echo esc_url($is_newsite_page ? '#fraud-types' : '#scanner'); ?>"><?php echo esc_html(ontario_t($is_newsite_page ? 'newsite.nav.scam_types' : 'nav.case_review', [], $is_newsite_page ? 'Scam types' : 'Case Review')); ?></a>
         <a href="<?php echo esc_url($is_newsite_page ? '#process' : '#report'); ?>"><?php echo esc_html(ontario_t($is_newsite_page ? 'nav.process' : 'nav.report_preview', [], $is_newsite_page ? 'Process' : 'Report Preview')); ?></a>
         <a href="#faq"><?php echo esc_html(ontario_t('nav.faq', [], 'FAQ')); ?></a>
       </div>

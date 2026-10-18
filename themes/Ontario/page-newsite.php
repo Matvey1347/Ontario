@@ -1,84 +1,35 @@
 <?php
 declare(strict_types=1);
-
-if (! defined('ABSPATH')) {
-    exit;
-}
-
+if (! defined('ABSPATH')) { exit; }
 $brand_name = ontario_site_brand_name();
-
+$t = static fn (string $key, string $fallback): string => ontario_t($key, ['brand_name' => $brand_name], $fallback);
 get_header();
 ?>
 <main id="top" class="newsite-page">
-  <section class="newsite-hero" aria-labelledby="newsite-title">
-    <div class="container newsite-hero__grid">
-      <div>
-        <p class="newsite-kicker"><?php echo esc_html(ontario_t('newsite.hero.kicker', [], 'Private, professional case assessment')); ?></p>
-        <h1 id="newsite-title"><?php echo esc_html(ontario_t('newsite.hero.title', [], 'Support after an online scam starts with clear information.')); ?></h1>
-        <p class="newsite-hero__lead"><?php echo esc_html(ontario_t('newsite.hero.copy', ['brand_name' => $brand_name], '{brand_name} reviews the details you can provide, helps organize the available information, and identifies practical next steps.')); ?></p>
-        <div class="newsite-actions">
-          <a class="btn btn-primary" href="#contact"><?php echo esc_html(ontario_t('newsite.hero.cta', [], 'Request a case assessment')); ?></a>
-          <a class="newsite-text-link" href="#process"><?php echo esc_html(ontario_t('newsite.hero.secondary_cta', [], 'How the review works')); ?></a>
-        </div>
-        <p class="newsite-disclosure"><?php echo esc_html(ontario_t('newsite.hero.disclosure', [], 'We do not guarantee recovery or promise a particular outcome.')); ?></p>
-      </div>
-      <aside class="newsite-hero__panel" aria-label="<?php echo esc_attr(ontario_t('newsite.hero.panel_aria', [], 'Case assessment overview')); ?>">
-        <h2><?php echo esc_html(ontario_t('newsite.hero.panel_title', [], 'Start with the facts you have')); ?></h2>
-        <ul>
-          <li><?php echo esc_html(ontario_t('newsite.hero.panel_1', [], 'A clear account of what happened')); ?></li>
-          <li><?php echo esc_html(ontario_t('newsite.hero.panel_2', [], 'Transaction, payment, or platform details')); ?></li>
-          <li><?php echo esc_html(ontario_t('newsite.hero.panel_3', [], 'Screenshots, messages, and a timeline if available')); ?></li>
-        </ul>
-      </aside>
-    </div>
-  </section>
+  <section class="newsite-hero" aria-labelledby="newsite-title"><div class="container newsite-hero__grid"><div>
+    <p class="newsite-kicker"><?php echo esc_html($t('newsite.hero.kicker', 'Independent private assistance')); ?></p>
+    <h1 id="newsite-title"><?php echo esc_html($t('newsite.hero.title', 'Report a Scam & Get Professional Help')); ?></h1>
+    <h2 class="newsite-hero__supporting"><?php echo esc_html($t('newsite.hero.supporting', 'Professional Assistance for Victims of Online Financial Fraud')); ?></h2>
+    <p class="newsite-hero__lead"><?php echo esc_html($t('newsite.hero.copy', 'Lost money to an online scam, fraudulent investment platform, or cryptocurrency fraud? {brand_name} helps you review your case, trace transactions, organize evidence, and explore available options for recovering lost funds.')); ?></p>
+    <div class="newsite-actions"><a class="btn btn-primary" href="#contact"><?php echo esc_html($t('newsite.hero.cta', 'Request a Case Assessment')); ?></a><a class="newsite-text-link" href="#professional-assistance"><?php echo esc_html($t('newsite.hero.secondary_cta', 'How We Can Help')); ?></a></div>
+    <p class="newsite-disclosure"><?php echo esc_html($t('newsite.hero.disclosure', 'Independent private assistance. Recovery outcomes depend on individual circumstances.')); ?></p>
+  </div><aside class="newsite-hero__panel" aria-label="<?php echo esc_attr($t('newsite.hero.panel_aria', 'Case assessment overview')); ?>"><h2><?php echo esc_html($t('newsite.hero.panel_title', 'Start with the facts you have')); ?></h2><ul><li><?php echo esc_html($t('newsite.hero.panel_1', 'A clear account of what happened')); ?></li><li><?php echo esc_html($t('newsite.hero.panel_2', 'Transaction, payment, or platform details')); ?></li><li><?php echo esc_html($t('newsite.hero.panel_3', 'Screenshots, messages, and a timeline if available')); ?></li></ul></aside></div></section>
 
-  <section id="services" class="newsite-section">
-    <div class="container">
-      <div class="newsite-heading">
-        <p class="newsite-kicker"><?php echo esc_html(ontario_t('newsite.services.kicker', [], 'A practical first response')); ?></p>
-        <h2><?php echo esc_html(ontario_t('newsite.services.title', [], 'Help for online scam and cybercrime cases')); ?></h2>
-        <p><?php echo esc_html(ontario_t('newsite.services.copy', [], 'Whether you need to report a scam in Canada, prepare a cyber crime complaint, or understand a suspected fraud, the first step is to preserve and organize the facts.')); ?></p>
-      </div>
-      <div class="newsite-card-grid">
-        <article class="newsite-card"><h3><?php echo esc_html(ontario_t('newsite.services.card_1_title', [], 'Case assessment')); ?></h3><p><?php echo esc_html(ontario_t('newsite.services.card_1_copy', [], 'We review the information you provide to understand the incident, the payment path, and what evidence may be useful.')); ?></p></article>
-        <article class="newsite-card"><h3><?php echo esc_html(ontario_t('newsite.services.card_2_title', [], 'Evidence organization')); ?></h3><p><?php echo esc_html(ontario_t('newsite.services.card_2_copy', [], 'We can help structure records such as payment receipts, wallet addresses, platform links, communications, and dates.')); ?></p></article>
-        <article class="newsite-card"><h3><?php echo esc_html(ontario_t('newsite.services.card_3_title', [], 'Next-step guidance')); ?></h3><p><?php echo esc_html(ontario_t('newsite.services.card_3_copy', [], 'We explain possible documentation, reporting, institutional, or legal follow-up based on the circumstances of the case.')); ?></p></article>
-      </div>
-    </div>
-  </section>
+  <section id="professional-assistance" class="newsite-section"><div class="container newsite-copy-block"><p class="newsite-kicker"><?php echo esc_html($t('newsite.assistance.kicker', 'Professional assistance')); ?></p><h2><?php echo esc_html($t('newsite.assistance.title', 'Professional Support After Online Financial Fraud')); ?></h2><p><?php echo esc_html($t('newsite.assistance.copy_1', "Whether you've been affected by an investment scam, a fraudulent trading platform, a cryptocurrency scam, or another form of online financial deception, understanding your next steps is essential.")); ?></p><p><?php echo esc_html($t('newsite.assistance.copy_2', 'Our team assists with financial transaction analysis, evidence preparation, and the documentation needed to pursue available recovery procedures.')); ?></p></div></section>
 
-  <section id="scam-types" class="newsite-section newsite-section--soft">
-    <div class="container">
-      <div class="newsite-heading"><h2><?php echo esc_html(ontario_t('newsite.types.title', [], 'Common situations we can assess')); ?></h2><p><?php echo esc_html(ontario_t('newsite.types.copy', [], 'The same intake can cover multiple types of online fraud. Sharing the right details early can make later reporting and review more focused.')); ?></p></div>
-      <div class="newsite-type-grid">
-        <article><h3><?php echo esc_html(ontario_t('newsite.types.crypto_title', [], 'Crypto scam recovery questions')); ?></h3><p><?php echo esc_html(ontario_t('newsite.types.crypto_copy', [], 'Fake exchanges, investment platforms, wallet drains, unauthorized transfers, and requests for additional crypto payments.')); ?></p></article>
-        <article><h3><?php echo esc_html(ontario_t('newsite.types.investment_title', [], 'Investment scam recovery help')); ?></h3><p><?php echo esc_html(ontario_t('newsite.types.investment_copy', [], 'Misleading investment offers, fraudulent brokers, manipulated dashboards, and blocked withdrawals.')); ?></p></article>
-        <article><h3><?php echo esc_html(ontario_t('newsite.types.task_title', [], 'Online task scam recovery')); ?></h3><p><?php echo esc_html(ontario_t('newsite.types.task_copy', [], 'Task platforms, fake job offers, deposit requirements, and payment loops presented as employment.')); ?></p></article>
-        <article><h3><?php echo esc_html(ontario_t('newsite.types.payment_title', [], 'Scammed out of money online')); ?></h3><p><?php echo esc_html(ontario_t('newsite.types.payment_copy', [], 'Card, bank, e-transfer, payment-app, marketplace, romance, phishing, and impersonation scams.')); ?></p></article>
-      </div>
-    </div>
-  </section>
+  <section id="fraud-types" class="newsite-section newsite-section--soft"><div class="container"><div class="newsite-heading"><h2><?php echo esc_html($t('newsite.types.title', 'Types of Online Financial Fraud We Assist With')); ?></h2></div><div class="newsite-type-grid"><?php for ($index = 1; $index <= 4; $index++) : ?><article><h3><?php echo esc_html($t('newsite.types.title_' . $index, '')); ?></h3><p><?php echo esc_html($t('newsite.types.copy_' . $index, '')); ?></p></article><?php endfor; ?></div></div></section>
 
-  <section id="process" class="newsite-section">
-    <div class="container newsite-process">
-      <div class="newsite-heading"><p class="newsite-kicker"><?php echo esc_html(ontario_t('newsite.process.kicker', [], 'What happens next')); ?></p><h2><?php echo esc_html(ontario_t('newsite.process.title', [], 'A clear process, without false promises')); ?></h2></div>
-      <ol>
-        <li><strong><?php echo esc_html(ontario_t('newsite.process.step_1_title', [], 'Share the available details')); ?></strong><span><?php echo esc_html(ontario_t('newsite.process.step_1_copy', [], 'Tell us what happened and include the documents or records you have.')); ?></span></li>
-        <li><strong><?php echo esc_html(ontario_t('newsite.process.step_2_title', [], 'We review the case')); ?></strong><span><?php echo esc_html(ontario_t('newsite.process.step_2_copy', [], 'Our team considers the information and the possible scope for further work.')); ?></span></li>
-        <li><strong><?php echo esc_html(ontario_t('newsite.process.step_3_title', [], 'Discuss possible next steps')); ?></strong><span><?php echo esc_html(ontario_t('newsite.process.step_3_copy', [], 'If appropriate, we explain useful evidence, reporting routes, and available options.')); ?></span></li>
-      </ol>
-    </div>
-  </section>
+  <section id="process" class="newsite-section"><div class="container"><div class="newsite-heading"><p class="newsite-kicker"><?php echo esc_html($t('newsite.process.kicker', 'Four-step process')); ?></p><h2><?php echo esc_html($t('newsite.process.title', 'How We Assist With Your Case')); ?></h2></div><ol class="newsite-process-cards"><?php for ($index = 1; $index <= 4; $index++) : ?><li><span aria-hidden="true">0<?php echo esc_html((string) $index); ?></span><h3><?php echo esc_html($t('newsite.process.title_' . $index, '')); ?></h3><p><?php echo esc_html($t('newsite.process.copy_' . $index, '')); ?></p></li><?php endfor; ?></ol></div></section>
 
-  <section class="newsite-section newsite-safety"><div class="container"><h2><?php echo esc_html(ontario_t('newsite.safety.title', [], 'Choose help carefully')); ?></h2><p><?php echo esc_html(ontario_t('newsite.safety.copy', [], 'Be cautious of anyone presenting themselves as a funds recovery company that guarantees results, promises money back within a fixed time, or asks for secret wallet information. Legitimate case assessment does not require your seed phrase, private key, password, or one-time security code.')); ?></p></div></section>
+  <section id="after-scam" class="newsite-section newsite-actions-section"><div class="container newsite-actions-layout"><div><p class="newsite-kicker"><?php echo esc_html($t('newsite.after.kicker', 'Reporting and next steps')); ?></p><h2><?php echo esc_html($t('newsite.after.title', "What to Do If You've Been Scammed Online")); ?></h2><p><?php echo esc_html($t('newsite.after.copy', "If you've been scammed out of money, act promptly. Taking the right steps early may help protect your accounts and preserve important evidence.")); ?></p></div><ol class="newsite-checklist"><?php for ($index = 1; $index <= 5; $index++) : ?><li><?php echo esc_html($t('newsite.after.step_' . $index, '')); ?></li><?php endfor; ?></ol></div><div class="container"><p class="newsite-official-note"><?php echo esc_html($t('newsite.after.notice', 'Contacting {brand_name} is not the same as filing an official police or government report.')); ?></p></div></section>
 
-  <section id="faq" class="newsite-section"><div class="container newsite-faq"><div class="newsite-heading"><h2><?php echo esc_html(ontario_t('newsite.faq.title', [], 'Questions before you submit')); ?></h2></div>
-    <?php for ($faq_index = 1; $faq_index <= 4; $faq_index++) : ?>
-      <details><summary><?php echo esc_html(ontario_t('newsite.faq.q' . $faq_index, [], '')); ?></summary><p><?php echo esc_html(ontario_t('newsite.faq.a' . $faq_index, ['brand_name' => $brand_name], '')); ?></p></details>
-    <?php endfor; ?>
-  </div></section>
+  <section id="transaction-tracing" class="newsite-section"><div class="container newsite-copy-block"><p class="newsite-kicker"><?php echo esc_html($t('newsite.tracing.kicker', 'Transaction analysis')); ?></p><h2><?php echo esc_html($t('newsite.tracing.title', 'Financial Transaction Tracing & Evidence Documentation')); ?></h2><p><?php echo esc_html($t('newsite.tracing.copy_1', 'Financial transaction analysis can help establish payment timelines, identify relevant transaction destinations, and organize records that may support complaints, financial institution reviews, or other available recovery procedures.')); ?></p><p><?php echo esc_html($t('newsite.tracing.copy_2', 'For cryptocurrency-related cases, blockchain transaction tracing may provide additional information about recorded transfers and wallet activity.')); ?></p><p class="newsite-disclosure"><?php echo esc_html($t('newsite.tracing.notice', 'Transaction tracing does not guarantee recovery.')); ?></p></div></section>
 
-  <section id="contact" class="newsite-contact"><div class="container newsite-contact__grid"><div><p class="newsite-kicker"><?php echo esc_html(ontario_t('newsite.contact.kicker', [], 'Private intake')); ?></p><h2><?php echo esc_html(ontario_t('newsite.contact.title', [], 'Request a Professional Case Assessment')); ?></h2><p><?php echo esc_html(ontario_t('newsite.contact.copy', [], 'Tell us about your situation and provide the available details. Our team can review the information and help identify possible next steps.')); ?></p></div><div class="newsite-contact__form"><?php include locate_template('template-parts/front-page/case-form.php'); ?></div></div></section>
+  <section id="recovery-assistance" class="newsite-section newsite-section--soft"><div class="container newsite-copy-block"><p class="newsite-kicker"><?php echo esc_html($t('newsite.recovery.kicker', 'Recovery assistance')); ?></p><h2><?php echo esc_html($t('newsite.recovery.title', 'Exploring Available Financial Recovery Options')); ?></h2><p><?php echo esc_html($t('newsite.recovery.copy_1', 'The appropriate next steps depend on the circumstances of each case, the payment methods involved, available documentation, and the institutions concerned.')); ?></p><p><?php echo esc_html($t('newsite.recovery.copy_2', '{brand_name} assists clients with understanding these factors, preparing relevant evidence, and navigating applicable procedures.')); ?></p></div></section>
+
+  <section id="why-us" class="newsite-section"><div class="container"><div class="newsite-heading"><p class="newsite-kicker"><?php echo esc_html($t('newsite.why.kicker', 'Why choose us')); ?></p><h2><?php echo esc_html($t('newsite.why.title', 'Professional Support Through Every Stage')); ?></h2></div><div class="newsite-why-grid"><?php for ($index = 1; $index <= 4; $index++) : ?><article><h3><?php echo esc_html($t('newsite.why.title_' . $index, '')); ?></h3><p><?php echo esc_html($t('newsite.why.copy_' . $index, '')); ?></p></article><?php endfor; ?></div></div></section>
+
+  <section id="faq" class="newsite-section newsite-section--soft"><div class="container newsite-faq"><div class="newsite-heading"><h2><?php echo esc_html($t('newsite.faq.title', 'Frequently Asked Questions')); ?></h2></div><?php for ($index = 1; $index <= 8; $index++) : ?><details><summary><?php echo esc_html($t('newsite.faq.q' . $index, '')); ?></summary><p><?php echo esc_html($t('newsite.faq.a' . $index, '')); ?></p></details><?php endfor; ?></div></section>
+  <section id="contact" class="newsite-contact"><div class="container newsite-contact__grid"><div><p class="newsite-kicker"><?php echo esc_html($t('newsite.contact.kicker', 'Private intake')); ?></p><h2><?php echo esc_html($t('newsite.contact.title', 'Request a Professional Case Assessment')); ?></h2><p><?php echo esc_html($t('newsite.contact.copy', 'Tell us about your situation and provide the available details. Our team can review the information and help identify possible next steps.')); ?></p></div><div class="newsite-contact__form"><?php include locate_template('template-parts/front-page/case-form.php'); ?></div></div></section>
 </main>
 <?php get_footer();
