@@ -10,7 +10,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-const ONTARIO_BOOTSTRAP_VERSION = '1.1.0';
+const ONTARIO_BOOTSTRAP_VERSION = '1.1.1';
 
 /**
  * A small full-page cache for public landing pages.
@@ -27,6 +27,35 @@ const ONTARIO_PAGE_CACHE_TTL = 300;
 function ontario_page_cache_directory(): string
 {
     return WP_CONTENT_DIR . '/cache/ontario-page-cache';
+}
+
+/**
+ * This file runs before WordPress initializes its usual HTTPS helpers.
+ * Determine the visitor-facing scheme here so that an HTTP response can never
+ * populate the same cached document used by an HTTPS visitor.
+ */
+function ontario_page_cache_request_scheme(): string
+{
+    $https = strtolower((string) ($_SERVER['HTTPS'] ?? ''));
+
+    if ($https !== '' && $https !== 'off') {
+        return 'https';
+    }
+
+    $forwarded_proto = strtolower(trim(explode(',', (string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''))[0]));
+
+    if ($forwarded_proto === 'https') {
+        return 'https';
+    }
+
+    $forwarded_ssl = strtolower(trim((string) ($_SERVER['HTTP_X_FORWARDED_SSL'] ?? '')));
+    $front_end_https = strtolower(trim((string) ($_SERVER['HTTP_FRONT_END_HTTPS'] ?? '')));
+
+    if (in_array($forwarded_ssl, ['on', '1', 'true'], true) || in_array($front_end_https, ['on', '1', 'true'], true)) {
+        return 'https';
+    }
+
+    return (string) ($_SERVER['SERVER_PORT'] ?? '') === '443' ? 'https' : 'http';
 }
 
 function ontario_page_cache_request_key(): string
@@ -86,7 +115,10 @@ function ontario_page_cache_request_key(): string
         return '';
     }
 
-    return hash('sha256', $host . '|/|' . $language);
+    // The scheme and bootstrap version are part of the key. Without them an
+    // HTTP-rendered document can be served to HTTPS visitors and make its
+    // scripts and styles fail as mixed content.
+    return hash('sha256', ONTARIO_BOOTSTRAP_VERSION . '|' . ontario_page_cache_request_scheme() . '|' . $host . '|/|' . $language);
 }
 
 function ontario_page_cache_file(string $key): string
