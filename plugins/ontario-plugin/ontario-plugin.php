@@ -17,6 +17,34 @@ define('OSM_PLUGIN_FILE', __FILE__);
 define('OSM_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('OSM_PLUGIN_URL', plugin_dir_url(__FILE__));
 
+// Keep a small, dependency-free trace for production fatals. WordPress may
+// suppress the actual error from visitors, so this records only technical
+// diagnostics (never form values or query strings) for urgent recovery.
+register_shutdown_function(static function (): void {
+    $error = error_get_last();
+    $fatal_types = [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR];
+
+    if (! is_array($error) || ! in_array((int) ($error['type'] ?? 0), $fatal_types, true)) {
+        return;
+    }
+
+    $request_uri = isset($_SERVER['REQUEST_URI']) ? (string) $_SERVER['REQUEST_URI'] : '';
+    $request_path = (string) wp_parse_url($request_uri, PHP_URL_PATH);
+    $entry = [
+        'type' => (int) ($error['type'] ?? 0),
+        'message' => (string) ($error['message'] ?? ''),
+        'file' => (string) ($error['file'] ?? ''),
+        'line' => (int) ($error['line'] ?? 0),
+        'path' => $request_path,
+    ];
+
+    @file_put_contents(
+        OSM_PLUGIN_PATH . 'logs',
+        '[' . gmdate('Y-m-d H:i:s') . '] PHP fatal | ' . json_encode($entry, JSON_UNESCAPED_SLASHES) . PHP_EOL,
+        FILE_APPEND
+    );
+});
+
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-logger.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-crypto.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-sites.php';
