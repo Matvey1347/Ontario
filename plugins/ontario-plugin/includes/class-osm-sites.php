@@ -1233,9 +1233,14 @@ final class OSM_Sites
         }
 
         $show_language_tabs = count($effective_languages) > 1;
+        $initial_surface = ($meta['homepage_design'] ?? 'classic') === 'newsite' ? 'newsite' : 'main';
 
         echo '<div class="osm-content-editor" data-osm-content-editor data-global-enabled="' . esc_attr(wp_json_encode(array_values($global_enabled))) . '">';
         echo '<p class="description" style="margin-top:0;">These fields show the effective text currently visible on this site for each enabled language. Edit a field to create a site override, or reset it to inherit the current global or translation-file value.</p>';
+        echo '<div class="osm-content-surface-nav" role="tablist" aria-label="Website content design">';
+        echo '<button type="button" class="button osm-content-surface-tab' . ($initial_surface === 'main' ? ' is-active' : '') . '" data-osm-content-surface-tab="main">Main site</button>';
+        echo '<button type="button" class="button osm-content-surface-tab' . ($initial_surface === 'newsite' ? ' is-active' : '') . '" data-osm-content-surface-tab="newsite">New site</button>';
+        echo '</div>';
 
         if ($show_language_tabs) {
             echo '<div class="osm-language-tab-nav" role="tablist" aria-label="Content language tabs">';
@@ -1263,7 +1268,14 @@ final class OSM_Sites
 
             echo '<div class="osm-language-tab-panel' . (($active || ! $show_language_tabs) ? ' is-active' : '') . '" data-osm-content-lang-panel="' . esc_attr($code) . '"' . ($active || ! $show_language_tabs ? '' : ' hidden') . '>';
 
-            foreach ($groups as $group) {
+            foreach (['main', 'newsite'] as $surface) {
+                $surface_active = $surface === $initial_surface;
+                echo '<div class="osm-content-surface-panel' . ($surface_active ? ' is-active' : '') . '" data-osm-content-surface-panel="' . esc_attr($surface) . '"' . ($surface_active ? '' : ' hidden') . '>';
+
+                foreach ($groups as $group) {
+                    if (($group['surface'] ?? 'main') !== $surface) {
+                        continue;
+                    }
                 echo '<section class="osm-content-group">';
                 echo '<h3>' . esc_html((string) $group['label']) . '</h3>';
 
@@ -1290,6 +1302,9 @@ final class OSM_Sites
                 }
 
                 echo '</section>';
+            }
+
+                echo '</div>';
             }
 
             echo '</div>';
@@ -1699,6 +1714,24 @@ final class OSM_Sites
             gap: 18px;
           }
 
+          .osm-content-surface-nav {
+            display: flex;
+            gap: 10px;
+            margin: 16px 0 20px;
+          }
+
+          .osm-content-surface-tab.is-active,
+          .osm-content-surface-tab.is-active:hover,
+          .osm-content-surface-tab.is-active:focus {
+            background: #2271b1;
+            border-color: #2271b1;
+            color: #fff !important;
+          }
+
+          .osm-content-surface-panel[hidden] { display: none !important; }
+          .osm-content-surface-panel { display: none; }
+          .osm-content-surface-panel.is-active { display: grid; gap: 18px; }
+
           .osm-content-group {
             background: #fff;
             border: 1px solid #dcdcde;
@@ -1770,6 +1803,19 @@ final class OSM_Sites
             ].map((key) => tabsRoot.querySelector(`[data-osm-field-row="${key}"]`)).filter(Boolean);
             const contentEditor = tabsRoot.querySelector('[data-osm-content-editor]');
             const languageCheckboxes = Array.from(tabsRoot.querySelectorAll('input[name="osm[enabled_languages][]"]'));
+
+            const activateContentSurface = (surface) => {
+              if (!contentEditor) return;
+
+              contentEditor.querySelectorAll('[data-osm-content-surface-tab]').forEach((tab) => {
+                tab.classList.toggle('is-active', tab.dataset.osmContentSurfaceTab === surface);
+              });
+              contentEditor.querySelectorAll('[data-osm-content-surface-panel]').forEach((panel) => {
+                const active = panel.dataset.osmContentSurfacePanel === surface;
+                panel.classList.toggle('is-active', active);
+                panel.hidden = !active;
+              });
+            };
 
             const syncDisplayModeFields = () => {
               if (!displayModeField || !displayChoiceRows.length) {
@@ -1909,6 +1955,10 @@ final class OSM_Sites
             });
 
             if (contentEditor) {
+              Array.from(contentEditor.querySelectorAll('[data-osm-content-surface-tab]')).forEach((button) => {
+                button.addEventListener('click', () => activateContentSurface(button.dataset.osmContentSurfaceTab));
+              });
+
               Array.from(contentEditor.querySelectorAll('[data-osm-content-lang-tab]')).forEach((button) => {
                 button.addEventListener('click', () => activateContentLanguage(button.dataset.osmContentLangTab));
               });

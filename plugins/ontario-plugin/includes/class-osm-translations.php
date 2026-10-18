@@ -12,6 +12,7 @@ final class OSM_Translations
     private const CONTENT_GROUPS = [
         'full_hero' => [
             'label' => 'Full Hero',
+            'surface' => 'main',
             'keys' => [
                 'hero.badge',
                 'hero.title',
@@ -21,13 +22,11 @@ final class OSM_Translations
                 'hero.trust.encrypted',
                 'hero.trust.pipeda',
                 'hero.trust.soc2',
-                'hero.form_title',
-                'hero.form_copy',
-                'hero.form_submit',
             ],
         ],
         'simple_hero' => [
             'label' => 'Simple Hero',
+            'surface' => 'main',
             'keys' => [
                 'simple.hero.badge',
                 'simple.hero.title',
@@ -41,6 +40,7 @@ final class OSM_Translations
         ],
         'footer' => [
             'label' => 'Footer',
+            'surface' => 'main',
             'keys' => [
                 'footer.description',
                 'footer.security',
@@ -48,6 +48,41 @@ final class OSM_Translations
                 'footer.terms',
                 'footer.privacy',
             ],
+        ],
+        'newsite_hero' => [
+            'label' => 'New site hero',
+            'surface' => 'newsite',
+            'keys' => ['newsite.hero.kicker', 'newsite.hero.title', 'newsite.hero.supporting', 'newsite.hero.copy', 'newsite.hero.cta', 'newsite.hero.secondary_cta', 'newsite.hero.benefit_1', 'newsite.hero.benefit_2', 'newsite.hero.benefit_3'],
+        ],
+        'newsite_conversion' => [
+            'label' => 'Forms and testimonials',
+            'surface' => 'newsite',
+            'keys' => ['hero.form_title', 'hero.form_copy', 'hero.form_submit', 'form.quick_name', 'form.quick_name_placeholder', 'form.phone', 'form.phone_placeholder_ca', 'form.email', 'form.quick_email_placeholder', 'form.quick_message', 'form.quick_message_placeholder', 'form.loss_confirm', 'testimonials.quote_1', 'testimonials.name_1', 'testimonials.case_1', 'testimonials.quote_2', 'testimonials.name_2', 'testimonials.case_2', 'testimonials.quote_3', 'testimonials.name_3', 'testimonials.case_3', 'testimonials.quote_4', 'testimonials.name_4', 'testimonials.case_4', 'testimonials.quote_5', 'testimonials.name_5', 'testimonials.case_5'],
+        ],
+        'newsite_assistance' => [
+            'label' => 'Professional assistance',
+            'surface' => 'newsite',
+            'keys' => ['newsite.assistance.kicker', 'newsite.assistance.title', 'newsite.assistance.copy_1', 'newsite.assistance.copy_2'],
+        ],
+        'newsite_types' => [
+            'label' => 'Fraud types',
+            'surface' => 'newsite',
+            'keys' => ['newsite.types.title', 'newsite.types.title_1', 'newsite.types.copy_1', 'newsite.types.title_2', 'newsite.types.copy_2', 'newsite.types.title_3', 'newsite.types.copy_3', 'newsite.types.title_4', 'newsite.types.copy_4'],
+        ],
+        'newsite_process' => [
+            'label' => 'Process',
+            'surface' => 'newsite',
+            'keys' => ['newsite.process.kicker', 'newsite.process.title', 'newsite.process.title_1', 'newsite.process.copy_1', 'newsite.process.title_2', 'newsite.process.copy_2', 'newsite.process.title_3', 'newsite.process.copy_3', 'newsite.process.title_4', 'newsite.process.copy_4'],
+        ],
+        'newsite_guidance' => [
+            'label' => 'Guidance and recovery',
+            'surface' => 'newsite',
+            'keys' => ['newsite.after.kicker', 'newsite.after.title', 'newsite.after.copy', 'newsite.after.step_1', 'newsite.after.step_2', 'newsite.after.step_3', 'newsite.after.step_4', 'newsite.after.step_5', 'newsite.after.notice', 'newsite.tracing.kicker', 'newsite.tracing.title', 'newsite.tracing.copy_1', 'newsite.tracing.copy_2', 'newsite.tracing.notice', 'newsite.recovery.kicker', 'newsite.recovery.title', 'newsite.recovery.copy_1', 'newsite.recovery.copy_2'],
+        ],
+        'newsite_why_faq_contact' => [
+            'label' => 'Why us, FAQ and contact',
+            'surface' => 'newsite',
+            'keys' => ['newsite.why.kicker', 'newsite.why.title', 'newsite.why.title_1', 'newsite.why.copy_1', 'newsite.why.title_2', 'newsite.why.copy_2', 'newsite.why.title_3', 'newsite.why.copy_3', 'newsite.why.title_4', 'newsite.why.copy_4', 'newsite.faq.title', 'newsite.faq.q1', 'newsite.faq.a1', 'newsite.faq.q2', 'newsite.faq.a2', 'newsite.faq.q3', 'newsite.faq.a3', 'newsite.faq.q4', 'newsite.faq.a4', 'newsite.faq.q5', 'newsite.faq.a5', 'newsite.faq.q6', 'newsite.faq.a6', 'newsite.faq.q7', 'newsite.faq.a7', 'newsite.faq.q8', 'newsite.faq.a8', 'newsite.contact.kicker', 'newsite.contact.title', 'newsite.contact.copy', 'newsite.form.submit'],
         ],
     ];
 
