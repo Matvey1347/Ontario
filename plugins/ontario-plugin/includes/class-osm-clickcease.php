@@ -29,6 +29,7 @@ final class OSM_Clickcease
 
         add_action('save_post_' . OSM_Sites::post_type(), [$this, 'handle_site_save'], 20, 2);
         add_action('send_headers', [$this, 'server_validation'], -999);
+        add_action('wp_head', [$this, 'remove_legacy_head_hook'], -999);
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets'], -999);
         add_action('wp_body_open', [$this, 'render_noscript_tags'], -999);
         add_action('wp_ajax_validate_clickcease_response', [$this, 'validate_clickcease_response'], -999);
@@ -178,6 +179,62 @@ final class OSM_Clickcease
             'monitorScriptUrl' => ((string) ($site['clickcease_install_click_fraud'] ?? '0') === '1') ? self::CLICKCEASE . '/monitor/stat.js' : '',
             'botzappingScriptUrl' => $domain . '/i/' . $api_key . '.js',
         ]);
+    }
+
+    /**
+     * A legacy ClickCease install may keep its own wp_head callback enabled
+     * alongside the Ontario integration. On affected sites that callback
+     * emits its tag and then fatals, taking down the public page. Keep the
+     * Ontario integration (including server-side validation) and remove only
+     * the duplicate legacy callback when ClickCease is managed here.
+     */
+    public function remove_legacy_head_hook(): void
+    {
+        $site = $this->current_site->get_site();
+
+        if ((string) ($site['clickcease_install_click_fraud'] ?? '0') !== '1') {
+            return;
+        }
+
+        global $wp_filter;
+
+        if (! isset($wp_filter['wp_head']) || ! $wp_filter['wp_head'] instanceof WP_Hook) {
+            return;
+        }
+
+        foreach ($wp_filter['wp_head']->callbacks as $priority => $callbacks) {
+            foreach ($callbacks as $callback) {
+                $function = $callback['function'] ?? null;
+                $identifier = $this->callback_identifier($function);
+
+                if ($identifier === '' || preg_match('/(?:clickcease|cheq|botzapping|travenicora)/i', $identifier) !== 1) {
+                    continue;
+                }
+
+                remove_action('wp_head', $function, (int) $priority);
+            }
+        }
+    }
+
+    private function callback_identifier(mixed $function): string
+    {
+        if (is_string($function)) {
+            return $function;
+        }
+
+        if (is_array($function) && isset($function[0], $function[1]) && is_string($function[1])) {
+            $owner = is_object($function[0]) ? get_class($function[0]) : (string) $function[0];
+
+            return $owner . '::' . $function[1];
+        }
+
+        if ($function instanceof Closure) {
+            $reflection = new ReflectionFunction($function);
+
+            return (string) $reflection->getFileName();
+        }
+
+        return '';
     }
 
     public function render_noscript_tags(): void
