@@ -1034,11 +1034,13 @@ section {
 
 .progress i {
   display: block;
-  width: 20%;
+  width: 100%;
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--cyan), var(--green));
-  transition: width 0.25s ease;
+  transform: scaleX(0.2);
+  transform-origin: left center;
+  transition: transform 0.25s ease;
 }
 
 .form-step {

@@ -14,7 +14,7 @@ if (! defined('ABSPATH')) {
   <input type="hidden" name="utm_campaign" value="" />
   <input type="hidden" name="utm_term" value="" />
   <input type="hidden" name="utm_content" value="" />
-  <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" />
+  <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
   <div class="form-top">
     <div>
       <strong><?php echo esc_html(ontario_t('form.case.title', [], 'Start Free Case Review')); ?></strong>

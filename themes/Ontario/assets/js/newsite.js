@@ -114,7 +114,7 @@
     if (!form || !steps.length) return;
     steps.forEach((item, index) => item.classList.toggle('active', index === step));
     label.textContent = t('stepLabel', 'Step {current} of {total}').replace('{current}', step + 1).replace('{total}', steps.length);
-    progress.style.width = `${((step + 1) / steps.length) * 100}%`;
+    progress.style.transform = `scaleX(${(step + 1) / steps.length})`;
     previous.style.visibility = step ? 'visible' : 'hidden';
     next.textContent = step === steps.length - 1 ? t('submitCase', 'Submit Your Case') : t('nextStep', 'Next Step');
   }
