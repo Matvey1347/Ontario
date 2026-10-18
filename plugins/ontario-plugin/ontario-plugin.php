@@ -50,6 +50,13 @@ if (! function_exists('ontario_site_field')) {
     }
 }
 
+if (! function_exists('ontario_dynamic_headline')) {
+    function ontario_dynamic_headline(): string
+    {
+        return OSM_Plugin::instance()->current_site()->get_dynamic_headline();
+    }
+}
+
 if (! function_exists('ontario_site_logo_url')) {
     function ontario_site_logo_url(): string
     {

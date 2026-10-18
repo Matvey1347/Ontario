@@ -4,14 +4,22 @@ declare(strict_types=1);
 if (! defined('ABSPATH')) {
     exit;
 }
+
+$dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynamic_headline() : '';
 ?>
 <main id="top">
   <section class="hero">
     <div class="container hero-grid">
       <div class="hero-content">
         <div class="eyebrow"><?php echo esc_html(ontario_t('hero.badge', [], 'Private blockchain intelligence for fraud victims')); ?></div>
-        <h1 data-keyword-headline>
-          <?php echo wp_kses_post(ontario_t('hero.title', [], 'Trace lost digital assets with <span class="gradient-text">forensic precision.</span>')); ?>
+        <h1>
+          <?php
+          if ($dynamic_headline !== '') {
+              echo esc_html($dynamic_headline);
+          } else {
+              echo wp_kses_post(ontario_t('hero.title', [], 'Trace lost digital assets with <span class="gradient-text">forensic precision.</span>'));
+          }
+          ?>
         </h1>
         <p class="hero-copy">
           <?php echo wp_kses_post(ontario_t('hero.copy', ['brand_name' => $brand_name], $brand_name . ' helps victims of online financial fraud map crypto transactions.')); ?>

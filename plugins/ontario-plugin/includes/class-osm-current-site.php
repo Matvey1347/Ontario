@@ -20,6 +20,7 @@ final class OSM_Current_Site
         add_filter('get_site_icon_url', [$this, 'filter_site_icon_url'], 10, 3);
         add_filter('pre_get_document_title', [$this, 'filter_document_title']);
         add_filter('the_content', [$this, 'filter_content_tokens'], 20);
+        add_action('send_headers', [$this, 'disable_dynamic_headline_cache']);
         add_action('wp_head', [$this, 'render_head_assets'], 1);
         add_action('wp_body_open', [$this, 'render_body_assets'], 1);
     }
@@ -74,6 +75,61 @@ final class OSM_Current_Site
         }
 
         return $default;
+    }
+
+    public function get_dynamic_headline(): string
+    {
+        $parameter = $this->get_field('dynamic_headline_parameter', 'keyword');
+
+        if (preg_match('/^[A-Za-z0-9_-]{1,64}$/', $parameter) !== 1) {
+            return '';
+        }
+
+        $query_string = isset($_SERVER['QUERY_STRING']) && is_string($_SERVER['QUERY_STRING'])
+            ? $_SERVER['QUERY_STRING']
+            : '';
+
+        if ($query_string === '') {
+            return '';
+        }
+
+        foreach (explode('&', $query_string) as $query_part) {
+            $separator_position = strpos($query_part, '=');
+            $raw_name = $separator_position === false ? $query_part : substr($query_part, 0, $separator_position);
+
+            if (preg_match('/%(?![0-9A-Fa-f]{2})/', $raw_name) === 1) {
+                continue;
+            }
+
+            $name = rawurldecode(str_replace('+', ' ', $raw_name));
+
+            if ($name !== $parameter) {
+                continue;
+            }
+
+            $raw_value = $separator_position === false ? '' : substr($query_part, $separator_position + 1);
+
+            if (preg_match('/%(?![0-9A-Fa-f]{2})/', $raw_value) === 1) {
+                return '';
+            }
+
+            $headline = trim(rawurldecode(str_replace('+', ' ', $raw_value)));
+            $length = function_exists('mb_strlen') ? mb_strlen($headline, 'UTF-8') : strlen($headline);
+
+            if (
+                $headline === '' ||
+                $length > 200 ||
+                str_contains($headline, "\0") ||
+                preg_match('//u', $headline) !== 1 ||
+                preg_match('/^\{[^{}]+\}$/u', $headline) === 1
+            ) {
+                return '';
+            }
+
+            return $headline;
+        }
+
+        return '';
     }
 
     public function get_logo_url(): string
@@ -183,6 +239,12 @@ final class OSM_Current_Site
         $site_title = $this->get_field('meta_title', get_bloginfo('name'));
 
         if (is_front_page() || is_home()) {
+            $dynamic_headline = $this->get_dynamic_headline();
+
+            if ($dynamic_headline !== '') {
+                return $dynamic_headline;
+            }
+
             return $site_title;
         }
 
@@ -192,6 +254,17 @@ final class OSM_Current_Site
         }
 
         return $site_title;
+    }
+
+    public function disable_dynamic_headline_cache(): void
+    {
+        if (! is_front_page() && ! is_home()) {
+            return;
+        }
+
+        if ($this->get_dynamic_headline() !== '') {
+            nocache_headers();
+        }
     }
 
     public function filter_content_tokens(string $content): string

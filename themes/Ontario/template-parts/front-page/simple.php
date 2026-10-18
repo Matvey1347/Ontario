@@ -4,13 +4,15 @@ declare(strict_types=1);
 if (! defined('ABSPATH')) {
     exit;
 }
+
+$dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynamic_headline() : '';
 ?>
 <main id="top" class="simple-front-page">
   <section class="simple-hero">
     <div class="container simple-hero-grid">
       <div class="simple-hero-copy">
         <div class="eyebrow"><?php echo esc_html(ontario_t('simple.hero.badge', [], 'Clear private case review')); ?></div>
-        <h1 data-keyword-headline><?php echo esc_html(ontario_t('simple.hero.title', [], 'Get calm, step-by-step help reviewing a suspected financial fraud case.')); ?></h1>
+        <h1><?php echo $dynamic_headline !== '' ? esc_html($dynamic_headline) : esc_html(ontario_t('simple.hero.title', [], 'Get calm, step-by-step help reviewing a suspected financial fraud case.')); ?></h1>
         <p class="simple-lead">
           <?php echo esc_html(ontario_t('simple.hero.lead', ['brand_name' => $brand_name], $brand_name . ' helps people organize evidence, understand what happened, and learn what practical next steps may be available.')); ?>
         </p>
