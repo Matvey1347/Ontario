@@ -588,18 +588,33 @@ add_action('wp_enqueue_scripts', static function (): void {
 
     if ($is_front_page || $is_newsite_page) {
         $theme_css_path = $theme_dir . '/assets/css/styles.css';
-        wp_register_style('ontario-theme', false, [], $version);
-        wp_enqueue_style('ontario-theme');
-
-        if (is_readable($theme_css_path)) {
-            wp_add_inline_style('ontario-theme', (string) file_get_contents($theme_css_path));
-        }
-
         if ($is_newsite_page) {
             $newsite_css_path = $theme_dir . '/assets/css/newsite.css';
 
-            if (is_readable($newsite_css_path)) {
-                wp_add_inline_style('ontario-theme', (string) file_get_contents($newsite_css_path));
+            // This landing page is deliberately cacheable.  Keeping ~66 KiB of
+            // CSS inline made every dynamic HTML response much larger and
+            // prevented the browser/CDN from reusing the styles on later
+            // visits.  The versioned files have immutable cache headers, and
+            // stylesheet links remain render-blocking so there is no FOUC.
+            wp_enqueue_style(
+                'ontario-theme',
+                $theme_uri . '/assets/css/styles.css',
+                [],
+                is_readable($theme_css_path) ? (string) filemtime($theme_css_path) : $version
+            );
+
+            wp_enqueue_style(
+                'ontario-newsite',
+                $theme_uri . '/assets/css/newsite.css',
+                ['ontario-theme'],
+                is_readable($newsite_css_path) ? (string) filemtime($newsite_css_path) : $version
+            );
+        } else {
+            wp_register_style('ontario-theme', false, [], $version);
+            wp_enqueue_style('ontario-theme');
+
+            if (is_readable($theme_css_path)) {
+                wp_add_inline_style('ontario-theme', (string) file_get_contents($theme_css_path));
             }
         }
 

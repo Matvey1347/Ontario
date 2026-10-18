@@ -1,4 +1,5 @@
 body.ontario-newsite { --bg: #050914; --bg-soft: #07111f; --panel: rgba(11, 24, 42, .9); --panel-solid: #0b182a; --text: #eef6ff; --muted: #93a8bd; --line: rgba(126, 221, 255, .16); --blue: #397cff; background: #050914; color: var(--text); }
+body.ontario-newsite::after { animation:none; }
 .ontario-newsite .top-notice { background: #123d73; color: #f4faff; border-color: rgba(126, 221, 255, .18); }
 .ontario-newsite .site-header { background: rgba(5, 12, 24, .9); border-color: rgba(126, 221, 255, .14); }
 .ontario-newsite .site-header .brand, .ontario-newsite .nav-links, .ontario-newsite .phone { color: #d8e9fb; }
