@@ -485,6 +485,107 @@ h1 {
   min-height: 96px;
 }
 
+.hero-testimonials {
+  width: 100%;
+  max-width: 600px;
+  margin: 16px 0 0 auto;
+  padding: 18px 20px 14px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(7, 17, 31, 0.72);
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.22);
+}
+
+.testimonial-carousel__slide {
+  min-height: 122px;
+}
+
+.testimonial-carousel__slide[hidden] {
+  display: none;
+}
+
+.testimonial-carousel blockquote {
+  margin: 0;
+}
+
+.testimonial-carousel blockquote p {
+  margin: 0;
+  color: #dcecff;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.testimonial-carousel footer {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-top: 14px;
+}
+
+.testimonial-carousel cite {
+  color: var(--text);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.testimonial-carousel footer span {
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.testimonial-carousel__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.testimonial-carousel__button {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.testimonial-carousel__button:hover,
+.testimonial-carousel__button:focus-visible {
+  border-color: var(--cyan);
+  background: rgba(77, 227, 255, 0.12);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.testimonial-carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.testimonial-carousel__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(147, 168, 189, 0.52);
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.testimonial-carousel__dot.is-active {
+  width: 20px;
+  background: var(--green);
+}
+
 .hero-visual::before,
 .hero-visual::after {
   content: "";
@@ -2525,6 +2626,14 @@ textarea.is-invalid,
   .cta-band,
   .process-copy-card {
     padding: 20px;
+  }
+
+  .hero-testimonials {
+    padding: 16px 18px 12px;
+  }
+
+  .testimonial-carousel__slide {
+    min-height: 140px;
   }
 
   .grid-4,

@@ -84,6 +84,82 @@
     });
   }
 
+  function initTestimonialCarousels() {
+    document.querySelectorAll('[data-testimonial-carousel]').forEach((carousel) => {
+      const slides = [...carousel.querySelectorAll('[data-testimonial-slide]')];
+      const dots = [...carousel.querySelectorAll('[data-testimonial-dot]')];
+      const previousButton = carousel.querySelector('[data-testimonial-previous]');
+      const nextButton = carousel.querySelector('[data-testimonial-next]');
+
+      if (slides.length < 2) {
+        return;
+      }
+
+      let activeIndex = slides.findIndex((slide) => slide.classList.contains('is-active'));
+      let timer = null;
+      let isPaused = false;
+
+      if (activeIndex < 0) {
+        activeIndex = 0;
+      }
+
+      function showSlide(index) {
+        activeIndex = (index + slides.length) % slides.length;
+
+        slides.forEach((slide, slideIndex) => {
+          const isActive = slideIndex === activeIndex;
+          slide.classList.toggle('is-active', isActive);
+          slide.hidden = !isActive;
+        });
+
+        dots.forEach((dot, dotIndex) => {
+          dot.classList.toggle('is-active', dotIndex === activeIndex);
+        });
+      }
+
+      function stopAutoplay() {
+        if (timer !== null) {
+          window.clearInterval(timer);
+          timer = null;
+        }
+      }
+
+      function startAutoplay() {
+        if (prefersReducedMotion || isPaused || timer !== null) {
+          return;
+        }
+
+        timer = window.setInterval(() => showSlide(activeIndex + 1), 6500);
+      }
+
+      function showPrevious() {
+        isPaused = true;
+        stopAutoplay();
+        showSlide(activeIndex - 1);
+      }
+
+      function showNext() {
+        isPaused = true;
+        stopAutoplay();
+        showSlide(activeIndex + 1);
+      }
+
+      previousButton?.addEventListener('click', showPrevious);
+      nextButton?.addEventListener('click', showNext);
+      carousel.addEventListener('pointerenter', stopAutoplay);
+      carousel.addEventListener('pointerleave', startAutoplay);
+      carousel.addEventListener('focusin', stopAutoplay);
+      carousel.addEventListener('focusout', () => {
+        if (!carousel.contains(document.activeElement)) {
+          startAutoplay();
+        }
+      });
+
+      showSlide(activeIndex);
+      startAutoplay();
+    });
+  }
+
   function initScrollReveal() {
     const revealGroups = [
       '.strip-card',
@@ -201,7 +277,8 @@
     const openButtons = document.querySelectorAll('[data-modal-open]');
     const closeButtons = modal.querySelectorAll('[data-modal-close]');
     const firstField = modal.querySelector('input, textarea, button');
-    const mainForm = document.getElementById('caseForm');
+    const leadForms = [...document.querySelectorAll('#caseForm, [data-quick-form]')]
+      .filter((formElement) => !modal.contains(formElement));
     let lastFocusedElement = null;
     let autoOpenCancelled = false;
     let autoOpenTimer = null;
@@ -246,7 +323,12 @@
       button.addEventListener('click', openModal);
     });
 
-    mainForm?.addEventListener('focusin', cancelAutoOpen);
+    leadForms.forEach((formElement) => {
+      formElement.addEventListener('pointerdown', cancelAutoOpen);
+      formElement.addEventListener('focusin', cancelAutoOpen);
+      formElement.addEventListener('input', cancelAutoOpen);
+      formElement.addEventListener('change', cancelAutoOpen);
+    });
 
     autoOpenTimer = window.setTimeout(() => {
       autoOpenTimer = null;
@@ -1138,6 +1220,7 @@
   initPhoneCountrySelects();
   initPhoneMask();
   initLanguageSwitcher();
+  initTestimonialCarousels();
   attachFieldValidation(form);
   document.querySelectorAll('[data-quick-form], #quickForm').forEach(attachFieldValidation);
   initQuickContactModal();

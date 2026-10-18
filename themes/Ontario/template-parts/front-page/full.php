@@ -53,6 +53,31 @@ $dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynami
           <button class="btn btn-primary short-submit" type="submit"><?php echo esc_html(ontario_t('hero.form_submit', [], 'Get A Free Consultation')); ?></button>
           <?php echo ontario_render_tracking_code('form'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
         </form>
+
+        <section class="hero-testimonials testimonial-carousel" data-testimonial-carousel aria-label="<?php echo esc_attr(ontario_t('testimonials.aria_label', [], 'Client testimonials')); ?>">
+          <div class="testimonial-carousel__viewport">
+            <?php for ($testimonial_index = 1; $testimonial_index <= 5; $testimonial_index++) : ?>
+              <article class="testimonial-carousel__slide<?php echo $testimonial_index === 1 ? ' is-active' : ''; ?>" data-testimonial-slide<?php echo $testimonial_index === 1 ? '' : ' hidden'; ?>>
+                <blockquote>
+                  <p><?php echo esc_html(ontario_t('testimonials.quote_' . $testimonial_index, [], '')); ?></p>
+                  <footer>
+                    <cite><?php echo esc_html(ontario_t('testimonials.name_' . $testimonial_index, [], '')); ?></cite>
+                    <span><?php echo esc_html(ontario_t('testimonials.case_' . $testimonial_index, [], '')); ?></span>
+                  </footer>
+                </blockquote>
+              </article>
+            <?php endfor; ?>
+          </div>
+          <div class="testimonial-carousel__controls">
+            <button type="button" class="testimonial-carousel__button" data-testimonial-previous aria-label="<?php echo esc_attr(ontario_t('testimonials.previous', [], 'Show previous testimonial')); ?>">←</button>
+            <div class="testimonial-carousel__dots" aria-hidden="true">
+              <?php for ($testimonial_index = 1; $testimonial_index <= 5; $testimonial_index++) : ?>
+                <span class="testimonial-carousel__dot<?php echo $testimonial_index === 1 ? ' is-active' : ''; ?>" data-testimonial-dot></span>
+              <?php endfor; ?>
+            </div>
+            <button type="button" class="testimonial-carousel__button" data-testimonial-next aria-label="<?php echo esc_attr(ontario_t('testimonials.next', [], 'Show next testimonial')); ?>">→</button>
+          </div>
+        </section>
       </div>
     </div>
   </section>
