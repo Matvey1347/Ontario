@@ -17,7 +17,7 @@ if (! defined('ABSPATH')) {
   <meta name="google" content="notranslate" />
   <meta name="googlebot" content="notranslate" />
   <meta name="translator" content="no" />
-  <meta name="description" content="<?php echo esc_attr(ontario_site_field('meta_description', ontario_t('hero.copy', ['brand_name' => ontario_site_brand_name()], 'Ontario Refunds helps victims of online financial fraud trace digital assets, prepare evidence-based reports, and understand practical next steps.'))); ?>" />
+  <meta name="description" content="<?php echo esc_attr(ontario_is_newsite_page() ? ontario_t('newsite.meta_description', ['brand_name' => ontario_site_brand_name()], 'Request a professional assessment for an online scam or cybercrime case.') : ontario_site_field('meta_description', ontario_t('hero.copy', ['brand_name' => ontario_site_brand_name()], 'Ontario Refunds helps victims of online financial fraud trace digital assets, prepare evidence-based reports, and understand practical next steps.'))); ?>" />
   <?php if (is_front_page() && $effective_display_mode === 'simple') : ?>
     <link rel="preload" as="image" href="<?php echo esc_url($hero_preload); ?>" type="image/webp" />
   <?php endif; ?>
@@ -32,6 +32,7 @@ $phone_href = ontario_site_field('phone_href');
 $phone_number = ontario_site_field('phone_number');
 $enabled_languages = ontario_enabled_languages();
 $current_language = ontario_current_language();
+$is_newsite_page = ontario_is_newsite_page();
 ?>
 <div class="top-notice">
   <div class="container">
@@ -52,9 +53,8 @@ $current_language = ontario_current_language();
 
       <div class="nav-links" aria-label="<?php echo esc_attr(ontario_t('site.primary_navigation', [], 'Primary navigation')); ?>">
         <a href="#services"><?php echo esc_html(ontario_t('nav.services', [], 'Services')); ?></a>
-        <a href="#scanner"><?php echo esc_html(ontario_t('nav.case_review', [], 'Case Review')); ?></a>
-        <a href="#report"><?php echo esc_html(ontario_t('nav.report_preview', [], 'Report Preview')); ?></a>
-        <a href="#process"><?php echo esc_html(ontario_t('nav.process', [], 'Process')); ?></a>
+        <a href="<?php echo esc_url($is_newsite_page ? '#scam-types' : '#scanner'); ?>"><?php echo esc_html(ontario_t($is_newsite_page ? 'newsite.nav.scam_types' : 'nav.case_review', [], $is_newsite_page ? 'Scam types' : 'Case Review')); ?></a>
+        <a href="<?php echo esc_url($is_newsite_page ? '#process' : '#report'); ?>"><?php echo esc_html(ontario_t($is_newsite_page ? 'nav.process' : 'nav.report_preview', [], $is_newsite_page ? 'Process' : 'Report Preview')); ?></a>
         <a href="#faq"><?php echo esc_html(ontario_t('nav.faq', [], 'FAQ')); ?></a>
       </div>
 
@@ -84,7 +84,7 @@ $current_language = ontario_current_language();
         <?php if ($phone_href !== '' && $phone_number !== '') : ?>
           <a class="phone" href="tel:<?php echo esc_attr($phone_href); ?>"><?php echo esc_html($phone_number); ?></a>
         <?php endif; ?>
-        <a class="btn btn-primary" href="#quick-contact-modal" data-modal-open><?php echo esc_html(ontario_t('nav.free_consultation', [], 'Free Consultation')); ?></a>
+        <a class="btn btn-primary" href="<?php echo esc_url($is_newsite_page ? '#contact' : '#quick-contact-modal'); ?>"<?php echo $is_newsite_page ? '' : ' data-modal-open'; ?>><?php echo esc_html(ontario_t($is_newsite_page ? 'newsite.nav.contact' : 'nav.free_consultation', [], $is_newsite_page ? 'Request assessment' : 'Free Consultation')); ?></a>
         <button class="mobile-menu-btn" type="button" aria-label="<?php echo esc_attr(ontario_t('site.open_menu', [], 'Open menu')); ?>" aria-expanded="false" id="menuBtn">☰</button>
       </div>
     </nav>

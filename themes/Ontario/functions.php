@@ -135,6 +135,25 @@ if (! function_exists('ontario_success_page_url')) {
     }
 }
 
+if (! function_exists('ontario_is_newsite_page')) {
+    /**
+     * The campaign landing page is intentionally a virtual route so it is
+     * available on every domain managed by the Ontario plugin.
+     */
+    function ontario_is_newsite_page(): bool
+    {
+        $request_uri = isset($_SERVER['REQUEST_URI']) ? wp_unslash((string) $_SERVER['REQUEST_URI']) : '';
+        $request_path = trim((string) wp_parse_url($request_uri, PHP_URL_PATH), '/');
+        $home_path = trim((string) wp_parse_url(home_url('/'), PHP_URL_PATH), '/');
+
+        if ($home_path !== '' && str_starts_with($request_path, $home_path . '/')) {
+            $request_path = substr($request_path, strlen($home_path) + 1);
+        }
+
+        return $request_path === 'newsite';
+    }
+}
+
 if (! function_exists('ontario_site_display_mode')) {
     function ontario_site_display_mode(): string
     {
@@ -461,6 +480,10 @@ add_filter('body_class', static function (array $classes): array {
         $classes[] = 'ontario-display-choice-pending';
     }
 
+    if (ontario_is_newsite_page()) {
+        $classes[] = 'ontario-newsite';
+    }
+
     return $classes;
 });
 
@@ -479,7 +502,7 @@ add_action('template_redirect', static function (): void {
         $request_path = '';
     }
 
-    if ($request_path !== 'success') {
+    if (! in_array($request_path, ['success', 'newsite'], true)) {
         return;
     }
 
@@ -491,9 +514,25 @@ add_action('template_redirect', static function (): void {
 
     status_header(200);
     nocache_headers();
-    include get_template_directory() . '/page-success.php';
+    include get_template_directory() . ($request_path === 'newsite' ? '/page-newsite.php' : '/page-success.php');
     exit;
 });
+
+add_filter('document_title_parts', static function (array $parts): array {
+    if (ontario_is_newsite_page()) {
+        $parts['title'] = ontario_t('newsite.meta_title', ['brand_name' => ontario_site_brand_name()], 'Online Scam Case Assessment | {brand_name}');
+    }
+
+    return $parts;
+});
+
+add_action('wp_head', static function (): void {
+    if (! ontario_is_newsite_page()) {
+        return;
+    }
+
+    echo '<link rel="canonical" href="' . esc_url(home_url('/newsite/')) . '" />' . "\n";
+}, 1);
 
 add_action('wp_enqueue_scripts', static function (): void {
     $theme = wp_get_theme();
@@ -501,6 +540,7 @@ add_action('wp_enqueue_scripts', static function (): void {
     $theme_uri = ontario_theme_asset_uri();
     $theme_dir = get_template_directory();
     $is_front_page = is_front_page();
+    $is_newsite_page = ontario_is_newsite_page();
     $current_site = function_exists('ontario_current_site') ? ontario_current_site() : [];
     $site_display_mode = ontario_site_display_mode();
     $effective_display_mode = ontario_effective_display_mode();
@@ -547,6 +587,15 @@ add_action('wp_enqueue_scripts', static function (): void {
                 file_exists($theme_dir . '/assets/css/simple.css') ? (string) filemtime($theme_dir . '/assets/css/simple.css') : $version
             );
         }
+    }
+
+    if ($is_newsite_page) {
+        wp_enqueue_style(
+            'ontario-newsite',
+            $theme_uri . '/assets/css/newsite.css',
+            ['ontario-theme'],
+            file_exists($theme_dir . '/assets/css/newsite.css') ? (string) filemtime($theme_dir . '/assets/css/newsite.css') : $version
+        );
     }
 
     wp_enqueue_script(
@@ -631,7 +680,9 @@ JS;
             'submitError' => ontario_t('validation.submit_error', [], 'Unable to submit the form right now.'),
             'sendError' => ontario_t('validation.send_error', [], 'Unable to send the form.'),
             'submitting' => ontario_t('form.submitting', [], 'Submitting...'),
-            'submitCase' => ontario_t('form.submit_case', [], 'Submit Case Review'),
+            'submitCase' => $is_newsite_page
+                ? ontario_t('newsite.form.submit', [], 'Submit Your Case')
+                : ontario_t('form.submit_case', [], 'Submit Case Review'),
             'nextStep' => ontario_t('form.next', [], 'Next Step'),
             'submitted' => ontario_t('form.sent', [], 'Submitted'),
             'sending' => ontario_t('form.sending', [], 'Sending...'),
