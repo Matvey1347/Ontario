@@ -145,11 +145,17 @@ final class OSM_Clickcease
         $whitelist = $this->normalize_whitelist((string) ($site['clickcease_whitelist'] ?? ''));
 
         if ((string) ($site['clickcease_install_click_fraud'] ?? '0') === '1') {
+            // Do not depend on a bootstrap constant here. This hook runs on every
+            // front-end request, and an outdated copied plugin file must not turn
+            // a missing asset-version constant into a site-wide fatal error.
+            $asset_path = dirname(__DIR__) . '/assets/js/osm-clickcease-frontend.js';
+            $asset_version = is_file($asset_path) ? (string) filemtime($asset_path) : '1';
+
             wp_register_script(
                 'osm-clickcease-frontend',
                 home_url('/wp-content/plugins/ontario-plugin/assets/js/osm-clickcease-frontend.js'),
                 [],
-                (string) filemtime(OSM_PLUGIN_PATH . 'assets/js/osm-clickcease-frontend.js'),
+                $asset_version,
                 true
             );
             wp_localize_script('osm-clickcease-frontend', 'osmClickcease', [

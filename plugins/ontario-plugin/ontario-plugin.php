@@ -15,6 +15,9 @@ if (! defined('ABSPATH')) {
 define('OSM_PLUGIN_VERSION', '2.0.1');
 define('OSM_PLUGIN_FILE', __FILE__);
 define('OSM_PLUGIN_PATH', plugin_dir_path(__FILE__));
+// Kept as an alias while older ClickCease class files may still be deployed.
+// Those versions used OSM_PLUGIN_DIR for the same plugin root path.
+define('OSM_PLUGIN_DIR', OSM_PLUGIN_PATH);
 define('OSM_PLUGIN_URL', plugin_dir_url(__FILE__));
 
 // Keep a small, dependency-free trace for production fatals. WordPress may
