@@ -108,7 +108,7 @@ final class OSM_Sites
             'primary_domain' => is_string($host) ? $host : 'ontariorefunds.info',
             'domain_aliases' => "localhost\n127.0.0.1",
             'meta_title' => 'Ontario Refunds',
-            'dynamic_headline_parameter' => 'keyword',
+            'dynamic_headline_parameter' => 'service',
             'company_name' => 'Ontario Refunds',
             'public_email' => 'support@ontariorefunds.info',
             'phone_number' => '+1 647 478 0877',
@@ -295,7 +295,7 @@ final class OSM_Sites
             'dynamic_headline_parameter',
             'Homepage headline URL parameter',
             $meta['dynamic_headline_parameter'],
-            'keyword',
+            'service',
             false,
             ['help' => 'The value of this URL parameter replaces the homepage headline. Only letters, numbers, hyphens, and underscores are allowed.']
         );
@@ -969,7 +969,7 @@ final class OSM_Sites
         }
 
         if ($values['dynamic_headline_parameter'] === '') {
-            $values['dynamic_headline_parameter'] = 'keyword';
+            $values['dynamic_headline_parameter'] = 'service';
         }
 
         if ($values['tracking_header_code'] === '') {

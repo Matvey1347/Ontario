@@ -30,7 +30,7 @@ return [
         'newsite.nav.scam_types' => 'Scam types',
         'newsite.nav.contact' => 'Request assessment',
         'newsite.hero.kicker' => 'Independent private assistance',
-        'newsite.hero.title' => 'Report a Scam & Get Professional Help',
+        'newsite.hero.title' => 'Report a Scam and Recover Your Lost Funds',
         'newsite.hero.copy' => 'Lost money to an online scam, fraudulent investment platform, or cryptocurrency fraud? {brand_name} helps you review your case, trace transactions, organize evidence, and explore available options for recovering lost funds.',
         'newsite.hero.cta' => 'Request a Case Assessment',
         'newsite.hero.secondary_cta' => 'How We Can Help',
@@ -106,7 +106,7 @@ return [
         'newsite.faq.q5' => 'What evidence is needed after an online scam?', 'newsite.faq.a5' => 'Keep transaction records, payment receipts, messages, emails, platform URLs, screenshots, wallet addresses, and a clear timeline whenever available.',
         'newsite.faq.q6' => 'How does financial fraud case assessment work?', 'newsite.faq.a6' => 'We review the information you provide to understand the circumstances, available evidence, and possible next steps. An assessment is not a guarantee of recovery.',
         'newsite.faq.q7' => 'What options are available after losing money to a fraudulent broker?', 'newsite.faq.a7' => 'Options depend on the payment method, timing, institution, jurisdiction, and available documentation. A case review can help organize the information needed to consider them.',
-        'newsite.faq.q8' => 'Does submitting a case guarantee recovery?', 'newsite.faq.a8' => 'No. Recovery outcomes depend on individual circumstances. Submitting a case allows us to review the available information and identify possible next steps.',
+        'newsite.faq.q8' => 'Can {brand_name} guarantee my money back?', 'newsite.faq.a8' => 'No. We do not guarantee recovery. We review the available evidence, analyze relevant information, and explain realistic next steps.',
 
         'footer.description' => '{brand_name} provides private blockchain intelligence and forensic case analysis for victims of online financial fraud. We trace digital asset movement, prepare evidence-based documentation, and explain practical next steps.',
         'footer.security' => 'Encrypted in transit & at rest · PIPEDA compliant · SOC 2 Type II',

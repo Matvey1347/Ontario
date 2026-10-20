@@ -52,13 +52,11 @@ $enabled_languages = ontario_enabled_languages();
 $current_language = ontario_current_language();
 $is_newsite_page = function_exists('ontario_uses_newsite_design') ? ontario_uses_newsite_design() : ontario_is_newsite_page();
 ?>
-<?php if (! $is_newsite_page) : ?>
-  <div class="top-notice">
-    <div class="container">
-      <?php echo esc_html(ontario_t('site.notice', [], 'Only cases with losses from $2,000+ • Free consultation • We do not accept US citizens • Not a government agency')); ?>
-    </div>
+<div class="top-notice">
+  <div class="container">
+    <?php echo esc_html(ontario_t('site.notice', [], 'Only cases with losses from $2,000+ • Free consultation • We do not accept US citizens • Not a government agency')); ?>
   </div>
-<?php endif; ?>
+</div>
 
 <header class="site-header">
   <div class="container">
@@ -72,9 +70,9 @@ $is_newsite_page = function_exists('ontario_uses_newsite_design') ? ontario_uses
       </a>
 
       <div class="nav-links" aria-label="<?php echo esc_attr(ontario_t('site.primary_navigation', [], 'Primary navigation')); ?>">
-        <a href="<?php echo esc_url($is_newsite_page ? '#professional-assistance' : '#services'); ?>"><?php echo esc_html(ontario_t('nav.services', [], 'Services')); ?></a>
-        <a href="<?php echo esc_url($is_newsite_page ? '#fraud-types' : '#scanner'); ?>"><?php echo esc_html(ontario_t($is_newsite_page ? 'newsite.nav.scam_types' : 'nav.case_review', [], $is_newsite_page ? 'Scam types' : 'Case Review')); ?></a>
-        <a href="<?php echo esc_url($is_newsite_page ? '#process' : '#report'); ?>"><?php echo esc_html(ontario_t($is_newsite_page ? 'nav.process' : 'nav.report_preview', [], $is_newsite_page ? 'Process' : 'Report Preview')); ?></a>
+        <a href="<?php echo esc_url('#services'); ?>"><?php echo esc_html(ontario_t('nav.services', [], 'Services')); ?></a>
+        <a href="<?php echo esc_url('#scanner'); ?>"><?php echo esc_html(ontario_t($is_newsite_page ? 'newsite.nav.contact' : 'nav.case_review', [], $is_newsite_page ? 'Request assessment' : 'Case Review')); ?></a>
+        <a href="#report"><?php echo esc_html(ontario_t('nav.report_preview', [], 'Report Preview')); ?></a>
         <a href="#faq"><?php echo esc_html(ontario_t('nav.faq', [], 'FAQ')); ?></a>
       </div>
 
@@ -104,7 +102,7 @@ $is_newsite_page = function_exists('ontario_uses_newsite_design') ? ontario_uses
         <?php if ($phone_href !== '' && $phone_number !== '') : ?>
           <a class="phone" href="tel:<?php echo esc_attr($phone_href); ?>"><?php echo esc_html($phone_number); ?></a>
         <?php endif; ?>
-        <a class="btn btn-primary" href="<?php echo esc_url($is_newsite_page ? '#contact' : '#quick-contact-modal'); ?>"<?php echo $is_newsite_page ? '' : ' data-modal-open'; ?>><?php echo esc_html(ontario_t($is_newsite_page ? 'newsite.nav.contact' : 'nav.free_consultation', [], $is_newsite_page ? 'Request assessment' : 'Free Consultation')); ?></a>
+        <a class="btn btn-primary" href="<?php echo esc_url($is_newsite_page ? '#scanner' : '#quick-contact-modal'); ?>"<?php echo $is_newsite_page ? '' : ' data-modal-open'; ?>><?php echo esc_html(ontario_t($is_newsite_page ? 'newsite.nav.contact' : 'nav.free_consultation', [], $is_newsite_page ? 'Request assessment' : 'Free Consultation')); ?></a>
         <button class="mobile-menu-btn" type="button" aria-label="<?php echo esc_attr(ontario_t('site.open_menu', [], 'Open menu')); ?>" aria-expanded="false" id="menuBtn">☰</button>
       </div>
     </nav>

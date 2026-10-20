@@ -79,9 +79,11 @@ final class OSM_Current_Site
 
     public function get_dynamic_headline(): string
     {
-        $parameter = $this->get_field('dynamic_headline_parameter', 'keyword');
+        $configured_parameter = $this->get_field('dynamic_headline_parameter', 'service');
+        $parameters = array_values(array_unique(['service', 'srv', $configured_parameter, 'keyword']));
+        $parameters = array_values(array_filter($parameters, static fn (string $parameter): bool => preg_match('/^[A-Za-z0-9_-]{1,64}$/', $parameter) === 1));
 
-        if (preg_match('/^[A-Za-z0-9_-]{1,64}$/', $parameter) !== 1) {
+        if ($parameters === []) {
             return '';
         }
 
@@ -103,7 +105,7 @@ final class OSM_Current_Site
 
             $name = rawurldecode(str_replace('+', ' ', $raw_name));
 
-            if ($name !== $parameter) {
+            if (! in_array($name, $parameters, true)) {
                 continue;
             }
 
@@ -126,6 +128,8 @@ final class OSM_Current_Site
                 return '';
             }
 
+            // The canonical public parameter is `service`; `srv` and the
+            // former `keyword` parameter remain supported for existing ads.
             return $headline;
         }
 
@@ -646,7 +650,7 @@ HTML;
             'resolved_host_normalized' => $this->get_request_host(),
             'primary_domain' => 'ontariorefunds.info',
             'meta_title' => 'Ontario Refunds',
-            'dynamic_headline_parameter' => 'keyword',
+            'dynamic_headline_parameter' => 'service',
             'company_name' => 'Ontario Refunds',
             'logo_url' => 'https://ontariorefunds.info/wp-content/uploads/2026/02/Ontario-Refunds-logo-color.png',
             'favicon_url' => content_url('themes/Ontario/assets/images/fav.png'),
