@@ -432,6 +432,16 @@ final class OSM_Sites
             }
 
             if ($config['type'] === 'secret') {
+                $secret_confirmed = isset($_POST['osm_secret_changed'][$key])
+                    && sanitize_text_field(wp_unslash((string) $_POST['osm_secret_changed'][$key])) === '1';
+
+                // Password managers may populate hidden fields when an admin
+                // only edits the domain tab. Never replace a working API
+                // secret unless the user explicitly edited that field.
+                if (! $secret_confirmed) {
+                    continue;
+                }
+
                 $raw_value = is_string($raw) ? trim(wp_unslash($raw)) : '';
 
                 if ($raw_value === '') {
@@ -1104,6 +1114,7 @@ final class OSM_Sites
         echo '<tr><th scope="row"><label for="osm-' . esc_attr($key) . '">' . esc_html($label) . '</label></th><td>';
         echo '<div class="osm-secret-field">';
         echo '<input class="regular-text osm-secret-input" type="password" id="osm-' . esc_attr($key) . '" name="osm[' . esc_attr($key) . ']" value="" placeholder="' . esc_attr($masked) . '" autocomplete="new-password" data-secret-value="' . esc_attr($plain) . '" />';
+        echo '<input type="hidden" name="osm_secret_changed[' . esc_attr($key) . ']" value="0" data-osm-secret-changed="' . esc_attr($key) . '" />';
         echo '<button type="button" class="button osm-secret-toggle" data-target="osm-' . esc_attr($key) . '" aria-label="Show secret" aria-pressed="false">Show</button>';
         echo '</div>';
         echo '<p class="description">Leave empty to keep the current value.</p>';
@@ -2035,6 +2046,26 @@ final class OSM_Sites
                   button.textContent = 'Show';
                   button.setAttribute('aria-label', 'Show secret');
                   button.setAttribute('aria-pressed', 'false');
+                }
+              });
+            });
+
+            tabsRoot.querySelectorAll('.osm-secret-input').forEach((input) => {
+              let userEditing = false;
+              const markUserEditing = () => { userEditing = true; };
+
+              input.addEventListener('pointerdown', markUserEditing);
+              input.addEventListener('keydown', markUserEditing);
+              input.addEventListener('input', () => {
+                if (!userEditing) {
+                  return;
+                }
+
+                const key = input.name.match(/^osm\[([^\]]+)\]$/)?.[1] || '';
+                const changed = key ? tabsRoot.querySelector(`[data-osm-secret-changed="${key}"]`) : null;
+
+                if (changed) {
+                  changed.value = '1';
                 }
               });
             });

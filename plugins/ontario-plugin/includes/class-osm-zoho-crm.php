@@ -38,13 +38,15 @@ final class OSM_Zoho_CRM
             return ['success' => false, 'message' => 'Zoho credentials incomplete'];
         }
 
-        $access_token = $this->refresh_access_token($site);
+        $token = $this->refresh_access_token($site);
+        $access_token = (string) ($token['access_token'] ?? '');
 
         if ($access_token === '') {
-            return ['success' => false, 'message' => 'Failed to refresh access token'];
+            return ['success' => false, 'message' => (string) ($token['message'] ?? 'Failed to refresh access token')];
         }
 
-        $endpoint = trailingslashit((string) $site['zoho_api_domain']) . 'crm/v8/Leads';
+        $api_domain = (string) ($token['api_domain'] ?? $site['zoho_api_domain'] ?? '');
+        $endpoint = trailingslashit($api_domain) . 'crm/v8/Leads';
         $lead_data = $this->map_payload($site, $form_key, $payload);
 
         $response = wp_remote_post($endpoint, [
@@ -104,33 +106,116 @@ final class OSM_Zoho_CRM
         return ['success' => false, 'message' => $error_message, 'data' => $decoded];
     }
 
-    private function refresh_access_token(array $site): string
+    private function refresh_access_token(array $site): array
     {
-        $endpoint = trailingslashit((string) $site['zoho_accounts_url']) . 'oauth/v2/token';
+        $cache_key = 'osm_zoho_token_' . md5(implode('|', [
+            (string) ($site['id'] ?? 0),
+            (string) ($site['zoho_client_id'] ?? ''),
+            (string) ($site['zoho_refresh_token'] ?? ''),
+        ]));
+        $cached = get_transient($cache_key);
 
-        $response = wp_remote_post($endpoint, [
-            'timeout' => 30,
-            'body' => [
-                'refresh_token' => (string) $site['zoho_refresh_token'],
-                'client_id' => (string) $site['zoho_client_id'],
-                'client_secret' => (string) $site['zoho_client_secret'],
-                'grant_type' => 'refresh_token',
-            ],
-        ]);
-
-        if (is_wp_error($response)) {
-            $this->logger->log('Zoho token refresh failed', [
-                'error' => $response->get_error_message(),
-                'site_id' => $site['id'] ?? 0,
-                'site_name' => $site['company_name'] ?? '',
-                'site_domain' => $site['resolved_host'] ?? $site['primary_domain'] ?? '',
-            ], $this->build_log_meta('error', $site));
-            return '';
+        if (is_array($cached) && ! empty($cached['access_token'])) {
+            return $cached;
         }
 
-        $decoded = json_decode(wp_remote_retrieve_body($response), true);
+        $accounts_urls = $this->accounts_url_candidates($site);
+        $last_message = 'Failed to refresh access token';
 
-        return is_array($decoded) && ! empty($decoded['access_token']) ? (string) $decoded['access_token'] : '';
+        foreach ($accounts_urls as $accounts_url) {
+            $endpoint = trailingslashit($accounts_url) . 'oauth/v2/token';
+            $response = wp_remote_post($endpoint, [
+                'timeout' => 15,
+                'body' => [
+                    'refresh_token' => (string) $site['zoho_refresh_token'],
+                    'client_id' => (string) $site['zoho_client_id'],
+                    'client_secret' => (string) $site['zoho_client_secret'],
+                    'grant_type' => 'refresh_token',
+                ],
+            ]);
+
+            if (is_wp_error($response)) {
+                $last_message = $response->get_error_message();
+                $this->log_token_failure($site, $accounts_url, 0, $last_message, '');
+                continue;
+            }
+
+            $status_code = wp_remote_retrieve_response_code($response);
+            $body = wp_remote_retrieve_body($response);
+            $decoded = json_decode($body, true);
+
+            if ($status_code >= 200 && $status_code < 300 && is_array($decoded) && ! empty($decoded['access_token'])) {
+                $api_domain = esc_url_raw((string) ($decoded['api_domain'] ?? $site['zoho_api_domain'] ?? ''));
+                $result = [
+                    'access_token' => (string) $decoded['access_token'],
+                    'api_domain' => $api_domain,
+                ];
+                $expires_in = max(120, (int) ($decoded['expires_in'] ?? 3600) - 120);
+                set_transient($cache_key, $result, $expires_in);
+
+                return $result;
+            }
+
+            $error = is_array($decoded) ? sanitize_text_field((string) ($decoded['error'] ?? '')) : '';
+            $last_message = $error !== '' ? 'Zoho OAuth error: ' . $error : 'Zoho OAuth returned HTTP ' . $status_code;
+            $this->log_token_failure($site, $accounts_url, $status_code, $last_message, $body);
+
+            // Authentication failures are region-specific in Zoho. Try the
+            // account server inferred from the configured CRM API before
+            // returning the failure to the form handler.
+        }
+
+        return ['access_token' => '', 'api_domain' => '', 'message' => $last_message];
+    }
+
+    private function accounts_url_candidates(array $site): array
+    {
+        $configured = untrailingslashit(esc_url_raw((string) ($site['zoho_accounts_url'] ?? '')));
+        $api_host = strtolower((string) wp_parse_url((string) ($site['zoho_api_domain'] ?? ''), PHP_URL_HOST));
+        $candidates = [];
+
+        if ($configured !== '') {
+            $candidates[] = $configured;
+        }
+
+        $accounts_by_api_host = [
+            'www.zohoapis.com' => 'https://accounts.zoho.com',
+            'www.zohoapis.eu' => 'https://accounts.zoho.eu',
+            'www.zohoapis.in' => 'https://accounts.zoho.in',
+            'www.zohoapis.com.au' => 'https://accounts.zoho.com.au',
+            'www.zohoapis.com.cn' => 'https://accounts.zoho.com.cn',
+            'www.zohoapis.jp' => 'https://accounts.zoho.jp',
+            'www.zohoapis.sa' => 'https://accounts.zoho.sa',
+            'www.zohoapis.ca' => 'https://accounts.zohocloud.ca',
+        ];
+
+        if (isset($accounts_by_api_host[$api_host])) {
+            $candidates[] = $accounts_by_api_host[$api_host];
+        }
+
+        if ($candidates === []) {
+            $candidates[] = 'https://accounts.zoho.eu';
+        }
+
+        return array_values(array_unique($candidates));
+    }
+
+    private function log_token_failure(array $site, string $accounts_url, int $status_code, string $message, string $body): void
+    {
+        $decoded = json_decode($body, true);
+        $safe_response = is_array($decoded)
+            ? array_intersect_key($decoded, array_flip(['error', 'error_description']))
+            : [];
+
+        $this->logger->log('Zoho token refresh failed', [
+            'accounts_url' => $accounts_url,
+            'status_code' => $status_code,
+            'error' => $message,
+            'response' => $safe_response,
+            'site_id' => $site['id'] ?? 0,
+            'site_name' => $site['company_name'] ?? '',
+            'site_domain' => $site['resolved_host'] ?? $site['primary_domain'] ?? '',
+        ], $this->build_log_meta('error', $site));
     }
 
     private function map_payload(array $site, string $form_key, array $payload): array
