@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (! defined('ABSPATH')) { exit; }
 $brand_name = ontario_site_brand_name();
+$address = function_exists('ontario_site_field') ? ontario_site_field('address') : '';
 $t = static fn (string $key, string $fallback): string => ontario_t($key, ['brand_name' => $brand_name], $fallback);
 $dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynamic_headline() : '';
 get_header();
@@ -37,6 +38,29 @@ get_header();
       <div class="testimonial-carousel__controls"><button type="button" class="testimonial-carousel__button" data-testimonial-previous aria-label="<?php echo esc_attr(ontario_t('testimonials.previous', [], 'Show previous testimonial')); ?>">←</button><div class="testimonial-carousel__dots" aria-hidden="true"><?php for ($testimonial_index = 1; $testimonial_index <= 5; $testimonial_index++) : ?><span class="testimonial-carousel__dot<?php echo $testimonial_index === 1 ? ' is-active' : ''; ?>" data-testimonial-dot></span><?php endfor; ?></div><button type="button" class="testimonial-carousel__button" data-testimonial-next aria-label="<?php echo esc_attr(ontario_t('testimonials.next', [], 'Show next testimonial')); ?>">→</button></div>
     </section>
   </div></div></section>
+
+  <section class="newsite-strip" aria-label="<?php echo esc_attr(ontario_t('site.trust_signals', [], 'Trust signals')); ?>">
+    <div class="container newsite-strip__grid">
+      <article class="newsite-strip__card">
+        <h2><?php echo esc_html(ontario_t('strip.distinction_title', [], 'Important distinction')); ?></h2>
+        <p><?php echo esc_html(ontario_t('strip.distinction_copy', [], 'We do not reverse blockchain transactions or guarantee recovery. We trace, document, and guide.')); ?></p>
+      </article>
+      <article class="newsite-strip__card">
+        <h2><?php echo esc_html(ontario_t('strip.crypto_title', [], 'Crypto & digital assets')); ?></h2>
+        <p><?php echo esc_html(ontario_t('strip.crypto_copy', [], 'Wallets, transaction hashes, exchanges, bridges, mixers, and suspicious fund movement.')); ?></p>
+      </article>
+      <article class="newsite-strip__card">
+        <h2><?php echo esc_html(ontario_t('strip.reports_title', [], 'Evidence-based reports')); ?></h2>
+        <p><?php echo esc_html(ontario_t('strip.reports_copy', [], 'Structured documentation for victims, institutions, counsel, and reporting workflows.')); ?></p>
+      </article>
+      <?php if ($address !== '') : ?>
+        <article class="newsite-strip__card">
+          <h2><?php echo esc_html(ontario_t('strip.support_title', [], 'Canadian support')); ?></h2>
+          <p><?php echo esc_html($address); ?></p>
+        </article>
+      <?php endif; ?>
+    </div>
+  </section>
 
   <section id="services" class="newsite-section"><div class="container newsite-copy-block"><p class="newsite-kicker"><?php echo esc_html($t('newsite.assistance.kicker', 'Professional assistance')); ?></p><h2><?php echo esc_html($t('newsite.assistance.title', 'Professional Support After Online Financial Fraud')); ?></h2><p><?php echo esc_html($t('newsite.assistance.copy_1', "Whether you've been affected by an investment scam, a fraudulent trading platform, a cryptocurrency scam, or another form of online financial deception, understanding your next steps is essential.")); ?></p><p><?php echo esc_html($t('newsite.assistance.copy_2', 'Our team assists with financial transaction analysis, evidence preparation, and the documentation needed to pursue available recovery procedures.')); ?></p></div></section>
 

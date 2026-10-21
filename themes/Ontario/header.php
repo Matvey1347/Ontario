@@ -71,7 +71,7 @@ $is_newsite_page = function_exists('ontario_uses_newsite_design') ? ontario_uses
 
       <div class="nav-links" aria-label="<?php echo esc_attr(ontario_t('site.primary_navigation', [], 'Primary navigation')); ?>">
         <a href="<?php echo esc_url('#services'); ?>"><?php echo esc_html(ontario_t('nav.services', [], 'Services')); ?></a>
-        <a href="<?php echo esc_url('#scanner'); ?>"><?php echo esc_html(ontario_t($is_newsite_page ? 'newsite.nav.contact' : 'nav.case_review', [], $is_newsite_page ? 'Request assessment' : 'Case Review')); ?></a>
+        <a href="<?php echo esc_url('#scanner'); ?>"><?php echo esc_html(ontario_t('nav.case_review', [], 'Case Review')); ?></a>
         <a href="#report"><?php echo esc_html(ontario_t('nav.report_preview', [], 'Report Preview')); ?></a>
         <a href="#faq"><?php echo esc_html(ontario_t('nav.faq', [], 'FAQ')); ?></a>
       </div>
@@ -102,7 +102,7 @@ $is_newsite_page = function_exists('ontario_uses_newsite_design') ? ontario_uses
         <?php if ($phone_href !== '' && $phone_number !== '') : ?>
           <a class="phone" href="tel:<?php echo esc_attr($phone_href); ?>"><?php echo esc_html($phone_number); ?></a>
         <?php endif; ?>
-        <a class="btn btn-primary" href="<?php echo esc_url($is_newsite_page ? '#scanner' : '#quick-contact-modal'); ?>"<?php echo $is_newsite_page ? '' : ' data-modal-open'; ?>><?php echo esc_html(ontario_t($is_newsite_page ? 'newsite.nav.contact' : 'nav.free_consultation', [], $is_newsite_page ? 'Request assessment' : 'Free Consultation')); ?></a>
+        <a class="btn btn-primary" href="<?php echo esc_url($is_newsite_page ? '#scanner' : '#quick-contact-modal'); ?>"<?php echo $is_newsite_page ? '' : ' data-modal-open'; ?>><?php echo esc_html(ontario_t('nav.free_consultation', [], 'Free Consultation')); ?></a>
         <button class="mobile-menu-btn" type="button" aria-label="<?php echo esc_attr(ontario_t('site.open_menu', [], 'Open menu')); ?>" aria-expanded="false" id="menuBtn">☰</button>
       </div>
     </nav>
