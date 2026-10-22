@@ -15,6 +15,7 @@ get_header();
     <p class="newsite-hero__lead"><?php echo esc_html($t('newsite.hero.copy', 'Lost money to an online scam, fraudulent investment platform, or cryptocurrency fraud? {brand_name} helps you review your case, trace transactions, organize evidence, and explore available options for recovering lost funds.')); ?></p>
     <div class="newsite-actions"><a class="btn btn-primary" href="#scanner"><?php echo esc_html(ontario_t('hero.cta_primary', [], 'Get A Free Consultation')); ?></a><a class="btn btn-secondary" href="#report"><?php echo esc_html(ontario_t('hero.cta_secondary', [], 'View Report Preview')); ?></a></div>
     <ul class="newsite-trust-badges"><?php for ($trust_badge_index = 1; $trust_badge_index <= 4; $trust_badge_index++) : ?><li><?php echo esc_html(ontario_t('newsite.hero.trust_' . $trust_badge_index, [], '')); ?></li><?php endfor; ?></ul>
+    <ul class="newsite-benefits" aria-label="<?php echo esc_attr(ontario_t('site.trust_signals', [], 'Trust signals')); ?>"><?php for ($benefit_index = 1; $benefit_index <= 3; $benefit_index++) : ?><li><?php echo esc_html(ontario_t('newsite.hero.benefit_' . $benefit_index, [], '')); ?></li><?php endfor; ?></ul>
   </div><div class="newsite-hero__conversion">
     <form class="newsite-hero-form" id="newsiteQuickForm" data-quick-form novalidate>
       <input type="hidden" name="formType" value="quickForm" />

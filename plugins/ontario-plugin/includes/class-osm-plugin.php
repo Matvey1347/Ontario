@@ -11,6 +11,7 @@ final class OSM_Plugin
 
     private OSM_Logger $logger;
     private OSM_Crypto $crypto;
+    private OSM_CRM_Templates $crm_templates;
     private OSM_Sites $sites;
     private OSM_Current_Site $current_site;
     private OSM_Clickcease $clickcease;
@@ -26,7 +27,8 @@ final class OSM_Plugin
     {
         $this->logger = new OSM_Logger();
         $this->crypto = new OSM_Crypto($this->logger);
-        $this->sites = new OSM_Sites($this->crypto, $this->logger);
+        $this->crm_templates = new OSM_CRM_Templates($this->crypto);
+        $this->sites = new OSM_Sites($this->crypto, $this->logger, $this->crm_templates);
         $this->current_site = new OSM_Current_Site($this->sites, $this->logger);
         $this->clickcease = new OSM_Clickcease($this->current_site, $this->sites, $this->logger);
         $this->translations = new OSM_Translations($this->sites, $this->current_site);
@@ -53,9 +55,11 @@ final class OSM_Plugin
     {
         $logger = new OSM_Logger();
         $crypto = new OSM_Crypto($logger);
-        $sites = new OSM_Sites($crypto, $logger);
+        $templates = new OSM_CRM_Templates($crypto);
+        $sites = new OSM_Sites($crypto, $logger, $templates);
         $sites->register_post_type();
         OSM_Leads::activate();
+        OSM_CRM_Templates::activate();
         flush_rewrite_rules(false);
     }
 
@@ -115,6 +119,7 @@ final class OSM_Plugin
 
         $this->sites->register_post_type();
         OSM_Leads::activate();
+        OSM_CRM_Templates::activate();
         flush_rewrite_rules(false);
         update_option('osm_plugin_version', OSM_PLUGIN_VERSION, true);
     }

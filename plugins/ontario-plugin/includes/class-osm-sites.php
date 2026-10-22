@@ -14,11 +14,13 @@ final class OSM_Sites
 
     private OSM_Crypto $crypto;
     private OSM_Logger $logger;
+    private OSM_CRM_Templates $crm_templates;
 
-    public function __construct(OSM_Crypto $crypto, OSM_Logger $logger)
+    public function __construct(OSM_Crypto $crypto, OSM_Logger $logger, OSM_CRM_Templates $crm_templates)
     {
         $this->crypto = $crypto;
         $this->logger = $logger;
+        $this->crm_templates = $crm_templates;
 
         add_action('init', [$this, 'register_post_type']);
         add_action('add_meta_boxes', [$this, 'register_meta_boxes']);
@@ -122,6 +124,8 @@ final class OSM_Sites
             'display_choice_full_label' => 'Continue with full design',
             'zoho_accounts_url' => 'https://accounts.zoho.eu',
             'zoho_api_domain' => 'https://www.zohoapis.eu',
+            'zoho_connection_mode' => 'custom',
+            'zoho_template_id' => '0',
             'default_lead_status' => 'Contact in Future',
             'notification_emails' => 'support@ontariorefunds.info',
             'language_configuration' => 'inherit',
@@ -324,11 +328,34 @@ final class OSM_Sites
         echo '<div class="osm-tab-panel" data-osm-panel="crm" role="tabpanel" hidden>';
         echo '<table class="form-table"><tbody>';
         $this->render_checkbox_row('zoho_enabled', 'Zoho enabled', $meta['zoho_enabled']);
+        $this->render_select_row('zoho_connection_mode', 'Connection type', $meta['zoho_connection_mode'], [
+            'custom' => 'Custom credentials',
+            'template' => 'Use a CRM template',
+        ]);
+        $template_options = ['0' => 'Select a template'];
+        foreach ($this->crm_templates->all() as $template) {
+            $template_options[(string) $template['id']] = (string) $template['name'];
+        }
+        $this->render_select_row('zoho_template_id', 'CRM template', $meta['zoho_template_id'], $template_options);
+        $template_defaults = [];
+        foreach ($this->crm_templates->all() as $template) {
+            $template_defaults[(string) $template['id']] = [
+                'owner_id' => (string) $template['owner_id'],
+                'default_lead_status' => (string) $template['default_lead_status'],
+            ];
+        }
+        $selected_template_defaults = $template_defaults[$meta['zoho_template_id']] ?? [];
+        if ($meta['zoho_connection_mode'] === 'template') {
+            if ($meta['zoho_owner_id'] === '') { $meta['zoho_owner_id'] = (string) ($selected_template_defaults['owner_id'] ?? ''); }
+            if ($meta['default_lead_status'] === '') { $meta['default_lead_status'] = (string) ($selected_template_defaults['default_lead_status'] ?? ''); }
+        }
+        echo '</tbody><tbody class="osm-zoho-custom-fields">';
         $this->render_text_row('zoho_accounts_url', 'Zoho accounts URL', $meta['zoho_accounts_url'], 'https://accounts.zoho.eu');
         $this->render_text_row('zoho_api_domain', 'Zoho API domain', $meta['zoho_api_domain'], 'https://www.zohoapis.eu');
         $this->render_text_row('zoho_client_id', 'Zoho client ID', $meta['zoho_client_id']);
         $this->render_secret_row('zoho_client_secret', 'Zoho client secret', $meta['zoho_client_secret']);
         $this->render_secret_row('zoho_refresh_token', 'Zoho refresh token', $meta['zoho_refresh_token']);
+        echo '</tbody><tbody>';
         $this->render_text_row(
             'zoho_owner_id',
             'Zoho lead owner ID',
@@ -345,7 +372,9 @@ final class OSM_Sites
         );
         $this->render_text_row('default_lead_status', 'Default lead status', $meta['default_lead_status'], 'Contact in Future');
         echo '</tbody></table>';
+        echo '<p class="description">Manage reusable credentials and default lead values under Sites → CRM Templates. Owner ID and lead status stay visible here and can be adjusted for this site.</p>';
         echo '</div>';
+        echo '<script>(function(){const mode=document.getElementById("osm-zoho_connection_mode");const custom=document.querySelector(".osm-zoho-custom-fields");const template=document.getElementById("osm-zoho_template_id");const defaults=' . wp_json_encode($template_defaults) . ';if(!mode||!custom)return;const update=()=>{custom.hidden=mode.value!=="custom";if(template)template.closest("tr").hidden=mode.value!=="template";};mode.addEventListener("change",update);if(template)template.addEventListener("change",()=>{const values=defaults[template.value]||{};const owner=document.getElementById("osm-zoho_owner_id");const status=document.getElementById("osm-default_lead_status");if(owner)owner.value=values.owner_id||"";if(status)status.value=values.default_lead_status||"";});update();})();</script>';
 
         echo '<div class="osm-tab-panel" data-osm-panel="clickcease" role="tabpanel" hidden>';
         echo '<table class="form-table"><tbody>';
@@ -550,6 +579,23 @@ final class OSM_Sites
         }
 
         $meta = $this->get_meta_values($post_id);
+        if ($meta['zoho_connection_mode'] === 'template') {
+            $meta['zoho_accounts_url'] = '';
+            $meta['zoho_api_domain'] = '';
+            $meta['zoho_client_id'] = '';
+            $meta['zoho_client_secret'] = '';
+            $meta['zoho_refresh_token'] = '';
+            $template = (int) $meta['zoho_template_id'] > 0 ? $this->crm_templates->get((int) $meta['zoho_template_id']) : [];
+            if ($template !== []) {
+                $meta['zoho_accounts_url'] = $template['accounts_url'];
+                $meta['zoho_api_domain'] = $template['api_domain'];
+                $meta['zoho_client_id'] = $template['client_id'];
+                $meta['zoho_client_secret'] = $this->crypto->encrypt($template['client_secret']);
+                $meta['zoho_refresh_token'] = $this->crypto->encrypt($template['refresh_token']);
+                if ($meta['zoho_owner_id'] === '') { $meta['zoho_owner_id'] = $template['owner_id']; }
+                if ($meta['default_lead_status'] === '') { $meta['default_lead_status'] = $template['default_lead_status']; }
+            }
+        }
         $settings = $this->get_global_settings();
 
         return [
@@ -583,6 +629,8 @@ final class OSM_Sites
             'tracking_form_html' => $meta['tracking_form_html'],
             'tracking_success_code' => $meta['tracking_success_code'],
             'zoho_enabled' => $meta['zoho_enabled'],
+            'zoho_connection_mode' => $meta['zoho_connection_mode'],
+            'zoho_template_id' => (int) $meta['zoho_template_id'],
             'zoho_accounts_url' => $meta['zoho_accounts_url'],
             'zoho_api_domain' => $meta['zoho_api_domain'],
             'zoho_client_id' => $meta['zoho_client_id'],
@@ -935,6 +983,8 @@ final class OSM_Sites
             'tracking_form_html' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
             'tracking_success_code' => ['type' => 'textarea', 'sanitize' => [$this, 'sanitize_tracking_code']],
             'zoho_enabled' => ['type' => 'checkbox', 'sanitize' => 'sanitize_text_field'],
+            'zoho_connection_mode' => ['type' => 'text', 'sanitize' => [$this, 'sanitize_zoho_connection_mode']],
+            'zoho_template_id' => ['type' => 'text', 'sanitize' => 'absint'],
             'zoho_accounts_url' => ['type' => 'text', 'sanitize' => 'esc_url_raw'],
             'zoho_api_domain' => ['type' => 'text', 'sanitize' => 'esc_url_raw'],
             'zoho_client_id' => ['type' => 'text', 'sanitize' => 'sanitize_text_field'],
@@ -987,6 +1037,8 @@ final class OSM_Sites
         }
 
         $values['display_mode'] = $this->sanitize_display_mode($values['display_mode']);
+        $values['zoho_connection_mode'] = $this->sanitize_zoho_connection_mode($values['zoho_connection_mode']);
+        $values['zoho_template_id'] = (string) absint($values['zoho_template_id']);
         $values['homepage_design'] = $this->sanitize_homepage_design($values['homepage_design']);
 
         if ($values['homepage_design'] === 'classic' && $this->normalize_host($values['primary_domain']) === 'ontariorefunds.org') {
@@ -1440,6 +1492,11 @@ final class OSM_Sites
         }
 
         return $value;
+    }
+
+    public function sanitize_zoho_connection_mode(string $value): string
+    {
+        return sanitize_key($value) === 'template' ? 'template' : 'custom';
     }
 
     public function sanitize_homepage_design(string $value): string

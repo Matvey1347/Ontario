@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Ontario Plugin
  * Description: Multi-domain site profiles, dynamic branding, lead capture, CRM integration, logs.
- * Version: 2.0.1
+ * Version: 2.1.1
  * Author: Codex
  */
 
@@ -12,7 +12,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('OSM_PLUGIN_VERSION', '2.0.1');
+define('OSM_PLUGIN_VERSION', '2.1.1');
 define('OSM_PLUGIN_FILE', __FILE__);
 define('OSM_PLUGIN_PATH', plugin_dir_path(__FILE__));
 // Kept as an alias while older ClickCease class files may still be deployed.
@@ -50,6 +50,7 @@ register_shutdown_function(static function (): void {
 
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-logger.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-crypto.php';
+require_once OSM_PLUGIN_PATH . 'includes/class-osm-crm-templates.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-sites.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-current-site.php';
 require_once OSM_PLUGIN_PATH . 'includes/class-osm-clickcease.php';
