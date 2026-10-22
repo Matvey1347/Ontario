@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Ontario Plugin
  * Description: Multi-domain site profiles, dynamic branding, lead capture, CRM integration, logs.
- * Version: 2.1.1
+ * Version: 2.2.0
  * Author: Codex
  */
 
@@ -12,7 +12,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('OSM_PLUGIN_VERSION', '2.1.1');
+define('OSM_PLUGIN_VERSION', '2.2.0');
 define('OSM_PLUGIN_FILE', __FILE__);
 define('OSM_PLUGIN_PATH', plugin_dir_path(__FILE__));
 // Kept as an alias while older ClickCease class files may still be deployed.

@@ -11,6 +11,7 @@ final class OSM_Sites
     private const SEED_OPTION = 'osm_seeded_default_site';
     private const SETTINGS_OPTION = 'osm_global_settings';
     private const PHONE_SELECTOR_MIGRATION_OPTION = 'osm_phone_selector_mode_migrated_v1';
+    private const PROFILE_DEFAULTS_MIGRATION_OPTION = 'osm_profile_defaults_migrated_v1';
 
     private OSM_Crypto $crypto;
     private OSM_Logger $logger;
@@ -34,6 +35,7 @@ final class OSM_Sites
         add_action('init', [$this, 'ensure_seed_site'], 30);
         add_action('init', [$this, 'normalize_default_sites'], 35);
         add_action('init', [$this, 'normalize_phone_selector_modes'], 40);
+        add_action('init', [$this, 'migrate_profile_defaults'], 45);
     }
 
     public static function post_type(): string
@@ -112,7 +114,7 @@ final class OSM_Sites
             'meta_title' => 'Ontario Refunds',
             'dynamic_headline_parameter' => 'service',
             'company_name' => 'Ontario Refunds',
-            'public_email' => 'support@ontariorefunds.info',
+            'public_email' => 'support@' . (is_string($host) ? strtolower(preg_replace('/^www\./i', '', $host)) : 'ontariorefunds.info'),
             'phone_number' => '+1 647 478 0877',
             'address' => '10-40 WEST WILMOT ST., RICHMOND HILL ON L4B 1H8',
             'working_hours' => '11AM-7PM ET',
@@ -177,6 +179,78 @@ final class OSM_Sites
             'keeper_id' => $keeper_id,
             'default_ids_before' => $default_ids,
         ]);
+    }
+
+    public function migrate_profile_defaults(): void
+    {
+        if (get_option(self::PROFILE_DEFAULTS_MIGRATION_OPTION, '') === '1') {
+            return;
+        }
+
+        $site_ids = get_posts([
+            'post_type' => self::POST_TYPE,
+            'post_status' => 'any',
+            'posts_per_page' => -1,
+            'fields' => 'ids',
+        ]);
+        $defaults = $this->get_profile_default_values($site_ids);
+
+        foreach ($site_ids as $site_id) {
+            $this->apply_profile_defaults((int) $site_id, $defaults);
+        }
+
+        update_option(self::PROFILE_DEFAULTS_MIGRATION_OPTION, '1', true);
+    }
+
+    private function get_profile_default_values(array $site_ids = []): array
+    {
+        $default_id = 0;
+        foreach ($site_ids as $site_id) {
+            if (get_post_meta((int) $site_id, '_osm_is_default', true) === '1') {
+                $default_id = (int) $site_id;
+                break;
+            }
+        }
+
+        if ($default_id === 0) {
+            $default_id = (int) ($site_ids[0] ?? 0);
+        }
+
+        $source = $default_id > 0 ? $this->get_meta_values($default_id) : [];
+        $default_value = static function (string $key, string $fallback) use ($source): string {
+            $value = trim((string) ($source[$key] ?? ''));
+            return $value !== '' ? $value : $fallback;
+        };
+        return [
+            'company_name' => $default_value('company_name', 'Ontario Refunds'),
+            'phone_number' => $default_value('phone_number', '+1 647 478 0877'),
+            'address' => $default_value('address', '10-40 WEST WILMOT ST., RICHMOND HILL ON L4B 1H8'),
+            'working_hours' => $default_value('working_hours', '11AM-7PM ET'),
+            'meta_title' => $default_value('meta_title', 'Ontario Refunds'),
+            'meta_description' => $default_value('meta_description', 'Ontario Refunds helps victims of online financial fraud trace digital assets, prepare evidence-based reports, and understand practical next steps.'),
+            'dynamic_headline_parameter' => $default_value('dynamic_headline_parameter', 'service'),
+        ];
+    }
+
+    private function apply_profile_defaults(int $post_id, ?array $defaults = null): void
+    {
+        $defaults = $defaults ?? $this->get_profile_default_values();
+        foreach ($defaults as $key => $value) {
+            if (trim((string) get_post_meta($post_id, '_osm_' . $key, true)) === '' && trim((string) $value) !== '') {
+                update_post_meta($post_id, '_osm_' . $key, $value);
+            }
+        }
+
+        if (trim((string) get_post_meta($post_id, '_osm_public_email', true)) === '') {
+            $domain = $this->normalize_host((string) get_post_meta($post_id, '_osm_primary_domain', true));
+            if ($domain === '') {
+                $home_host = wp_parse_url(home_url('/'), PHP_URL_HOST);
+                $domain = is_string($home_host) ? $this->normalize_host($home_host) : '';
+            }
+            if ($domain !== '') {
+                update_post_meta($post_id, '_osm_public_email', sanitize_email('support@' . $domain));
+            }
+        }
     }
 
     public function normalize_phone_selector_modes(): void
@@ -337,25 +411,13 @@ final class OSM_Sites
             $template_options[(string) $template['id']] = (string) $template['name'];
         }
         $this->render_select_row('zoho_template_id', 'CRM template', $meta['zoho_template_id'], $template_options);
-        $template_defaults = [];
-        foreach ($this->crm_templates->all() as $template) {
-            $template_defaults[(string) $template['id']] = [
-                'owner_id' => (string) $template['owner_id'],
-                'default_lead_status' => (string) $template['default_lead_status'],
-            ];
-        }
-        $selected_template_defaults = $template_defaults[$meta['zoho_template_id']] ?? [];
-        if ($meta['zoho_connection_mode'] === 'template') {
-            if ($meta['zoho_owner_id'] === '') { $meta['zoho_owner_id'] = (string) ($selected_template_defaults['owner_id'] ?? ''); }
-            if ($meta['default_lead_status'] === '') { $meta['default_lead_status'] = (string) ($selected_template_defaults['default_lead_status'] ?? ''); }
-        }
         echo '</tbody><tbody class="osm-zoho-custom-fields">';
         $this->render_text_row('zoho_accounts_url', 'Zoho accounts URL', $meta['zoho_accounts_url'], 'https://accounts.zoho.eu');
         $this->render_text_row('zoho_api_domain', 'Zoho API domain', $meta['zoho_api_domain'], 'https://www.zohoapis.eu');
         $this->render_text_row('zoho_client_id', 'Zoho client ID', $meta['zoho_client_id']);
         $this->render_secret_row('zoho_client_secret', 'Zoho client secret', $meta['zoho_client_secret']);
         $this->render_secret_row('zoho_refresh_token', 'Zoho refresh token', $meta['zoho_refresh_token']);
-        echo '</tbody><tbody>';
+        echo '</tbody><tbody class="osm-zoho-site-defaults">';
         $this->render_text_row(
             'zoho_owner_id',
             'Zoho lead owner ID',
@@ -374,7 +436,7 @@ final class OSM_Sites
         echo '</tbody></table>';
         echo '<p class="description">Manage reusable credentials and default lead values under Sites → CRM Templates. Owner ID and lead status stay visible here and can be adjusted for this site.</p>';
         echo '</div>';
-        echo '<script>(function(){const mode=document.getElementById("osm-zoho_connection_mode");const custom=document.querySelector(".osm-zoho-custom-fields");const template=document.getElementById("osm-zoho_template_id");const defaults=' . wp_json_encode($template_defaults) . ';if(!mode||!custom)return;const update=()=>{custom.hidden=mode.value!=="custom";if(template)template.closest("tr").hidden=mode.value!=="template";};mode.addEventListener("change",update);if(template)template.addEventListener("change",()=>{const values=defaults[template.value]||{};const owner=document.getElementById("osm-zoho_owner_id");const status=document.getElementById("osm-default_lead_status");if(owner)owner.value=values.owner_id||"";if(status)status.value=values.default_lead_status||"";});update();})();</script>';
+        echo '<script>(function(){const mode=document.getElementById("osm-zoho_connection_mode");const custom=document.querySelector(".osm-zoho-custom-fields");const template=document.getElementById("osm-zoho_template_id");const siteDefaults=document.querySelector(".osm-zoho-site-defaults");if(!mode||!custom)return;const update=()=>{custom.hidden=mode.value!=="custom";if(template)template.closest("tr").hidden=mode.value!=="template";if(siteDefaults)siteDefaults.hidden=mode.value==="template";};mode.addEventListener("change",update);update();})();</script>';
 
         echo '<div class="osm-tab-panel" data-osm-panel="clickcease" role="tabpanel" hidden>';
         echo '<table class="form-table"><tbody>';
@@ -484,12 +546,10 @@ final class OSM_Sites
             $value = is_string($raw) ? wp_unslash($raw) : '';
             $sanitized = $config['sanitize']($value);
 
-            if ($key === 'meta_title' && $sanitized === '') {
-                $sanitized = $this->default_meta_title($post);
-            }
-
             update_post_meta($post_id, $meta_key, $sanitized);
         }
+
+        $this->apply_profile_defaults($post_id);
 
         if (class_exists('OSM_Plugin')) {
             $translations = OSM_Plugin::instance()->translations();
@@ -592,8 +652,8 @@ final class OSM_Sites
                 $meta['zoho_client_id'] = $template['client_id'];
                 $meta['zoho_client_secret'] = $this->crypto->encrypt($template['client_secret']);
                 $meta['zoho_refresh_token'] = $this->crypto->encrypt($template['refresh_token']);
-                if ($meta['zoho_owner_id'] === '') { $meta['zoho_owner_id'] = $template['owner_id']; }
-                if ($meta['default_lead_status'] === '') { $meta['default_lead_status'] = $template['default_lead_status']; }
+                $meta['zoho_owner_id'] = $template['owner_id'];
+                $meta['default_lead_status'] = $template['default_lead_status'];
             }
         }
         $settings = $this->get_global_settings();
