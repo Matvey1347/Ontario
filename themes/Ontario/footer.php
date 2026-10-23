@@ -12,7 +12,7 @@ $phone_href = ontario_site_field('phone_href');
 $phone_number = ontario_site_field('phone_number');
 $working_hours = ontario_site_field('working_hours');
 $public_email = ontario_site_field('public_email');
-$is_newsite_page = function_exists('ontario_is_newsite_page') && ontario_is_newsite_page();
+$is_newsite_page = function_exists('ontario_uses_newsite_design') && ontario_uses_newsite_design();
 $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== '' && $phone_number !== '') || $working_hours !== '' || $public_email !== '';
 ?>
 <footer class="site-footer">

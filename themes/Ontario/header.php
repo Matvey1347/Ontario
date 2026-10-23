@@ -35,7 +35,7 @@ if (! defined('ABSPATH')) {
   <meta name="google" content="notranslate" />
   <meta name="googlebot" content="notranslate" />
   <meta name="translator" content="no" />
-  <meta name="description" content="<?php echo esc_attr(ontario_is_newsite_page() ? ontario_t('newsite.meta_description', ['brand_name' => ontario_site_brand_name()], 'Request a professional assessment for an online scam or cybercrime case.') : ontario_site_field('meta_description', ontario_t('hero.copy', ['brand_name' => ontario_site_brand_name()], 'Ontario Refunds helps victims of online financial fraud trace digital assets, prepare evidence-based reports, and understand practical next steps.'))); ?>" />
+  <meta name="description" content="<?php echo esc_attr(ontario_uses_newsite_design() ? ontario_t('newsite.meta_description', ['brand_name' => ontario_site_brand_name()], 'Request a professional assessment for an online scam or cybercrime case.') : ontario_site_field('meta_description', ontario_t('hero.copy', ['brand_name' => ontario_site_brand_name()], 'Ontario Refunds helps victims of online financial fraud trace digital assets, prepare evidence-based reports, and understand practical next steps.'))); ?>" />
   <?php if (is_front_page() && $effective_display_mode === 'simple') : ?>
     <link rel="preload" as="image" href="<?php echo esc_url($hero_preload); ?>" type="image/webp" />
   <?php endif; ?>
@@ -50,7 +50,7 @@ $phone_href = ontario_site_field('phone_href');
 $phone_number = ontario_site_field('phone_number');
 $enabled_languages = ontario_enabled_languages();
 $current_language = ontario_current_language();
-$is_newsite_page = function_exists('ontario_uses_newsite_design') ? ontario_uses_newsite_design() : ontario_is_newsite_page();
+$is_newsite_page = ontario_uses_newsite_design();
 ?>
 <div class="top-notice">
   <div class="container">

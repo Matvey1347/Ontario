@@ -363,7 +363,7 @@ HTML;
 
     public function filter_document_title(string $title): string
     {
-        if (function_exists('ontario_is_newsite_page') && ontario_is_newsite_page()) {
+        if (function_exists('ontario_uses_newsite_design') && ontario_uses_newsite_design()) {
             return $this->translations_title('newsite.meta_title', 'Online Scam Case Assessment | {brand_name}');
         }
 

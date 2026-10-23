@@ -135,37 +135,10 @@ if (! function_exists('ontario_success_page_url')) {
     }
 }
 
-if (! function_exists('ontario_is_newsite_page')) {
-    /**
-     * The campaign landing page is intentionally a virtual route so it is
-     * available on every domain managed by the Ontario plugin.
-     */
-    function ontario_is_newsite_page(): bool
-    {
-        $request_uri = isset($_SERVER['REQUEST_URI']) ? wp_unslash((string) $_SERVER['REQUEST_URI']) : '';
-        $request_path = trim((string) wp_parse_url($request_uri, PHP_URL_PATH), '/');
-        $home_path = trim((string) wp_parse_url(home_url('/'), PHP_URL_PATH), '/');
-
-        if ($home_path !== '' && str_starts_with($request_path, $home_path . '/')) {
-            $request_path = substr($request_path, strlen($home_path) + 1);
-        }
-
-        return $request_path === 'newsite';
-    }
-}
-
 if (! function_exists('ontario_uses_newsite_design')) {
     function ontario_uses_newsite_design(): bool
     {
-        if (ontario_is_newsite_page()) {
-            return true;
-        }
-
-        if (! is_front_page()) {
-            return false;
-        }
-
-        return ontario_site_field('homepage_design', '') === 'newsite';
+        return is_front_page() && ontario_site_field('homepage_design', '') === 'newsite';
     }
 }
 
@@ -517,25 +490,8 @@ add_action('template_redirect', static function (): void {
         $request_path = '';
     }
 
-    if (! in_array($request_path, ['success', 'newsite'], true)) {
+    if ($request_path !== 'success') {
         return;
-    }
-
-    // The campaign page is a virtual route, so WordPress's normal trailing
-    // slash canonicalization does not run for it. Keep its only public URL
-    // canonical without affecting any other route or query-string attribution.
-    $request_path_with_slash = (string) wp_parse_url($request_uri, PHP_URL_PATH);
-
-    if ($request_path === 'newsite' && $request_path_with_slash !== '' && ! str_ends_with($request_path_with_slash, '/')) {
-        $query = (string) wp_parse_url($request_uri, PHP_URL_QUERY);
-        $canonical_url = home_url('/newsite/');
-
-        if ($query !== '') {
-            $canonical_url .= '?' . $query;
-        }
-
-        wp_safe_redirect($canonical_url, 301);
-        exit;
     }
 
     global $wp_query;
@@ -553,12 +509,12 @@ add_action('template_redirect', static function (): void {
     if ($request_path === 'success') {
         nocache_headers();
     }
-    include get_template_directory() . ($request_path === 'newsite' ? '/page-newsite.php' : '/page-success.php');
+    include get_template_directory() . '/page-success.php';
     exit;
 });
 
 add_filter('document_title_parts', static function (array $parts): array {
-    if (ontario_is_newsite_page()) {
+    if (ontario_uses_newsite_design()) {
         $parts['title'] = ontario_t('newsite.meta_title', ['brand_name' => ontario_site_brand_name()], 'Online Scam Case Assessment | {brand_name}');
     }
 
@@ -566,14 +522,14 @@ add_filter('document_title_parts', static function (array $parts): array {
 });
 
 add_action('wp_head', static function (): void {
-    if (! ontario_is_newsite_page()) {
+    if (ontario_uses_newsite_design()) {
+        $brand_name = ontario_site_brand_name();
+        $title = ontario_t('newsite.meta_title', ['brand_name' => $brand_name], 'Online Scam Case Assessment | {brand_name}');
+        $description = ontario_t('newsite.meta_description', ['brand_name' => $brand_name], 'Request a professional assessment for an online scam or cybercrime case.');
+        $canonical_url = home_url('/');
+    } else {
         return;
     }
-
-    $brand_name = ontario_site_brand_name();
-    $title = ontario_t('newsite.meta_title', ['brand_name' => $brand_name], 'Online Scam Case Assessment | {brand_name}');
-    $description = ontario_t('newsite.meta_description', ['brand_name' => $brand_name], 'Request a professional assessment for an online scam or cybercrime case.');
-    $canonical_url = home_url('/newsite/');
 
     echo '<link rel="canonical" href="' . esc_url($canonical_url) . '" />' . "\n";
     echo '<meta property="og:type" content="website" />' . "\n";
@@ -779,7 +735,7 @@ JS;
 });
 
 add_action('wp_enqueue_scripts', static function (): void {
-    if (is_admin() || (! is_front_page() && ! ontario_is_newsite_page())) {
+    if (is_admin() || ! is_front_page()) {
         return;
     }
 
