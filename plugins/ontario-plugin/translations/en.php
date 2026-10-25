@@ -153,6 +153,7 @@ return [
         'hero.visual_alt' => 'Forensic blockchain tracing dashboard with wallet flow analysis',
         'hero.form_title' => 'Recover Your Lost Funds',
         'refundassist.form_title' => 'Get a free consultation',
+        'refundassist.quick_contact_submit' => 'Get a free consultation',
         'hero.form_copy' => 'Tell us what happened for a free initial review.',
         'hero.form_submit' => 'Get A Free Consultation',
 

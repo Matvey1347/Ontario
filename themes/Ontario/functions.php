@@ -545,6 +545,8 @@ add_action('wp_enqueue_scripts', static function (): void {
     $theme_dir = get_template_directory();
     $is_front_page = is_front_page();
     $is_newsite_page = ontario_uses_newsite_design();
+    $script_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
+    $is_refundassist_site = $script_host === 'refundassist.info' || $script_host === 'www.refundassist.info';
     $current_site = function_exists('ontario_current_site') ? ontario_current_site() : [];
     $site_display_mode = ontario_site_display_mode();
     $effective_display_mode = ontario_effective_display_mode();
@@ -707,7 +709,7 @@ JS;
             'nextStep' => ontario_t('form.next', [], 'Next Step'),
             'submitted' => ontario_t('form.sent', [], 'Submitted'),
             'sending' => ontario_t('form.sending', [], 'Sending...'),
-            'sendMessage' => ontario_t('quick_contact.send', [], 'Send Message'),
+            'sendMessage' => ontario_t($is_refundassist_site ? 'refundassist.quick_contact_submit' : 'quick_contact.send', [], $is_refundassist_site ? 'Get a free consultation' : 'Send Message'),
             'sendingMessage' => ontario_t('form.sending_message', [], 'Sending your message...'),
             'loadingTitle' => ontario_t('form.submitting_request', [], 'Submitting your request...'),
             'loadingCopy' => ontario_t('form.processing_copy', [], 'Please wait a moment while we process your form.'),

@@ -4,6 +4,8 @@ declare(strict_types=1);
 if (! defined('ABSPATH')) {
     exit;
 }
+$modal_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
+$is_refundassist_site = $modal_host === 'refundassist.info' || $modal_host === 'www.refundassist.info';
 ?>
 <div class="modal welcome-modal" id="welcome-modal" aria-hidden="true">
   <div class="modal-backdrop"></div>
@@ -27,7 +29,7 @@ if (! defined('ABSPATH')) {
       <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" />
       <div class="form-top">
         <div>
-          <strong id="quickContactTitle"><?php echo esc_html(ontario_t('quick_contact.title', [], 'Recover Your Lost Funds')); ?></strong>
+          <strong id="quickContactTitle"><?php echo esc_html(ontario_t($is_refundassist_site ? 'refundassist.form_title' : 'quick_contact.title', [], $is_refundassist_site ? 'Get a free consultation' : 'Recover Your Lost Funds')); ?></strong>
         </div>
         <button class="modal-close" type="button" aria-label="<?php echo esc_attr(ontario_t('quick_contact.close_aria', [], 'Close quick contact form')); ?>" data-modal-close>x</button>
       </div>
@@ -68,7 +70,7 @@ if (! defined('ABSPATH')) {
         <input id="lossConfirm" name="lossConfirm" type="checkbox" required data-label="<?php echo esc_attr(ontario_t('form.loss_confirm', [], 'I confirm my losses exceed $2,000')); ?>" />
         <span><?php echo esc_html(ontario_t('form.loss_confirm', [], 'I confirm my losses exceed $2,000')); ?></span>
       </label>
-      <button class="btn btn-primary short-submit" type="submit"><?php echo esc_html(ontario_t('quick_contact.send', [], 'Send Message')); ?></button>
+      <button class="btn btn-primary short-submit" type="submit"><?php echo esc_html(ontario_t($is_refundassist_site ? 'refundassist.quick_contact_submit' : 'quick_contact.send', [], $is_refundassist_site ? 'Get a free consultation' : 'Send Message')); ?></button>
       <?php echo ontario_render_tracking_code('form'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
     </form>
   </div>

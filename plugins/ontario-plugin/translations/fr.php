@@ -90,6 +90,7 @@ return [
         'hero.visual_alt' => 'Tableau de bord de traçage blockchain avec analyse des flux de portefeuilles',
         'hero.form_title' => 'Récupérez vos fonds perdus',
         'refundassist.form_title' => 'Obtenir une consultation gratuite',
+        'refundassist.quick_contact_submit' => 'Obtenir une consultation gratuite',
         'hero.form_copy' => 'Expliquez-nous ce qui s’est passé pour une première évaluation gratuite.',
         'hero.form_submit' => 'Obtenir une consultation gratuite',
 

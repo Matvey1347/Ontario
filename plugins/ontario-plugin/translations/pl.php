@@ -90,6 +90,7 @@ return [
         'hero.visual_alt' => 'Panel śledzenia blockchain z analizą przepływów portfeli',
         'hero.form_title' => 'Odzyskaj utracone środki',
         'refundassist.form_title' => 'Uzyskaj bezpłatną konsultację',
+        'refundassist.quick_contact_submit' => 'Uzyskaj bezpłatną konsultację',
         'hero.form_copy' => 'Opisz, co się wydarzyło, aby uzyskać bezpłatną wstępną ocenę.',
         'hero.form_submit' => 'Uzyskaj bezpłatną konsultację',
 
