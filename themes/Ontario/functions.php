@@ -496,6 +496,10 @@ add_filter('body_class', static function (array $classes): array {
         $classes[] = 'ontario-newsite';
     }
 
+    if (ontario_is_refundassist_newsite_route()) {
+        $classes[] = 'ontario-refundassist-newsite';
+    }
+
     return $classes;
 });
 
