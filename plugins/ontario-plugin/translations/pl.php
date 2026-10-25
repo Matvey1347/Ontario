@@ -79,6 +79,13 @@ return [
         'quick_contact.send' => 'Wyślij wiadomość',
 
         'hero.badge' => 'Prywatny wywiad blockchainowy dla ofiar oszustw',
+        'torontorefund.newsite.hero.kicker' => 'Śledzenie blockchain i analiza kryminalistyczna',
+        'torontorefund.newsite.hero.title' => 'Prześledź dowody. Poznaj dalsze kroki.',
+        'torontorefund.newsite.hero.supporting' => 'Niezależna analiza oszustw internetowych i spraw dotyczących aktywów cyfrowych',
+        'torontorefund.newsite.hero.copy' => 'Analizujemy transakcje, aktywność portfeli i dostępne dokumenty, a następnie przygotowujemy jasne ustalenia oraz praktyczne dalsze kroki.',
+        'torontorefund.newsite.hero.cta' => 'Poproś o ocenę sprawy',
+        'torontorefund.newsite.form_title' => 'Poproś o ocenę sprawy',
+        'torontorefund.newsite.form_copy' => 'Przekaż chronologię i dostępne dokumenty. Wyjaśnimy, co można ocenić.',
         'hero.title' => 'Odtwórz ślad utraconych aktywów cyfrowych z <span class="gradient-text">precyzją śledczą.</span>',
         'hero.copy' => '{brand_name} pomaga ofiarom internetowych oszustw finansowych mapować transakcje kryptowalutowe, porządkować dowody i rozumieć realistyczne możliwości dalszego działania. <strong>Bez fałszywych obietnic. Najpierw dowody.</strong>',
         'hero.cta_primary' => 'Uzyskaj bezpłatną konsultację',

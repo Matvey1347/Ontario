@@ -7,17 +7,28 @@ $t = static fn (string $key, string $fallback): string => ontario_t($key, ['bran
 $dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynamic_headline() : '';
 $current_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
 $is_refundassist_site = $current_host === 'refundassist.info' || $current_host === 'www.refundassist.info';
+$is_torontorefund_site = $current_host === 'torontorefund.com' || $current_host === 'www.torontorefund.com';
 get_header();
 ?>
-<main id="top" class="newsite-page">
+<main id="top" class="newsite-page<?php echo $is_torontorefund_site ? ' torontorefund-newsite' : ''; ?>">
   <section class="newsite-hero" aria-labelledby="newsite-title"><div class="container newsite-hero__grid"><div>
-    <p class="newsite-kicker"><?php echo esc_html(ontario_t('hero.badge', [], 'Private blockchain intelligence for fraud victims')); ?></p>
-    <h1 id="newsite-title"><?php echo esc_html($dynamic_headline !== '' ? $dynamic_headline : $t('newsite.hero.title', 'Report a Scam and Recover Your Lost Funds')); ?></h1>
-    <h2 class="newsite-hero__supporting"><?php echo esc_html($t('newsite.hero.supporting', 'Professional Assistance for Victims of Online Financial Fraud')); ?></h2>
-    <p class="newsite-hero__lead"><?php echo esc_html($t('newsite.hero.copy', 'Lost money to an online scam, fraudulent investment platform, or cryptocurrency fraud? {brand_name} helps you review your case, trace transactions, organize evidence, and explore available options for recovering lost funds.')); ?></p>
-    <div class="newsite-actions"><a class="btn btn-primary" href="#scanner"><?php echo esc_html(ontario_t('hero.cta_primary', [], 'Get A Free Consultation')); ?></a><a class="btn btn-secondary" href="#report"><?php echo esc_html(ontario_t('hero.cta_secondary', [], 'View Report Preview')); ?></a></div>
-    <ul class="newsite-trust-badges"><?php for ($trust_badge_index = 1; $trust_badge_index <= 4; $trust_badge_index++) : ?><li><?php echo esc_html(ontario_t('newsite.hero.trust_' . $trust_badge_index, [], '')); ?></li><?php endfor; ?></ul>
-    <ul class="newsite-benefits" aria-label="<?php echo esc_attr(ontario_t('site.trust_signals', [], 'Trust signals')); ?>"><?php for ($benefit_index = 1; $benefit_index <= 3; $benefit_index++) : ?><li><?php echo esc_html(ontario_t('newsite.hero.benefit_' . $benefit_index, [], '')); ?></li><?php endfor; ?></ul>
+    <p class="newsite-kicker"><?php echo esc_html($is_torontorefund_site ? ontario_t('torontorefund.newsite.hero.kicker', [], 'Blockchain tracing and forensic casework') : ontario_t('hero.badge', [], 'Private blockchain intelligence for fraud victims')); ?></p>
+    <h1 id="newsite-title"><?php echo esc_html($dynamic_headline !== '' ? $dynamic_headline : ($is_torontorefund_site ? ontario_t('torontorefund.newsite.hero.title', [], 'Follow the evidence. Understand the next step.') : $t('newsite.hero.title', 'Report a Scam and Recover Your Lost Funds'))); ?></h1>
+    <h2 class="newsite-hero__supporting"><?php echo esc_html($is_torontorefund_site ? ontario_t('torontorefund.newsite.hero.supporting', [], 'Independent analysis for online fraud and digital asset cases') : $t('newsite.hero.supporting', 'Professional Assistance for Victims of Online Financial Fraud')); ?></h2>
+    <p class="newsite-hero__lead"><?php echo esc_html($is_torontorefund_site ? ontario_t('torontorefund.newsite.hero.copy', [], 'We review transaction paths, wallet activity, and the records available to you, then prepare clear findings that help explain practical next steps.') : $t('newsite.hero.copy', 'Lost money to an online scam, fraudulent investment platform, or cryptocurrency fraud? {brand_name} helps you review your case, trace transactions, organize evidence, and explore available options for recovering lost funds.')); ?></p>
+    <div class="newsite-actions"><a class="btn btn-primary" href="#scanner"><?php echo esc_html($is_torontorefund_site ? ontario_t('torontorefund.newsite.hero.cta', [], 'Request a case review') : ontario_t('hero.cta_primary', [], 'Get A Free Consultation')); ?></a><a class="btn btn-secondary" href="#report"><?php echo esc_html(ontario_t('hero.cta_secondary', [], 'View Report Preview')); ?></a></div>
+    <?php if ($is_torontorefund_site) : ?>
+      <div class="torontorefund-trace-card" aria-label="<?php echo esc_attr(ontario_t('report.header_title', [], 'Sample Tracing Report')); ?>">
+        <div class="torontorefund-trace-card__heading"><span><?php echo esc_html(ontario_t('report.source_tx', [], 'Source TX')); ?></span><span><?php echo esc_html(ontario_t('report.header_preview', [], 'Preview')); ?></span></div>
+        <code>0x49d7...a81c9f7b2e</code>
+        <div class="torontorefund-trace-card__route" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <p><?php echo esc_html(ontario_t('report.value_path', [], 'Victim wallet → intermediary wallets → mixer exposure → exchange deposit cluster')); ?></p>
+      </div>
+    <?php endif; ?>
+    <?php if (! $is_torontorefund_site) : ?>
+      <ul class="newsite-trust-badges"><?php for ($trust_badge_index = 1; $trust_badge_index <= 4; $trust_badge_index++) : ?><li><?php echo esc_html(ontario_t('newsite.hero.trust_' . $trust_badge_index, [], '')); ?></li><?php endfor; ?></ul>
+      <ul class="newsite-benefits" aria-label="<?php echo esc_attr(ontario_t('site.trust_signals', [], 'Trust signals')); ?>"><?php for ($benefit_index = 1; $benefit_index <= 3; $benefit_index++) : ?><li><?php echo esc_html(ontario_t('newsite.hero.benefit_' . $benefit_index, [], '')); ?></li><?php endfor; ?></ul>
+    <?php endif; ?>
   </div><div class="newsite-hero__conversion">
     <form class="newsite-hero-form" id="newsiteQuickForm" data-quick-form novalidate>
       <input type="hidden" name="formType" value="quickForm" />
@@ -28,7 +39,7 @@ get_header();
       <input type="hidden" name="utm_term" value="" />
       <input type="hidden" name="utm_content" value="" />
       <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
-      <div class="newsite-hero-form__heading"><strong><?php echo esc_html(ontario_t($is_refundassist_site ? 'refundassist.form_title' : 'hero.form_title', [], $is_refundassist_site ? 'Get a free consultation' : 'Recover Your Lost Funds')); ?></strong><span><?php echo esc_html(ontario_t('hero.form_copy', [], 'Tell us what happened for a free initial review.')); ?></span></div>
+      <div class="newsite-hero-form__heading"><strong><?php echo esc_html($is_refundassist_site ? ontario_t('refundassist.form_title', [], 'Get a free consultation') : ($is_torontorefund_site ? ontario_t('torontorefund.newsite.form_title', [], 'Request a Case Review') : ontario_t('hero.form_title', [], 'Recover Your Lost Funds'))); ?></strong><span><?php echo esc_html($is_torontorefund_site ? ontario_t('torontorefund.newsite.form_copy', [], 'Share the timeline and records you have. We will explain what can be assessed.') : ontario_t('hero.form_copy', [], 'Tell us what happened for a free initial review.')); ?></span></div>
       <div class="field"><label for="newsiteQuickName"><?php echo esc_html(ontario_t('form.quick_name', [], 'Name')); ?></label><input id="newsiteQuickName" name="name" type="text" autocomplete="name" placeholder="<?php echo esc_attr(ontario_t('form.quick_name_placeholder', [], 'Enter first name')); ?>" required /></div>
       <div class="field"><label for="newsiteQuickPhone"><?php echo esc_html(ontario_t('form.phone', [], 'Phone number')); ?></label><div class="phone-input"><span class="phone-prefix" aria-hidden="true"><span class="phone-flag">🇨🇦</span> +1</span><div class="phone-number-input"><input id="newsiteQuickPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="<?php echo esc_attr(ontario_t('form.phone_placeholder_ca', [], '(647) 478-0877')); ?>" maxlength="14" required data-phone-mode="canada" /></div></div></div>
       <div class="field"><label for="newsiteQuickEmail"><?php echo esc_html(ontario_t('form.email', [], 'Email address')); ?></label><input id="newsiteQuickEmail" name="email" type="email" autocomplete="email" placeholder="<?php echo esc_attr(ontario_t('form.quick_email_placeholder', [], 'Enter your email')); ?>" required /></div>
@@ -40,7 +51,14 @@ get_header();
       <div class="testimonial-carousel__viewport"><div class="testimonial-carousel__track" data-testimonial-track><?php for ($testimonial_index = 1; $testimonial_index <= 5; $testimonial_index++) : ?><article class="testimonial-carousel__slide<?php echo $testimonial_index === 1 ? ' is-active' : ''; ?>" data-testimonial-slide aria-hidden="<?php echo $testimonial_index === 1 ? 'false' : 'true'; ?>"><blockquote><p><?php echo esc_html(ontario_t('testimonials.quote_open', [], '“')); ?><?php echo esc_html(ontario_t('testimonials.quote_' . $testimonial_index, [], '')); ?><?php echo esc_html(ontario_t('testimonials.quote_close', [], '”')); ?></p><div class="testimonial-carousel__rating" aria-label="<?php echo esc_attr(ontario_t('testimonials.rating', [], 'Five stars')); ?>"><?php echo esc_html(ontario_t('testimonials.stars', [], '⭐⭐⭐⭐⭐')); ?></div><footer><cite><em><?php echo esc_html(ontario_t('testimonials.name_prefix', [], '—')); ?> <?php echo esc_html(ontario_t('testimonials.name_' . $testimonial_index, [], '')); ?></em></cite><span><?php echo esc_html(ontario_t('testimonials.case_' . $testimonial_index, [], '')); ?></span></footer></blockquote></article><?php endfor; ?></div></div>
       <div class="testimonial-carousel__controls"><button type="button" class="testimonial-carousel__button" data-testimonial-previous aria-label="<?php echo esc_attr(ontario_t('testimonials.previous', [], 'Show previous testimonial')); ?>">←</button><div class="testimonial-carousel__dots" aria-hidden="true"><?php for ($testimonial_index = 1; $testimonial_index <= 5; $testimonial_index++) : ?><span class="testimonial-carousel__dot<?php echo $testimonial_index === 1 ? ' is-active' : ''; ?>" data-testimonial-dot></span><?php endfor; ?></div><button type="button" class="testimonial-carousel__button" data-testimonial-next aria-label="<?php echo esc_attr(ontario_t('testimonials.next', [], 'Show next testimonial')); ?>">→</button></div>
     </section>
-  </div></div></section>
+  </div></div>
+  <?php if ($is_torontorefund_site) : ?>
+    <div class="container torontorefund-proofbar">
+      <ul class="newsite-trust-badges"><?php for ($trust_badge_index = 1; $trust_badge_index <= 4; $trust_badge_index++) : ?><li><?php echo esc_html(ontario_t('newsite.hero.trust_' . $trust_badge_index, [], '')); ?></li><?php endfor; ?></ul>
+      <ul class="newsite-benefits" aria-label="<?php echo esc_attr(ontario_t('site.trust_signals', [], 'Trust signals')); ?>"><?php for ($benefit_index = 1; $benefit_index <= 3; $benefit_index++) : ?><li><?php echo esc_html(ontario_t('newsite.hero.benefit_' . $benefit_index, [], '')); ?></li><?php endfor; ?></ul>
+    </div>
+  <?php endif; ?>
+  </section>
 
   <section class="newsite-strip" aria-label="<?php echo esc_attr(ontario_t('site.trust_signals', [], 'Trust signals')); ?>">
     <div class="container newsite-strip__grid">

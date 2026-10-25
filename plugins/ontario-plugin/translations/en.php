@@ -142,6 +142,13 @@ return [
         'quick_contact.send' => 'Send Message',
 
         'hero.badge' => 'Private blockchain intelligence for fraud victims',
+        'torontorefund.newsite.hero.kicker' => 'Blockchain tracing and forensic casework',
+        'torontorefund.newsite.hero.title' => 'Follow the evidence. Understand the next step.',
+        'torontorefund.newsite.hero.supporting' => 'Independent analysis for online fraud and digital asset cases',
+        'torontorefund.newsite.hero.copy' => 'We review transaction paths, wallet activity, and the records available to you, then prepare clear findings that help explain practical next steps.',
+        'torontorefund.newsite.hero.cta' => 'Request a case review',
+        'torontorefund.newsite.form_title' => 'Request a Case Review',
+        'torontorefund.newsite.form_copy' => 'Share the timeline and records you have. We will explain what can be assessed.',
         'hero.title' => 'Trace lost digital assets with <span class="gradient-text">forensic precision.</span>',
         'hero.copy' => '{brand_name} helps victims of online financial fraud map crypto transactions, organize evidence, and understand realistic recovery options. <strong>No false promises. Evidence-first analysis.</strong>',
         'hero.cta_primary' => 'Get A Free Consultation',

@@ -79,6 +79,13 @@ return [
         'quick_contact.send' => 'Envoyer le message',
 
         'hero.badge' => 'Intelligence blockchain privée pour les victimes de fraude',
+        'torontorefund.newsite.hero.kicker' => 'Traçage blockchain et expertise médico-légale',
+        'torontorefund.newsite.hero.title' => 'Suivez les preuves. Comprenez les prochaines étapes.',
+        'torontorefund.newsite.hero.supporting' => 'Analyse indépendante des fraudes en ligne et des actifs numériques',
+        'torontorefund.newsite.hero.copy' => 'Nous examinons les transactions, l’activité des portefeuilles et les documents disponibles, puis préparons des constats clairs et des prochaines étapes pratiques.',
+        'torontorefund.newsite.hero.cta' => 'Demander l’évaluation du dossier',
+        'torontorefund.newsite.form_title' => 'Demander l’évaluation du dossier',
+        'torontorefund.newsite.form_copy' => 'Partagez la chronologie et les documents disponibles. Nous expliquerons ce qui peut être évalué.',
         'hero.title' => 'Retrouvez la trace des actifs numériques perdus avec une <span class="gradient-text">précision médico-légale.</span>',
         'hero.copy' => '{brand_name} aide les victimes de fraude financière en ligne à cartographier les transactions crypto, organiser les preuves et comprendre les options réalistes de recours. <strong>Aucune fausse promesse. Une analyse fondée sur les preuves.</strong>',
         'hero.cta_primary' => 'Obtenir une consultation gratuite',
