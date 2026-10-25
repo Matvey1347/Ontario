@@ -27,8 +27,8 @@ body.ontario-newsite::after { animation:none; }
 @media (max-width:900px) { .newsite-hero__grid, .newsite-contact__grid, .newsite-process, .newsite-actions-layout { grid-template-columns:1fr; gap:38px; }.newsite-strip__grid, .newsite-type-grid, .newsite-process-cards, .newsite-why-grid { grid-template-columns:repeat(2,1fr); }.newsite-hero { padding:48px 0 72px; } }
 @media (max-width:640px) { .newsite-section, .newsite-contact { padding:58px 0; }.newsite-strip { padding:20px 0 48px; }.newsite-card-grid, .newsite-strip__grid, .newsite-type-grid, .newsite-process-cards, .newsite-why-grid { grid-template-columns:1fr; }.newsite-strip__card { padding:20px; }.newsite-hero { padding:40px 0 58px; }.newsite-hero .newsite-kicker { margin-bottom:30px; padding:10px 16px; font-size:.84rem; }.newsite-actions { align-items:stretch; flex-direction:column; gap:14px; }.newsite-actions .btn { text-align:center; }.newsite-hero h1 { font-size:2.7rem; }.newsite-hero__supporting { margin-top:20px; }.newsite-hero__lead { font-size:1.05rem; }.newsite-contact__form .form-card { margin-inline:0; } }
 
-/* Refund Assist /newsite identity: evidence-led editorial, with restrained signal colors. */
-body.ontario-refundassist-newsite {
+/* Green design: evidence-led editorial palette with restrained signal colors. */
+body.ontario-design-green {
   --bg:#091312;
   --bg-soft:#0d1b19;
   --panel:rgba(17,35,31,.94);
@@ -39,36 +39,36 @@ body.ontario-refundassist-newsite {
   --blue:#c4ed73;
   background:radial-gradient(ellipse at 82% 14%,rgba(42,102,83,.2),transparent 34%),#091312;
 }
-body.ontario-refundassist-newsite::before { opacity:.1; background-size:64px 64px; }
-body.ontario-refundassist-newsite .top-notice { color:#d7e2d2; border-color:rgba(194,226,171,.12); background:#101d1a; }
-body.ontario-refundassist-newsite .site-header { background:rgba(9,19,18,.96); border-color:rgba(194,226,171,.12); }
-body.ontario-refundassist-newsite .site-header .brand { color:#f2f1e9; }
-body.ontario-refundassist-newsite .nav-links,
-body.ontario-refundassist-newsite .phone { color:#abb8ad; }
-body.ontario-refundassist-newsite .site-header .btn-primary,
-body.ontario-refundassist-newsite .newsite-actions .btn-primary,
-body.ontario-refundassist-newsite .newsite-hero-form .btn-primary {
+body.ontario-design-green::before { opacity:.1; background-size:64px 64px; }
+body.ontario-design-green .top-notice { color:#d7e2d2; border-color:rgba(194,226,171,.12); background:#101d1a; }
+body.ontario-design-green .site-header { background:rgba(9,19,18,.96); border-color:rgba(194,226,171,.12); }
+body.ontario-design-green .site-header .brand { color:#f2f1e9; }
+body.ontario-design-green .nav-links,
+body.ontario-design-green .phone { color:#abb8ad; }
+body.ontario-design-green .site-header .btn-primary,
+body.ontario-design-green .newsite-actions .btn-primary,
+body.ontario-design-green .newsite-hero-form .btn-primary {
   border:1px solid #c4ed73;
   background:#c4ed73;
   color:#152019;
   box-shadow:none;
 }
-body.ontario-refundassist-newsite .newsite-page {
+body.ontario-design-green .newsite-page {
   background:linear-gradient(180deg,#0b1715 0%,#0d1a18 42%,#091312 100%);
 }
-body.ontario-refundassist-newsite .newsite-hero {
+body.ontario-design-green .newsite-hero {
   padding:clamp(56px,7vw,104px) 0 clamp(68px,8vw,116px);
   background:radial-gradient(ellipse at 8% 12%,rgba(62,143,113,.22),transparent 38%),linear-gradient(115deg,#10211d 0%,#0c1917 58%,#101c1a 100%);
   border-bottom:1px solid rgba(194,226,171,.18);
 }
-body.ontario-refundassist-newsite .newsite-hero::before {
+body.ontario-design-green .newsite-hero::before {
   opacity:.45;
   background:radial-gradient(ellipse at 75% 62%,transparent 0 20%,rgba(196,237,115,.1) 20.1% 20.25%,transparent 20.35% 29%,rgba(196,237,115,.08) 29.1% 29.25%,transparent 29.35% 38%,rgba(196,237,115,.06) 38.1% 38.25%,transparent 38.35%),linear-gradient(90deg,transparent 0 68%,rgba(196,237,115,.08) 68.05% 68.12%,transparent 68.18%);
   background-size:auto,100% 100%;
   mask-image:linear-gradient(90deg,transparent 15%,#000 58%);
 }
-body.ontario-refundassist-newsite .newsite-hero__grid { grid-template-columns:minmax(0,1.15fr) minmax(340px,.72fr); gap:clamp(36px,6vw,92px); }
-body.ontario-refundassist-newsite .newsite-hero .newsite-kicker {
+body.ontario-design-green .newsite-hero__grid { grid-template-columns:minmax(0,1.15fr) minmax(340px,.72fr); gap:clamp(36px,6vw,92px); }
+body.ontario-design-green .newsite-hero .newsite-kicker {
   margin-bottom:34px;
   padding:9px 14px;
   border-color:rgba(196,237,115,.28);
@@ -79,106 +79,106 @@ body.ontario-refundassist-newsite .newsite-hero .newsite-kicker {
   letter-spacing:.08em;
   text-transform:uppercase;
 }
-body.ontario-refundassist-newsite .newsite-hero .newsite-kicker::before { width:8px;height:8px;background:#c4ed73;box-shadow:0 0 12px rgba(196,237,115,.55); }
-body.ontario-refundassist-newsite .newsite-hero h1 { max-width:760px;font-size:clamp(2.8rem,5.5vw,5.2rem);line-height:.99;letter-spacing:-.055em; }
-body.ontario-refundassist-newsite .newsite-hero__supporting { max-width:610px;color:#b8d38a;font-size:clamp(1.25rem,2.5vw,1.9rem);letter-spacing:-.025em; }
-body.ontario-refundassist-newsite .newsite-hero__lead { max-width:620px;color:#b8c4b9;font-size:1.08rem; }
-body.ontario-refundassist-newsite .newsite-trust-badges { gap:9px;margin-top:26px; }
-body.ontario-refundassist-newsite .newsite-trust-badges li { padding:9px 13px;border-color:rgba(194,226,171,.17);border-radius:4px;color:#c2d0c0;background:rgba(18,39,33,.72);font-size:.82rem; }
-body.ontario-refundassist-newsite .newsite-trust-badges li::before { width:7px;height:7px;flex-basis:7px;background:#c4ed73; }
-body.ontario-refundassist-newsite .newsite-benefits { color:#dce3d8;font-size:.96rem; }
-body.ontario-refundassist-newsite .newsite-benefits li::before { color:#c4ed73; }
-body.ontario-refundassist-newsite .newsite-hero-form,
-body.ontario-refundassist-newsite .newsite-hero-testimonials {
+body.ontario-design-green .newsite-hero .newsite-kicker::before { width:8px;height:8px;background:#c4ed73;box-shadow:0 0 12px rgba(196,237,115,.55); }
+body.ontario-design-green .newsite-hero h1 { max-width:760px;font-size:clamp(2.8rem,5.5vw,5.2rem);line-height:.99;letter-spacing:-.055em; }
+body.ontario-design-green .newsite-hero__supporting { max-width:610px;color:#b8d38a;font-size:clamp(1.25rem,2.5vw,1.9rem);letter-spacing:-.025em; }
+body.ontario-design-green .newsite-hero__lead { max-width:620px;color:#b8c4b9;font-size:1.08rem; }
+body.ontario-design-green .newsite-trust-badges { gap:9px;margin-top:26px; }
+body.ontario-design-green .newsite-trust-badges li { padding:9px 13px;border-color:rgba(194,226,171,.17);border-radius:4px;color:#c2d0c0;background:rgba(18,39,33,.72);font-size:.82rem; }
+body.ontario-design-green .newsite-trust-badges li::before { width:7px;height:7px;flex-basis:7px;background:#c4ed73; }
+body.ontario-design-green .newsite-benefits { color:#dce3d8;font-size:.96rem; }
+body.ontario-design-green .newsite-benefits li::before { color:#c4ed73; }
+body.ontario-design-green .newsite-hero-form,
+body.ontario-design-green .newsite-hero-testimonials {
   border-color:rgba(194,226,171,.2);
   border-radius:8px;
   background:rgba(14,29,26,.94);
   box-shadow:0 22px 60px rgba(0,0,0,.22);
 }
-body.ontario-refundassist-newsite .newsite-hero-form { padding:clamp(20px,2.3vw,30px); }
-body.ontario-refundassist-newsite .newsite-hero-form input:not([type="checkbox"], [type="tel"]),
-body.ontario-refundassist-newsite .newsite-hero-form textarea { border-color:rgba(194,226,171,.17);border-radius:5px;background:#0a1916;color:#f2f1e9; }
-body.ontario-refundassist-newsite .newsite-hero-form input:focus,
-body.ontario-refundassist-newsite .newsite-hero-form textarea:focus { outline:2px solid #c4ed73;outline-offset:2px; }
-body.ontario-refundassist-newsite .newsite-hero-testimonials { padding:17px 20px; }
-body.ontario-refundassist-newsite .newsite-hero-testimonials footer span,
-body.ontario-refundassist-newsite .newsite-text-link { color:#c4ed73; }
-body.ontario-refundassist-newsite .newsite-hero-testimonials .testimonial-carousel__button { border-radius:5px;border-color:rgba(194,226,171,.3); }
-body.ontario-refundassist-newsite .newsite-section--soft,
-body.ontario-refundassist-newsite .newsite-actions-section { background:#0d1b19;border-color:rgba(194,226,171,.12); }
-body.ontario-refundassist-newsite .newsite-card,
-body.ontario-refundassist-newsite .newsite-type-grid article,
-body.ontario-refundassist-newsite .newsite-process-cards li,
-body.ontario-refundassist-newsite .newsite-why-grid article { border-color:rgba(194,226,171,.16);border-radius:8px;background:#11211e;box-shadow:none; }
-body.ontario-refundassist-newsite .newsite-process-cards span,
-body.ontario-refundassist-newsite .newsite-checklist li::before { color:#c4ed73; }
-body.ontario-refundassist-newsite .newsite-checklist li { border:1px solid rgba(194,226,171,.14);border-radius:5px;background:#11211e; }
-body.ontario-refundassist-newsite .newsite-contact { background:linear-gradient(120deg,#11241e,#14221d);border-color:rgba(194,226,171,.18); }
-body.ontario-refundassist-newsite .newsite-contact .newsite-kicker { color:#d8edac; }
-body.ontario-refundassist-newsite .newsite-contact__form .form-card { border-color:rgba(194,226,171,.2);border-radius:8px;background:#0d1b19;box-shadow:none; }
+body.ontario-design-green .newsite-hero-form { padding:clamp(20px,2.3vw,30px); }
+body.ontario-design-green .newsite-hero-form input:not([type="checkbox"], [type="tel"]),
+body.ontario-design-green .newsite-hero-form textarea { border-color:rgba(194,226,171,.17);border-radius:5px;background:#0a1916;color:#f2f1e9; }
+body.ontario-design-green .newsite-hero-form input:focus,
+body.ontario-design-green .newsite-hero-form textarea:focus { outline:2px solid #c4ed73;outline-offset:2px; }
+body.ontario-design-green .newsite-hero-testimonials { padding:17px 20px; }
+body.ontario-design-green .newsite-hero-testimonials footer span,
+body.ontario-design-green .newsite-text-link { color:#c4ed73; }
+body.ontario-design-green .newsite-hero-testimonials .testimonial-carousel__button { border-radius:5px;border-color:rgba(194,226,171,.3); }
+body.ontario-design-green .newsite-section--soft,
+body.ontario-design-green .newsite-actions-section { background:#0d1b19;border-color:rgba(194,226,171,.12); }
+body.ontario-design-green .newsite-card,
+body.ontario-design-green .newsite-type-grid article,
+body.ontario-design-green .newsite-process-cards li,
+body.ontario-design-green .newsite-why-grid article { border-color:rgba(194,226,171,.16);border-radius:8px;background:#11211e;box-shadow:none; }
+body.ontario-design-green .newsite-process-cards span,
+body.ontario-design-green .newsite-checklist li::before { color:#c4ed73; }
+body.ontario-design-green .newsite-checklist li { border:1px solid rgba(194,226,171,.14);border-radius:5px;background:#11211e; }
+body.ontario-design-green .newsite-contact { background:linear-gradient(120deg,#11241e,#14221d);border-color:rgba(194,226,171,.18); }
+body.ontario-design-green .newsite-contact .newsite-kicker { color:#d8edac; }
+body.ontario-design-green .newsite-contact__form .form-card { border-color:rgba(194,226,171,.2);border-radius:8px;background:#0d1b19;box-shadow:none; }
 
 @media (max-width:900px) {
-  body.ontario-refundassist-newsite .newsite-hero__grid { grid-template-columns:1fr;gap:38px; }
-  body.ontario-refundassist-newsite .newsite-hero__conversion { max-width:650px; }
+  body.ontario-design-green .newsite-hero__grid { grid-template-columns:1fr;gap:38px; }
+  body.ontario-design-green .newsite-hero__conversion { max-width:650px; }
 }
 @media (max-width:640px) {
-  body.ontario-refundassist-newsite .newsite-hero { padding:46px 0 58px; }
-  body.ontario-refundassist-newsite .newsite-hero h1 { font-size:clamp(2.55rem,12vw,3.5rem); }
-  body.ontario-refundassist-newsite .newsite-hero::before { mask-image:linear-gradient(180deg,transparent,#000 38%,transparent); }
+  body.ontario-design-green .newsite-hero { padding:46px 0 58px; }
+  body.ontario-design-green .newsite-hero h1 { font-size:clamp(2.55rem,12vw,3.5rem); }
+  body.ontario-design-green .newsite-hero::before { mask-image:linear-gradient(180deg,transparent,#000 38%,transparent); }
 }
-.refundassist-disclosure { margin:24px 0 0; padding-top:18px; border-top:1px solid rgba(126,221,255,.14); color:#91a6bb; font-size:.68rem; line-height:1.55; text-align:center; overflow-wrap:anywhere; }
+.refundassist-disclosure { margin:24px 0 0; padding-top:18px; border-top:1px solid rgba(194,226,171,.14); color:#9daa9b; font-size:.68rem; line-height:1.55; text-align:center; overflow-wrap:anywhere; }
 
-/* Carry the Refund Assist palette through the remaining legacy sections. */
-body.ontario-refundassist-newsite .newsite-strip {
+/* Carry the Green design palette through every remaining page section. */
+body.ontario-design-green .newsite-strip {
   border-color:rgba(194,226,171,.14);
   background:linear-gradient(180deg,#101e1a,#0d1917);
 }
-body.ontario-refundassist-newsite .newsite-strip::before {
+body.ontario-design-green .newsite-strip::before {
   opacity:.24;
   background-image:linear-gradient(rgba(196,237,115,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(196,237,115,.1) 1px,transparent 1px);
 }
-body.ontario-refundassist-newsite .newsite-strip__card {
+body.ontario-design-green .newsite-strip__card {
   border-color:rgba(194,226,171,.17);
   border-radius:7px;
   background:rgba(17,33,29,.82);
 }
-body.ontario-refundassist-newsite .newsite-strip__card h2 { color:#edf1e7; }
-body.ontario-refundassist-newsite .newsite-strip__card p { color:#b0beb1; }
-body.ontario-refundassist-newsite .newsite-faq details {
+body.ontario-design-green .newsite-strip__card h2 { color:#edf1e7; }
+body.ontario-design-green .newsite-strip__card p { color:#b0beb1; }
+body.ontario-design-green .newsite-faq details {
   border-color:rgba(194,226,171,.18);
   border-radius:7px;
   background:#11211e;
 }
-body.ontario-refundassist-newsite .newsite-faq details[open] {
+body.ontario-design-green .newsite-faq details[open] {
   border-color:rgba(196,237,115,.42);
   background:linear-gradient(110deg,rgba(25,43,32,.98),rgba(17,33,29,.98));
   box-shadow:inset 3px 0 #c4ed73;
 }
-body.ontario-refundassist-newsite .newsite-faq summary { color:#edf1e7; }
-body.ontario-refundassist-newsite .newsite-faq summary::marker { color:#c4ed73; }
-body.ontario-refundassist-newsite .newsite-faq p { color:#b0beb1; }
-body.ontario-refundassist-newsite .newsite-report .newsite-kicker { color:#c4ed73; }
-body.ontario-refundassist-newsite .newsite-report .card {
+body.ontario-design-green .newsite-faq summary { color:#edf1e7; }
+body.ontario-design-green .newsite-faq summary::marker { color:#c4ed73; }
+body.ontario-design-green .newsite-faq p { color:#b0beb1; }
+body.ontario-design-green .newsite-report .newsite-kicker { color:#c4ed73; }
+body.ontario-design-green .newsite-report .card {
   border-color:rgba(194,226,171,.18);
   border-radius:7px;
   background:#11211e;
   box-shadow:none;
 }
-body.ontario-refundassist-newsite .newsite-report .card::before { background:#c4ed73; }
-body.ontario-refundassist-newsite .newsite-report .card h3 { color:#edf1e7; }
-body.ontario-refundassist-newsite .newsite-report .card p { color:#b0beb1; }
-body.ontario-refundassist-newsite .newsite-report .report {
+body.ontario-design-green .newsite-report .card::before { background:#c4ed73; }
+body.ontario-design-green .newsite-report .card h3 { color:#edf1e7; }
+body.ontario-design-green .newsite-report .card p { color:#b0beb1; }
+body.ontario-design-green .newsite-report .report {
   border-color:rgba(194,226,171,.22);
   border-radius:8px;
   background:#0d1917;
   box-shadow:none;
 }
-body.ontario-refundassist-newsite .newsite-report .report-header,
-body.ontario-refundassist-newsite .newsite-report .report-row { border-color:rgba(194,226,171,.12); }
-body.ontario-refundassist-newsite .newsite-report .report-header span { color:#c4ed73; }
-body.ontario-refundassist-newsite .newsite-report .report-row small { color:#9daa9b; }
-body.ontario-refundassist-newsite .newsite-report .hash { color:#d8edac; }
-body.ontario-refundassist-newsite .newsite-hero-form .phone-input {
+body.ontario-design-green .newsite-report .report-header,
+body.ontario-design-green .newsite-report .report-row { border-color:rgba(194,226,171,.12); }
+body.ontario-design-green .newsite-report .report-header span { color:#c4ed73; }
+body.ontario-design-green .newsite-report .report-row small { color:#9daa9b; }
+body.ontario-design-green .newsite-report .hash { color:#d8edac; }
+body.ontario-design-green .newsite-hero-form .phone-input {
   min-height:46px;
   padding:0 12px;
   gap:9px;
@@ -187,21 +187,47 @@ body.ontario-refundassist-newsite .newsite-hero-form .phone-input {
   background:#0a1916;
   box-shadow:none;
 }
-body.ontario-refundassist-newsite .newsite-hero-form .phone-input:focus-within {
+body.ontario-design-green .newsite-hero-form .phone-input:focus-within {
   border-color:rgba(196,237,115,.62);
   box-shadow:0 0 0 2px rgba(196,237,115,.1);
 }
-body.ontario-refundassist-newsite .newsite-hero-form .phone-number-input,
-body.ontario-refundassist-newsite .newsite-hero-form .phone-input--with-country .phone-number-input {
+body.ontario-design-green .newsite-hero-form .phone-number-input,
+body.ontario-design-green .newsite-hero-form .phone-input--with-country .phone-number-input {
   min-height:44px;
   padding:0;
   border:0;
   border-radius:0;
   background:transparent;
 }
-body.ontario-refundassist-newsite .newsite-hero-form .phone-input input {
+body.ontario-design-green .newsite-hero-form .phone-input input {
   min-height:44px;
   color:#f2f1e9;
 }
-body.ontario-refundassist-newsite .newsite-hero-form .phone-prefix { color:#edf1e7; }
-body.ontario-refundassist-newsite .newsite-hero-form .phone-country-select { border-color:rgba(194,226,171,.18); }
+body.ontario-design-green .newsite-hero-form .phone-prefix { color:#edf1e7; }
+body.ontario-design-green .newsite-hero-form .phone-country-select { border-color:rgba(194,226,171,.18); }
+
+
+/* Green design continuation for legal and confirmation pages. */
+body.ontario-design-green .legal-shell {
+  border-color:rgba(194,226,171,.18);
+  border-radius:8px;
+  background:linear-gradient(145deg,rgba(17,35,31,.96),rgba(13,27,25,.96));
+  box-shadow:none;
+}
+body.ontario-design-green .legal-content { color:#c2cec2; }
+body.ontario-design-green .legal-content h2,
+body.ontario-design-green .legal-content a { color:#c4ed73; }
+body.ontario-design-green .success-page::before {
+  background:radial-gradient(circle at 18% 18%,rgba(196,237,115,.12),transparent 24%),radial-gradient(circle at 80% 16%,rgba(42,102,83,.16),transparent 22%),linear-gradient(180deg,rgba(9,19,18,.08),rgba(9,19,18,0));
+}
+body.ontario-design-green .success-page-card {
+  border-color:rgba(194,226,171,.2);
+  border-radius:8px;
+  background:linear-gradient(145deg,#11231f,#0d1b19);
+  box-shadow:none;
+}
+body.ontario-design-green .success-page-card h1,
+body.ontario-design-green .success-page-card p { color:#edf1e7; }
+body.ontario-design-green .success-eyebrow { color:#c4ed73; }
+body.ontario-design-green .success-icon { background:rgba(196,237,115,.1); box-shadow:none; }
+body.ontario-design-green .success-icon span { border-color:rgba(196,237,115,.72); color:#c4ed73; background:#0d1b19; }

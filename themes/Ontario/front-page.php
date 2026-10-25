@@ -13,20 +13,6 @@ $address = function_exists('ontario_site_field') ? ontario_site_field('address')
 $display_mode = function_exists('ontario_effective_display_mode') ? ontario_effective_display_mode() : 'full';
 
 if (function_exists('ontario_uses_newsite_design') && ontario_uses_newsite_design()) {
-    $front_page_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
-    if ($front_page_host === 'torontorefund.com' || $front_page_host === 'www.torontorefund.com') {
-        $torontorefund_css = get_template_directory() . '/assets/css/torontorefund-newsite.css';
-        wp_enqueue_style(
-            'ontario-torontorefund-newsite',
-            get_template_directory_uri() . '/assets/css/torontorefund-newsite.css',
-            ['ontario-newsite'],
-            is_readable($torontorefund_css) ? (string) filemtime($torontorefund_css) : null
-        );
-        add_filter('body_class', static function (array $classes): array {
-            $classes[] = 'ontario-torontorefund';
-            return $classes;
-        });
-    }
     include get_template_directory() . '/page-newsite.php';
     return;
 }

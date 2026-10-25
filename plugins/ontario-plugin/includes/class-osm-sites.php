@@ -349,9 +349,9 @@ final class OSM_Sites
         $this->render_text_row('phone_number', 'Phone number', $meta['phone_number']);
         $this->render_textarea_row('address', 'Full address', $meta['address']);
         $this->render_text_row('working_hours', 'Working hours', $meta['working_hours']);
-        $this->render_select_row('homepage_design', 'Homepage design', $meta['homepage_design'], [
+        $this->render_select_row('homepage_design', 'Site design', $meta['homepage_design'], [
             'classic' => 'Classic Ontario design',
-            'newsite' => 'New conversion landing design',
+            'newsite' => 'Green design',
         ]);
         $this->render_select_row('display_mode', 'Website display mode', $meta['display_mode'], [
             'full' => 'Full interactive design',
@@ -1101,10 +1101,6 @@ final class OSM_Sites
         $values['zoho_template_id'] = (string) absint($values['zoho_template_id']);
         $values['homepage_design'] = $this->sanitize_homepage_design($values['homepage_design']);
 
-        if ($values['homepage_design'] === 'classic' && $this->normalize_host($values['primary_domain']) === 'ontariorefunds.org') {
-            $values['homepage_design'] = 'newsite';
-        }
-
         if ($values['display_choice_title'] === '') {
             $values['display_choice_title'] = 'Choose how you would like to view this website';
         }
@@ -1362,7 +1358,7 @@ final class OSM_Sites
         echo '<p class="description" style="margin-top:0;">These fields show the effective text currently visible on this site for each enabled language. Edit a field to create a site override, or reset it to inherit the current global or translation-file value.</p>';
         echo '<div class="osm-content-surface-nav" role="tablist" aria-label="Website content design">';
         echo '<button type="button" class="button osm-content-surface-tab' . ($initial_surface === 'main' ? ' is-active' : '') . '" data-osm-content-surface-tab="main">Main site</button>';
-        echo '<button type="button" class="button osm-content-surface-tab' . ($initial_surface === 'newsite' ? ' is-active' : '') . '" data-osm-content-surface-tab="newsite">New site</button>';
+        echo '<button type="button" class="button osm-content-surface-tab' . ($initial_surface === 'newsite' ? ' is-active' : '') . '" data-osm-content-surface-tab="newsite">Green design</button>';
         echo '</div>';
 
         if ($show_language_tabs) {

@@ -164,7 +164,7 @@ return [
         'report.source_tx' => 'TX source',
         'report.path' => 'Parcours observé',
         'report.findings' => 'Constatations',
-        'report.value_scam_type' => 'Fausse plateforme d\'investissement crypto',
+        'report.value_scam_type' => 'Plateforme d\'investissement crypto',
         'report.value_path' => 'Portefeuille de la victime → portefeuilles intermédiaires → exposition à un mixer → cluster de dépôt sur une plateforme d\'échange',
         'report.value_findings' => 'Plusieurs portefeuilles liés ont été identifiés. Une documentation complémentaire est recommandée avant toute démarche institutionnelle.',
 

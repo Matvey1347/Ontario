@@ -135,34 +135,10 @@ if (! function_exists('ontario_success_page_url')) {
     }
 }
 
-if (! function_exists('ontario_is_refundassist_newsite_route')) {
-    function ontario_is_refundassist_newsite_route(): bool
-    {
-        if (is_admin()) {
-            return false;
-        }
-
-        $host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
-        if (! in_array($host, ['refundassist.info', 'www.refundassist.info'], true)) {
-            return false;
-        }
-
-        $request_uri = isset($_SERVER['REQUEST_URI']) ? wp_unslash((string) $_SERVER['REQUEST_URI']) : '';
-        $request_path = trim((string) wp_parse_url($request_uri, PHP_URL_PATH), '/');
-        $home_path = trim((string) wp_parse_url(home_url('/'), PHP_URL_PATH), '/');
-
-        if ($home_path !== '' && str_starts_with($request_path, $home_path . '/')) {
-            $request_path = substr($request_path, strlen($home_path) + 1);
-        }
-
-        return $request_path === 'newsite';
-    }
-}
-
 if (! function_exists('ontario_uses_newsite_design')) {
     function ontario_uses_newsite_design(): bool
     {
-        return ontario_is_refundassist_newsite_route() || (is_front_page() && ontario_site_field('homepage_design', '') === 'newsite');
+        return ! is_admin() && ontario_site_field('homepage_design', '') === 'newsite';
     }
 }
 
@@ -494,35 +470,11 @@ add_filter('body_class', static function (array $classes): array {
 
     if (ontario_uses_newsite_design()) {
         $classes[] = 'ontario-newsite';
-    }
-
-    if (ontario_is_refundassist_newsite_route()) {
-        $classes[] = 'ontario-refundassist-newsite';
+        $classes[] = 'ontario-design-green';
     }
 
     return $classes;
 });
-
-add_action('template_redirect', static function (): void {
-    if (! ontario_is_refundassist_newsite_route()) {
-        return;
-    }
-
-    global $wp_query;
-
-    if ($wp_query instanceof WP_Query) {
-        $wp_query->is_404 = false;
-        $wp_query->is_page = true;
-        $wp_query->is_singular = true;
-        $wp_query->is_home = false;
-        $wp_query->is_archive = false;
-    }
-
-    status_header(200);
-    nocache_headers();
-    include get_template_directory() . '/page-newsite.php';
-    exit;
-}, 0);
 
 add_action('template_redirect', static function (): void {
     if (is_admin()) {
@@ -563,7 +515,7 @@ add_action('template_redirect', static function (): void {
 });
 
 add_filter('document_title_parts', static function (array $parts): array {
-    if (ontario_uses_newsite_design()) {
+    if (is_front_page() && ontario_uses_newsite_design()) {
         $parts['title'] = ontario_t('newsite.meta_title', ['brand_name' => ontario_site_brand_name()], 'Online Scam Case Assessment | {brand_name}');
     }
 
@@ -571,11 +523,11 @@ add_filter('document_title_parts', static function (array $parts): array {
 });
 
 add_action('wp_head', static function (): void {
-    if (ontario_uses_newsite_design()) {
+    if (is_front_page() && ontario_uses_newsite_design()) {
         $brand_name = ontario_site_brand_name();
         $title = ontario_t('newsite.meta_title', ['brand_name' => $brand_name], 'Online Scam Case Assessment | {brand_name}');
         $description = ontario_t('newsite.meta_description', ['brand_name' => $brand_name], 'Request a professional assessment for an online scam or cybercrime case.');
-        $canonical_url = ontario_is_refundassist_newsite_route() ? home_url('/newsite/') : home_url('/');
+        $canonical_url = home_url('/');
     } else {
         return;
     }

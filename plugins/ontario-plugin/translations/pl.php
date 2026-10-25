@@ -164,7 +164,7 @@ return [
         'report.source_tx' => 'TX źródłowa',
         'report.path' => 'Zaobserwowana ścieżka',
         'report.findings' => 'Ustalenia',
-        'report.value_scam_type' => 'Fałszywa platforma inwestycyjna crypto',
+        'report.value_scam_type' => 'Platforma inwestycyjna crypto',
         'report.value_path' => 'Portfel ofiary → portfele pośrednie → ekspozycja na mixer → klaster depozytowy giełdy',
         'report.value_findings' => 'Zidentyfikowano wiele powiązanych portfeli. Przed kontaktem z instytucjami zalecana jest dalsza dokumentacja.',
 
