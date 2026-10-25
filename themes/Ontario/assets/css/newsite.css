@@ -164,7 +164,12 @@ body.ontario-design-green .newsite-report .card {
   background:#11211e;
   box-shadow:none;
 }
-body.ontario-design-green .newsite-report .card::before { background:#c4ed73; }
+body.ontario-design-green .newsite-report .card::before {
+  z-index:0;
+  background:radial-gradient(circle at var(--glow-x) var(--glow-y),rgba(196,237,115,.12),transparent 46%);
+}
+body.ontario-design-green .newsite-report .card h3,
+body.ontario-design-green .newsite-report .card p { z-index:1; }
 body.ontario-design-green .newsite-report .card h3 { color:#edf1e7; }
 body.ontario-design-green .newsite-report .card p { color:#b0beb1; }
 body.ontario-design-green .newsite-report .report {
