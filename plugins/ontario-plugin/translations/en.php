@@ -8,6 +8,7 @@ return [
     'flag' => '🇬🇧',
     'strings' => [
         'site.notice' => 'Only cases with losses from $2,000+ • Free consultation • We do not accept US citizens • Not a government agency',
+        'green.site_notice' => 'Not A Trading Platform • Free consultation • We do not accept US citizens • Not a government agency',
         'site.brand_home' => '{brand_name} home',
         'site.primary_navigation' => 'Primary navigation',
         'site.open_menu' => 'Open menu',

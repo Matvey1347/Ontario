@@ -8,6 +8,7 @@ return [
     'flag' => '🇫🇷',
     'strings' => [
         'site.notice' => 'Uniquement pour les dossiers avec des pertes de 2 000 $+ • Consultation gratuite • Nous n\'acceptons pas les citoyens américains • Nous ne sommes pas un organisme public',
+        'green.site_notice' => 'Nous ne sommes pas une plateforme de trading • Consultation gratuite • Nous n’acceptons pas les citoyens américains • Nous ne sommes pas un organisme public',
         'site.brand_home' => 'Accueil {brand_name}',
         'site.primary_navigation' => 'Navigation principale',
         'site.open_menu' => 'Ouvrir le menu',

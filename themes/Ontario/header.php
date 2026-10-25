@@ -54,7 +54,9 @@ $is_newsite_page = ontario_uses_newsite_design();
 ?>
 <div class="top-notice">
   <div class="container">
-    <?php echo esc_html(ontario_t('site.notice', [], 'Only cases with losses from $2,000+ • Free consultation • We do not accept US citizens • Not a government agency')); ?>
+    <?php echo esc_html($is_newsite_page
+        ? ontario_t('green.site_notice', [], 'Not A Trading Platform • Free consultation • We do not accept US citizens • Not a government agency')
+        : ontario_t('site.notice', [], 'Only cases with losses from $2,000+ • Free consultation • We do not accept US citizens • Not a government agency')); ?>
   </div>
 </div>
 

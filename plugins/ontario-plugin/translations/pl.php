@@ -8,6 +8,7 @@ return [
     'flag' => '🇵🇱',
     'strings' => [
         'site.notice' => 'Tylko sprawy ze stratą od 2 000 USD+ • Bezpłatna konsultacja • Nie obsługujemy obywateli USA • To nie jest agencja rządowa',
+        'green.site_notice' => 'Nie jesteśmy platformą handlową • Bezpłatna konsultacja • Nie obsługujemy obywateli USA • To nie jest agencja rządowa',
         'site.brand_home' => 'Strona główna {brand_name}',
         'site.primary_navigation' => 'Główna nawigacja',
         'site.open_menu' => 'Otwórz menu',
