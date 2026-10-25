@@ -5,6 +5,8 @@ $brand_name = ontario_site_brand_name();
 $address = function_exists('ontario_site_field') ? ontario_site_field('address') : '';
 $t = static fn (string $key, string $fallback): string => ontario_t($key, ['brand_name' => $brand_name], $fallback);
 $dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynamic_headline() : '';
+$current_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
+$is_refundassist_site = $current_host === 'refundassist.info' || $current_host === 'www.refundassist.info';
 get_header();
 ?>
 <main id="top" class="newsite-page">
@@ -26,7 +28,7 @@ get_header();
       <input type="hidden" name="utm_term" value="" />
       <input type="hidden" name="utm_content" value="" />
       <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
-      <div class="newsite-hero-form__heading"><strong><?php echo esc_html(ontario_t('hero.form_title', [], 'Recover Your Lost Funds')); ?></strong><span><?php echo esc_html(ontario_t('hero.form_copy', [], 'Tell us what happened for a free initial review.')); ?></span></div>
+      <div class="newsite-hero-form__heading"><strong><?php echo esc_html(ontario_t($is_refundassist_site ? 'refundassist.form_title' : 'hero.form_title', [], $is_refundassist_site ? 'Get a free consultation' : 'Recover Your Lost Funds')); ?></strong><span><?php echo esc_html(ontario_t('hero.form_copy', [], 'Tell us what happened for a free initial review.')); ?></span></div>
       <div class="field"><label for="newsiteQuickName"><?php echo esc_html(ontario_t('form.quick_name', [], 'Name')); ?></label><input id="newsiteQuickName" name="name" type="text" autocomplete="name" placeholder="<?php echo esc_attr(ontario_t('form.quick_name_placeholder', [], 'Enter first name')); ?>" required /></div>
       <div class="field"><label for="newsiteQuickPhone"><?php echo esc_html(ontario_t('form.phone', [], 'Phone number')); ?></label><div class="phone-input"><span class="phone-prefix" aria-hidden="true"><span class="phone-flag">🇨🇦</span> +1</span><div class="phone-number-input"><input id="newsiteQuickPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="<?php echo esc_attr(ontario_t('form.phone_placeholder_ca', [], '(647) 478-0877')); ?>" maxlength="14" required data-phone-mode="canada" /></div></div></div>
       <div class="field"><label for="newsiteQuickEmail"><?php echo esc_html(ontario_t('form.email', [], 'Email address')); ?></label><input id="newsiteQuickEmail" name="email" type="email" autocomplete="email" placeholder="<?php echo esc_attr(ontario_t('form.quick_email_placeholder', [], 'Enter your email')); ?>" required /></div>

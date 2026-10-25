@@ -13,6 +13,8 @@ $phone_number = ontario_site_field('phone_number');
 $working_hours = ontario_site_field('working_hours');
 $public_email = ontario_site_field('public_email');
 $is_newsite_page = function_exists('ontario_uses_newsite_design') && ontario_uses_newsite_design();
+$current_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
+$is_refundassist_site = $current_host === 'refundassist.info' || $current_host === 'www.refundassist.info';
 $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== '' && $phone_number !== '') || $working_hours !== '' || $public_email !== '';
 ?>
 <footer class="site-footer">
@@ -61,6 +63,9 @@ $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== ''
         <?php endif; ?>
       </div>
     </div>
+    <?php if ($is_refundassist_site) : ?>
+      <p class="refundassist-disclosure"><?php echo esc_html(ontario_t('refundassist.footer_disclosure', [], 'Sitename is a private blockchain intelligence and forensic investigation firm providing software, analytics, and expert services to qualified organizations and individuals. We are a non-government entity (operated by CHARITY ACCOUNTING SERVICES LTD, registered in England and Wales) providing value-added paid services. We are not a law enforcement agency and do not provide legal, investment, or financial advice. On-chain analysis cannot guarantee identification or recovery of funds; outcomes vary by case. We do not accept U.S. citizens or residents as clients. Not affiliated with any government agency or regulator. Not affiliated with the Canada Revenue Agency (CRA).')); ?></p>
+    <?php endif; ?>
   </div>
 </footer>
 

@@ -113,6 +113,7 @@ return [
         'newsite.faq.q8' => 'Can {brand_name} guarantee my money back?', 'newsite.faq.a8' => 'No. We do not guarantee recovery. We review the available evidence, analyze relevant information, and explain realistic next steps.',
 
         'footer.description' => '{brand_name} provides private blockchain intelligence and forensic case analysis for victims of online financial fraud. We trace digital asset movement, prepare evidence-based documentation, and explain practical next steps.',
+        'refundassist.footer_disclosure' => 'Sitename is a private blockchain intelligence and forensic investigation firm providing software, analytics, and expert services to qualified organizations and individuals. We are a non-government entity (operated by CHARITY ACCOUNTING SERVICES LTD, registered in England and Wales) providing value-added paid services. We are not a law enforcement agency and do not provide legal, investment, or financial advice. On-chain analysis cannot guarantee identification or recovery of funds; outcomes vary by case. We do not accept U.S. citizens or residents as clients. Not affiliated with any government agency or regulator. Not affiliated with the Canada Revenue Agency (CRA).',
         'footer.security' => 'Encrypted in transit & at rest · PIPEDA compliant · SOC 2 Type II',
         'footer.copyright' => '© {year} {brand_name}. All Rights Reserved.',
         'footer.terms' => 'Terms & Conditions',
@@ -151,6 +152,7 @@ return [
         'hero.visual_aria' => 'Forensic dashboard illustration',
         'hero.visual_alt' => 'Forensic blockchain tracing dashboard with wallet flow analysis',
         'hero.form_title' => 'Recover Your Lost Funds',
+        'refundassist.form_title' => 'Get a free consultation',
         'hero.form_copy' => 'Tell us what happened for a free initial review.',
         'hero.form_submit' => 'Get A Free Consultation',
 
