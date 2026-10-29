@@ -12,9 +12,9 @@ $is_refundassist_site = $modal_host === 'refundassist.info' || $modal_host === '
   <div class="modal-dialog welcome-dialog" role="dialog" aria-modal="true" aria-labelledby="welcomeModalTitle">
     <div class="welcome-card">
       <div class="success-eyebrow"><?php echo esc_html(ontario_t('welcome.badge', [], 'Please note')); ?></div>
-      <h2 id="welcomeModalTitle"><?php echo esc_html(ontario_t('welcome.title', [], 'Only If You Lost $2,000+')); ?></h2>
+      <h2 id="welcomeModalTitle"><?php echo esc_html(ontario_t('welcome.title', [], 'Start with a Case Review')); ?></h2>
       <div class="welcome-copy">
-        <p><?php echo esc_html(ontario_t('welcome.copy', [], 'We will only accept your case if your losses exceed $2,000.')); ?></p>
+        <p><?php echo esc_html(ontario_t('welcome.copy', [], 'We will review the information you provide and explain what next steps may be available.')); ?></p>
       </div>
       <button class="btn btn-primary welcome-close" type="button" data-welcome-close><?php echo esc_html(ontario_t('welcome.button', [], 'I Understand')); ?></button>
     </div>
@@ -67,8 +67,8 @@ $is_refundassist_site = $modal_host === 'refundassist.info' || $modal_host === '
         <textarea id="quickMessage" name="message" placeholder="<?php echo esc_attr(ontario_t('form.quick_message_placeholder', [], 'Briefly describe what happened (amount, dates, platform or wallets)')); ?>" required data-label="<?php echo esc_attr(ontario_t('form.quick_message', [], 'Message')); ?>"></textarea>
       </div>
       <label class="checkbox-field" for="lossConfirm">
-        <input id="lossConfirm" name="lossConfirm" type="checkbox" required data-label="<?php echo esc_attr(ontario_t('form.loss_confirm', [], 'I confirm my losses exceed $2,000')); ?>" />
-        <span><?php echo esc_html(ontario_t('form.loss_confirm', [], 'I confirm my losses exceed $2,000')); ?></span>
+        <input id="lossConfirm" name="lossConfirm" type="checkbox" required data-label="<?php echo esc_attr(ontario_t('form.loss_confirm', [], 'I confirm the information provided is accurate to the best of my knowledge.')); ?>" />
+        <span><?php echo esc_html(ontario_t('form.loss_confirm', [], 'I confirm the information provided is accurate to the best of my knowledge.')); ?></span>
       </label>
       <button class="btn btn-primary short-submit" type="submit"><?php echo esc_html(ontario_t($is_refundassist_site ? 'refundassist.quick_contact_submit' : 'quick_contact.send', [], $is_refundassist_site ? 'Get a free consultation' : 'Send Message')); ?></button>
       <?php echo ontario_render_tracking_code('form'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>

@@ -473,6 +473,11 @@ add_filter('body_class', static function (array $classes): array {
         $classes[] = 'ontario-design-green';
     }
 
+    $site_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
+    if ($site_host === 'refundassist.info' || $site_host === 'www.refundassist.info') {
+        $classes[] = 'refundassist-site';
+    }
+
     return $classes;
 });
 
@@ -627,6 +632,15 @@ add_action('wp_enqueue_scripts', static function (): void {
         $theme_uri . $script_file,
         [],
         file_exists($theme_dir . $script_file) ? (string) filemtime($theme_dir . $script_file) : $version,
+        true
+    );
+
+    $sticky_cta_script = '/assets/js/sticky-case-review.js';
+    wp_enqueue_script(
+        'ontario-sticky-case-review',
+        $theme_uri . $sticky_cta_script,
+        [],
+        file_exists($theme_dir . $sticky_cta_script) ? (string) filemtime($theme_dir . $sticky_cta_script) : $version,
         true
     );
 

@@ -5,7 +5,11 @@ if (! defined('ABSPATH')) {
     exit;
 }
 ?>
-<?php $phone_selector_enabled = ontario_phone_country_selector_enabled(); ?>
+<?php
+$phone_selector_enabled = ontario_phone_country_selector_enabled();
+$form_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
+$is_refundassist_site = $form_host === 'refundassist.info' || $form_host === 'www.refundassist.info';
+?>
 <form class="form-card" id="caseForm" novalidate>
   <input type="hidden" name="formType" value="caseForm" />
   <input type="hidden" name="zc_gad" value="" />
@@ -28,7 +32,7 @@ if (! defined('ABSPATH')) {
       <label for="lossAmount"><?php echo esc_html(ontario_t('form.loss_amount', [], 'Approximate amount lost')); ?></label>
       <select id="lossAmount" name="lossAmount" required data-label="<?php echo esc_attr(ontario_t('form.loss_amount', [], 'Approximate amount lost')); ?>">
         <option value=""><?php echo esc_html(ontario_t('form.loss_placeholder', [], 'Select range')); ?></option>
-        <option value="$500-$1,999"><?php echo esc_html(ontario_t('form.loss_1', [], '$500-$1,999')); ?></option>
+        <?php if (! $is_refundassist_site) : ?><option value="$500-$1,999"><?php echo esc_html(ontario_t('form.loss_1', [], '$500-$1,999')); ?></option><?php endif; ?>
         <option value="$2,000-$9,999"><?php echo esc_html(ontario_t('form.loss_2', [], '$2,000-$9,999')); ?></option>
         <option value="$10,000-$49,999"><?php echo esc_html(ontario_t('form.loss_3', [], '$10,000-$49,999')); ?></option>
         <option value="$50,000-$99,999"><?php echo esc_html(ontario_t('form.loss_4', [], '$50,000-$99,999')); ?></option>

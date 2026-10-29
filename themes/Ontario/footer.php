@@ -69,6 +69,11 @@ $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== ''
   </div>
 </footer>
 
+<a class="sticky-case-review" href="<?php echo esc_url(home_url('/#scanner')); ?>" data-sticky-case-review aria-hidden="true" tabindex="-1">
+  <span><?php echo esc_html(ontario_t('nav.free_consultation', [], 'Request a Case Review')); ?></span>
+  <svg aria-hidden="true" viewBox="0 0 20 20" focusable="false"><path d="M10 3.5v12m-5-5 5 5 5-5" /></svg>
+</a>
+
 <?php
 if (ontario_site_display_mode() === 'choice') {
     include locate_template('template-parts/modals/display-mode.php');

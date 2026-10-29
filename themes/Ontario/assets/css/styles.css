@@ -2935,3 +2935,143 @@ textarea.is-invalid,
     transition: none;
   }
 }
+
+.sticky-case-review {
+  position: fixed;
+  z-index: 120;
+  right: clamp(16px, 3vw, 28px);
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  display: inline-flex;
+  max-width: calc(100vw - 32px);
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  color: #03111f;
+  background: linear-gradient(135deg, var(--cyan), var(--green));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24), 0 4px 14px rgba(77, 227, 255, 0.18);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+}
+
+.sticky-case-review.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.sticky-case-review svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.sticky-case-review:hover {
+  color: #03111f;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3), 0 5px 16px rgba(77, 227, 255, 0.2);
+}
+
+.sticky-case-review:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+body.ontario-design-green .sticky-case-review {
+  border-color: rgba(21, 32, 25, 0.18);
+  color: #152019;
+  background: #c4ed73;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 480px) {
+  .sticky-case-review {
+    right: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    min-height: 48px;
+    gap: 8px;
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sticky-case-review.is-visible svg {
+    animation: stickyCaseReviewNudge 3.6s ease-in-out 1.2s infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticky-case-review,
+  .sticky-case-review svg {
+    animation: none;
+    transition: none;
+  }
+}
+
+@keyframes stickyCaseReviewNudge {
+  0%, 78%, 100% { transform: translateY(0); }
+  84% { transform: translateY(2px); }
+  90% { transform: translateY(-1px); }
+}
+
+.refundassist-mobile-label {
+  display: none;
+}
+
+body.refundassist-site .sticky-case-review {
+  display: none;
+}
+
+body.refundassist-site #newsiteQuickForm {
+  scroll-margin-top: 118px;
+}
+
+@media (max-width: 720px) {
+  body.refundassist-site .nav-actions .btn {
+    display: inline-flex;
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  body.refundassist-site .refundassist-header-label {
+    display: none;
+  }
+
+  body.refundassist-site .refundassist-mobile-label {
+    display: inline;
+  }
+
+  body.refundassist-site .brand img {
+    width: clamp(90px, 28vw, 106px);
+  }
+}
+
+@media (max-width: 380px) {
+  body.refundassist-site .nav-actions {
+    gap: 6px;
+  }
+
+  body.refundassist-site .nav-actions .btn {
+    min-height: 40px;
+    padding-inline: 8px;
+    font-size: 11px;
+  }
+}

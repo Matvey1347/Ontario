@@ -51,12 +51,16 @@ $phone_number = ontario_site_field('phone_number');
 $enabled_languages = ontario_enabled_languages();
 $current_language = ontario_current_language();
 $is_newsite_page = ontario_uses_newsite_design();
+$header_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
+$is_refundassist_site = $header_host === 'refundassist.info' || $header_host === 'www.refundassist.info';
+$refundassist_form_anchor = $is_newsite_page ? 'newsiteQuickForm' : 'scanner';
+$header_cta_href = $is_refundassist_site ? (is_front_page() ? '#' . $refundassist_form_anchor : home_url('/#' . $refundassist_form_anchor)) : '#scanner';
 ?>
 <div class="top-notice">
   <div class="container">
     <?php echo esc_html($is_newsite_page
         ? ontario_t('green.site_notice', [], 'Not A Trading Platform • Free consultation • We do not accept US citizens • Not a government agency')
-        : ontario_t('site.notice', [], 'Only cases with losses from $2,000+ • Free consultation • We do not accept US citizens • Not a government agency')); ?>
+        : ontario_t('site.notice', [], 'Private case review • Free consultation • We do not accept US citizens • Not a government agency')); ?>
   </div>
 </div>
 
@@ -104,7 +108,10 @@ $is_newsite_page = ontario_uses_newsite_design();
         <?php if ($phone_href !== '' && $phone_number !== '') : ?>
           <a class="phone" href="tel:<?php echo esc_attr($phone_href); ?>"><?php echo esc_html($phone_number); ?></a>
         <?php endif; ?>
-        <a class="btn btn-primary" href="<?php echo esc_url($is_newsite_page ? '#scanner' : '#quick-contact-modal'); ?>"<?php echo $is_newsite_page ? '' : ' data-modal-open'; ?>><?php echo esc_html(ontario_t('nav.free_consultation', [], 'Free Consultation')); ?></a>
+        <a class="btn btn-primary" href="<?php echo esc_url($header_cta_href); ?>" aria-label="<?php echo esc_attr(ontario_t('nav.free_consultation', [], 'Request a Case Review')); ?>">
+          <span class="refundassist-header-label"><?php echo esc_html(ontario_t('nav.free_consultation', [], 'Request a Case Review')); ?></span>
+          <?php if ($is_refundassist_site) : ?><span class="refundassist-mobile-label"><?php echo esc_html(ontario_t('refundassist.mobile_case_review', [], 'Case Review')); ?></span><?php endif; ?>
+        </a>
         <button class="mobile-menu-btn" type="button" aria-label="<?php echo esc_attr(ontario_t('site.open_menu', [], 'Open menu')); ?>" aria-expanded="false" id="menuBtn">☰</button>
       </div>
     </nav>
