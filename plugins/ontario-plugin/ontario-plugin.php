@@ -169,6 +169,13 @@ if (! function_exists('ontario_phone_countries')) {
 if (! function_exists('ontario_t')) {
     function ontario_t(string $key, array $replacements = [], string $fallback = ''): string
     {
+        // Make the active site's brand available to every translation, including
+        // strings whose callers do not explicitly pass a replacement map.
+        $replacements = array_merge(
+            ['brand_name' => ontario_site_brand_name()],
+            $replacements
+        );
+
         return OSM_Plugin::instance()->translations()->translate($key, $replacements, $fallback);
     }
 }
