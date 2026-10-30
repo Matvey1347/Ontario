@@ -457,7 +457,7 @@ return [
         'form.quick_email_placeholder' => 'Entrez votre e-mail',
         'form.quick_message' => 'Message',
         'form.quick_message_placeholder' => 'Décrivez brièvement ce qui s\'est passé (montant, dates, plateforme ou portefeuilles)',
-        'form.loss_confirm' => 'Je confirme que les informations fournies sont exactes à ma connaissance.',
+        'form.loss_confirm' => 'J’accepte d’être contacté(e) et j’accepte la {privacy_policy}',
         'form.sending' => 'Envoi...',
         'form.sending_message' => 'Envoi de votre message...',
         'form.submitting_request' => 'Envoi de votre demande...',

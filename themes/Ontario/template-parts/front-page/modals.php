@@ -66,9 +66,10 @@ $is_refundassist_site = $modal_host === 'refundassist.info' || $modal_host === '
         <label for="quickMessage"><?php echo esc_html(ontario_t('form.quick_message', [], 'Message')); ?></label>
         <textarea id="quickMessage" name="message" placeholder="<?php echo esc_attr(ontario_t('form.quick_message_placeholder', [], 'Briefly describe what happened (amount, dates, platform or wallets)')); ?>" required data-label="<?php echo esc_attr(ontario_t('form.quick_message', [], 'Message')); ?>"></textarea>
       </div>
+      <?php $contact_consent = ontario_form_contact_consent(); ?>
       <label class="checkbox-field" for="lossConfirm">
-        <input id="lossConfirm" name="lossConfirm" type="checkbox" required data-label="<?php echo esc_attr(ontario_t('form.loss_confirm', [], 'I confirm the information provided is accurate to the best of my knowledge.')); ?>" />
-        <span><?php echo esc_html(ontario_t('form.loss_confirm', [], 'I confirm the information provided is accurate to the best of my knowledge.')); ?></span>
+        <input id="lossConfirm" name="lossConfirm" type="checkbox" required data-label="<?php echo esc_attr(wp_strip_all_tags($contact_consent)); ?>" />
+        <span><?php echo $contact_consent; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
       </label>
       <button class="btn btn-primary short-submit" type="submit"><?php echo esc_html(ontario_t($is_refundassist_site ? 'refundassist.quick_contact_submit' : 'quick_contact.send', [], $is_refundassist_site ? 'Get a free consultation' : 'Send Message')); ?></button>
       <?php echo ontario_render_tracking_code('form'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>

@@ -457,7 +457,7 @@ return [
         'form.quick_email_placeholder' => 'Wpisz swój e-mail',
         'form.quick_message' => 'Wiadomość',
         'form.quick_message_placeholder' => 'Krótko opisz, co się wydarzyło (kwota, daty, platforma lub portfele)',
-        'form.loss_confirm' => 'Potwierdzam, że przekazane informacje są zgodne z moją najlepszą wiedzą.',
+        'form.loss_confirm' => 'Wyrażam zgodę na kontakt i akceptuję {privacy_policy}',
         'form.sending' => 'Wysyłanie...',
         'form.sending_message' => 'Wysyłamy Twoją wiadomość...',
         'form.submitting_request' => 'Wysyłamy Twoje zgłoszenie...',

@@ -26,7 +26,7 @@ $dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynami
         </p>
 
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#quick-contact-modal" data-modal-open><?php echo esc_html(ontario_t('hero.cta_primary', [], 'Get A Free Consultation')); ?></a>
+          <a class="btn btn-primary" href="#heroQuickForm"><?php echo esc_html(ontario_t('hero.cta_primary', [], 'Get A Free Consultation')); ?></a>
           <a class="btn btn-secondary" href="#report"><?php echo esc_html(ontario_t('hero.cta_secondary', [], 'View Report Preview')); ?></a>
         </div>
 
@@ -49,7 +49,8 @@ $dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynami
           <div class="field"><label for="heroQuickPhone"><?php echo esc_html(ontario_t('form.phone', [], 'Phone number')); ?></label><div class="phone-input"><span class="phone-prefix" aria-hidden="true"><span class="phone-flag">🇨🇦</span> +1</span><div class="phone-number-input"><input id="heroQuickPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="<?php echo esc_attr(ontario_t('form.phone_placeholder_ca', [], '(506) 234-5678')); ?>" maxlength="14" required data-label="<?php echo esc_attr(ontario_t('form.phone', [], 'Phone number')); ?>" data-phone-mode="canada" /></div></div></div>
           <div class="field"><label for="heroQuickEmail"><?php echo esc_html(ontario_t('form.email', [], 'Email address')); ?></label><input id="heroQuickEmail" name="email" type="email" placeholder="<?php echo esc_attr(ontario_t('form.quick_email_placeholder', [], 'Enter your email')); ?>" required data-label="<?php echo esc_attr(ontario_t('form.email', [], 'Email address')); ?>" /></div>
           <div class="field"><label for="heroQuickMessage"><?php echo esc_html(ontario_t('form.quick_message', [], 'Message')); ?></label><textarea id="heroQuickMessage" name="message" placeholder="<?php echo esc_attr(ontario_t('form.quick_message_placeholder', [], 'Briefly describe what happened (amount, dates, platform or wallets)')); ?>" required data-label="<?php echo esc_attr(ontario_t('form.quick_message', [], 'Message')); ?>"></textarea></div>
-          <label class="checkbox-field" for="heroLossConfirm"><input id="heroLossConfirm" name="lossConfirm" type="checkbox" required data-label="<?php echo esc_attr(ontario_t('form.loss_confirm', [], 'I confirm the information provided is accurate to the best of my knowledge.')); ?>" /><span><?php echo esc_html(ontario_t('form.loss_confirm', [], 'I confirm the information provided is accurate to the best of my knowledge.')); ?></span></label>
+          <?php $contact_consent = ontario_form_contact_consent(); ?>
+          <label class="checkbox-field" for="heroLossConfirm"><input id="heroLossConfirm" name="lossConfirm" type="checkbox" required data-label="<?php echo esc_attr(wp_strip_all_tags($contact_consent)); ?>" /><span><?php echo $contact_consent; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></label>
           <button class="btn btn-primary short-submit" type="submit"><?php echo esc_html(ontario_t('hero.form_submit', [], 'Get A Free Consultation')); ?></button>
           <?php echo ontario_render_tracking_code('form'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
         </form>
@@ -298,7 +299,7 @@ $dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynami
         <h2><?php echo esc_html(ontario_t('cta.title', [], 'Start with a free case review.')); ?></h2>
         <p><?php echo esc_html(ontario_t('cta.copy', [], 'Submit what you have. We will help determine whether your case has enough information for meaningful tracing and evidence preparation.')); ?></p>
       </div>
-      <a class="btn btn-primary" href="#scanner"><?php echo esc_html(ontario_t('cta.button', [], 'Check Your Case')); ?></a>
+      <a class="btn btn-primary" href="#heroQuickForm"><?php echo esc_html(ontario_t('cta.button', [], 'Check Your Case')); ?></a>
     </div>
   </section>
 </main>

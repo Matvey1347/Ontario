@@ -53,8 +53,9 @@ $current_language = ontario_current_language();
 $is_newsite_page = ontario_uses_newsite_design();
 $header_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
 $is_refundassist_site = $header_host === 'refundassist.info' || $header_host === 'www.refundassist.info';
-$refundassist_form_anchor = $is_newsite_page ? 'newsiteQuickForm' : 'scanner';
-$header_cta_href = $is_refundassist_site ? (is_front_page() ? '#' . $refundassist_form_anchor : home_url('/#' . $refundassist_form_anchor)) : '#scanner';
+$header_cta_href = is_front_page()
+    ? '#' . ontario_primary_form_anchor()
+    : home_url('/#' . ontario_primary_form_anchor());
 ?>
 <div class="top-notice">
   <div class="container">

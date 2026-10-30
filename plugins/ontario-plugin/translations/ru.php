@@ -437,7 +437,7 @@ return [
         'form.quick_email_placeholder' => 'Введите email',
         'form.quick_message' => 'Сообщение',
         'form.quick_message_placeholder' => 'Кратко опишите, что произошло (сумма, даты, платформа или кошельки)',
-        'form.loss_confirm' => 'Подтверждаю, что предоставленная информация верна, насколько мне известно.',
+        'form.loss_confirm' => 'Я соглашаюсь на связь со мной и принимаю {privacy_policy}',
         'form.sending' => 'Отправка...',
         'form.sending_message' => 'Отправляем ваше сообщение...',
         'form.submitting_request' => 'Отправляем ваш запрос...',

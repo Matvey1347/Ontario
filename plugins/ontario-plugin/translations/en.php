@@ -521,7 +521,7 @@ return [
         'form.quick_email_placeholder' => 'Enter your email',
         'form.quick_message' => 'Message',
         'form.quick_message_placeholder' => 'Briefly describe what happened (amount, dates, platform or wallets)',
-        'form.loss_confirm' => 'I confirm the information provided is accurate to the best of my knowledge.',
+        'form.loss_confirm' => 'I agree to be contacted and accept {privacy_policy}',
         'form.sending' => 'Sending...',
         'form.sending_message' => 'Sending your message...',
         'form.submitting_request' => 'Submitting your request...',

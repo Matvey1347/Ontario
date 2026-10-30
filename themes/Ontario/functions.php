@@ -128,6 +128,16 @@ if (! function_exists('ontario_t')) {
     }
 }
 
+if (! function_exists('ontario_form_contact_consent')) {
+    function ontario_form_contact_consent(): string
+    {
+        $privacy_link = '<a href="' . esc_url(ontario_legal_page_url('privacy')) . '">' . esc_html(ontario_t('footer.privacy', [], 'Privacy Policy')) . '</a>';
+        $consent = ontario_t('form.loss_confirm', ['privacy_policy' => $privacy_link], 'I agree to be contacted and accept {privacy_policy}');
+
+        return wp_kses($consent, ['a' => ['href' => []]]);
+    }
+}
+
 if (! function_exists('ontario_success_page_url')) {
     function ontario_success_page_url(): string
     {
@@ -181,6 +191,17 @@ if (! function_exists('ontario_effective_display_mode')) {
         $preference = ontario_display_preference();
 
         return $preference !== '' ? $preference : 'choice';
+    }
+}
+
+if (! function_exists('ontario_primary_form_anchor')) {
+    function ontario_primary_form_anchor(): string
+    {
+        if (ontario_uses_newsite_design()) {
+            return 'newsiteQuickForm';
+        }
+
+        return ontario_effective_display_mode() === 'simple' ? 'scanner' : 'heroQuickForm';
     }
 }
 
