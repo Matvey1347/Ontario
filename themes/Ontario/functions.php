@@ -132,7 +132,7 @@ if (! function_exists('ontario_form_contact_consent')) {
     function ontario_form_contact_consent(): string
     {
         $privacy_link = '<a href="' . esc_url(ontario_legal_page_url('privacy')) . '">' . esc_html(ontario_t('footer.privacy', [], 'Privacy Policy')) . '</a>';
-        $consent = ontario_t('form.loss_confirm', ['privacy_policy' => $privacy_link], 'I agree to be contacted and accept {privacy_policy}');
+        $consent = ontario_t('form.contact_consent', ['privacy_policy' => $privacy_link]);
 
         return wp_kses($consent, ['a' => ['href' => []]]);
     }
