@@ -96,6 +96,18 @@ body.ontario-design-green .newsite-hero-testimonials {
   box-shadow:0 22px 60px rgba(0,0,0,.22);
 }
 body.ontario-design-green .newsite-hero-form { padding:clamp(20px,2.3vw,30px); }
+body.ontario-design-green .newsite-hero-form .checkbox-field {
+  display:grid;
+  grid-template-columns:20px minmax(0,1fr);
+  align-items:center;
+  column-gap:9px;
+  row-gap:4px;
+}
+body.ontario-design-green .newsite-hero-form .checkbox-field input { margin:0; }
+body.ontario-design-green .newsite-hero-form .checkbox-field .field-error {
+  grid-column:1 / -1;
+  grid-row:2;
+}
 body.ontario-design-green .newsite-hero-form input:not([type="checkbox"], [type="tel"]),
 body.ontario-design-green .newsite-hero-form textarea { border-color:rgba(194,226,171,.17);border-radius:5px;background:#0a1916;color:#f2f1e9; }
 body.ontario-design-green .newsite-hero-form input:focus,
@@ -207,6 +219,7 @@ body.ontario-design-green .newsite-hero-form .phone-input--with-country .phone-n
 body.ontario-design-green .newsite-hero-form .phone-input input {
   min-height:44px;
   color:#f2f1e9;
+  margin:0;
 }
 body.ontario-design-green .newsite-hero-form .phone-prefix { color:#edf1e7; }
 body.ontario-design-green .newsite-hero-form .phone-country-select { border-color:rgba(194,226,171,.18); }

@@ -1698,6 +1698,8 @@ textarea.is-invalid,
 }
 
 .checkbox-field input {
+  grid-column: 1;
+  grid-row: 1;
   appearance: none;
   flex: 0 0 auto;
   display: inline-block;
@@ -1733,8 +1735,14 @@ textarea.is-invalid,
   box-shadow: 0 0 0 3px rgba(255, 107, 138, 0.12) !important;
 }
 
+.checkbox-field > span {
+  grid-column: 2;
+  grid-row: 1;
+}
+
 .checkbox-field .field-error {
   grid-column: 2;
+  grid-row: 2;
   width: 100%;
   margin-top: 0;
   margin-left: 0;
