@@ -1359,6 +1359,7 @@ final class OSM_Sites
         echo '<div class="osm-content-surface-nav" role="tablist" aria-label="Website content design">';
         echo '<button type="button" class="button osm-content-surface-tab' . ($initial_surface === 'main' ? ' is-active' : '') . '" data-osm-content-surface-tab="main">Main site</button>';
         echo '<button type="button" class="button osm-content-surface-tab' . ($initial_surface === 'newsite' ? ' is-active' : '') . '" data-osm-content-surface-tab="newsite">Green design</button>';
+        echo '<button type="button" class="button osm-content-surface-tab" data-osm-content-surface-tab="shared">Shared</button>';
         echo '</div>';
 
         if ($show_language_tabs) {
@@ -1387,18 +1388,31 @@ final class OSM_Sites
 
             echo '<div class="osm-language-tab-panel' . (($active || ! $show_language_tabs) ? ' is-active' : '') . '" data-osm-content-lang-panel="' . esc_attr($code) . '"' . ($active || ! $show_language_tabs ? '' : ' hidden') . '>';
 
-            foreach (['main', 'newsite'] as $surface) {
-                $surface_active = $surface === $initial_surface;
+            foreach (['main', 'newsite', 'shared'] as $surface) {
+                $surface_active = $surface === ($initial_surface === 'newsite' ? 'newsite' : 'main');
                 echo '<div class="osm-content-surface-panel' . ($surface_active ? ' is-active' : '') . '" data-osm-content-surface-panel="' . esc_attr($surface) . '"' . ($surface_active ? '' : ' hidden') . '>';
 
-                foreach ($groups as $group) {
-                    if (($group['surface'] ?? 'main') !== $surface) {
-                        continue;
-                    }
-                echo '<section class="osm-content-group">';
-                echo '<h3>' . esc_html((string) $group['label']) . '</h3>';
+                $surface_groups = array_values(array_filter($groups, static fn (array $group): bool => ($group['surface'] ?? 'main') === $surface));
+                $group_nav_label = match ($surface) {
+                    'main' => 'Main site content sections',
+                    'newsite' => 'Green design content sections',
+                    default => 'Shared content sections',
+                };
+                echo '<div class="osm-content-group-nav" role="tablist" aria-label="' . esc_attr($group_nav_label) . '">';
+                foreach ($surface_groups as $group_index => $group) {
+                    $group_id = (string) ($group['id'] ?? '');
+                    $group_active = $group_index === 0;
+                    echo '<button type="button" class="button osm-content-group-tab' . ($group_active ? ' is-active' : '') . '" data-osm-content-group-tab="' . esc_attr($group_id) . '" aria-selected="' . ($group_active ? 'true' : 'false') . '">' . esc_html((string) $group['label']) . '</button>';
+                }
+                echo '</div>';
 
-                foreach ((array) $group['keys'] as $key) {
+                foreach ($surface_groups as $group_index => $group) {
+                    $group_id = (string) ($group['id'] ?? '');
+                    $group_active = $group_index === 0;
+                    echo '<section class="osm-content-group' . ($group_active ? ' is-active' : '') . '" data-osm-content-group-panel="' . esc_attr($group_id) . '"' . ($group_active ? '' : ' hidden') . '>';
+                    echo '<h3>' . esc_html((string) $group['label']) . '</h3>';
+
+                    foreach ((array) $group['keys'] as $key) {
                     $resolved = $translations->resolve_site_content_value($site, (string) $key, $code);
                     $site_override_exists = ! empty($meta['content_overrides'][$code][$key]);
                     $reset_value = $translations->resolve_global_content_value((string) $key, $code)['value'];
@@ -1418,10 +1432,10 @@ final class OSM_Sites
                     echo '<button type="button" class="button-link" data-osm-reset-content>Use inherited value</button>';
                     echo '</div>';
                     echo '</div>';
-                }
+                    }
 
-                echo '</section>';
-            }
+                    echo '</section>';
+                }
 
                 echo '</div>';
             }
@@ -1856,6 +1870,26 @@ final class OSM_Sites
           .osm-content-surface-panel { display: none; }
           .osm-content-surface-panel.is-active { display: grid; gap: 18px; }
 
+          .osm-content-group-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #dcdcde;
+          }
+
+          .osm-content-group-tab.is-active,
+          .osm-content-group-tab.is-active:hover,
+          .osm-content-group-tab.is-active:focus {
+            background: #2271b1;
+            border-color: #2271b1;
+            color: #fff !important;
+          }
+
+          .osm-content-group[hidden] { display: none !important; }
+          .osm-content-group { display: none; }
+          .osm-content-group.is-active { display: block; }
+
           .osm-content-group {
             background: #fff;
             border: 1px solid #dcdcde;
@@ -1936,6 +1970,20 @@ final class OSM_Sites
               });
               contentEditor.querySelectorAll('[data-osm-content-surface-panel]').forEach((panel) => {
                 const active = panel.dataset.osmContentSurfacePanel === surface;
+                panel.classList.toggle('is-active', active);
+                panel.hidden = !active;
+              });
+            };
+
+            const activateContentGroup = (surfacePanel, groupId) => {
+              if (!surfacePanel) return;
+              surfacePanel.querySelectorAll('[data-osm-content-group-tab]').forEach((tab) => {
+                const active = tab.dataset.osmContentGroupTab === groupId;
+                tab.classList.toggle('is-active', active);
+                tab.setAttribute('aria-selected', active ? 'true' : 'false');
+              });
+              surfacePanel.querySelectorAll('[data-osm-content-group-panel]').forEach((panel) => {
+                const active = panel.dataset.osmContentGroupPanel === groupId;
                 panel.classList.toggle('is-active', active);
                 panel.hidden = !active;
               });
@@ -2081,6 +2129,10 @@ final class OSM_Sites
             if (contentEditor) {
               Array.from(contentEditor.querySelectorAll('[data-osm-content-surface-tab]')).forEach((button) => {
                 button.addEventListener('click', () => activateContentSurface(button.dataset.osmContentSurfaceTab));
+              });
+
+              Array.from(contentEditor.querySelectorAll('[data-osm-content-group-tab]')).forEach((button) => {
+                button.addEventListener('click', () => activateContentGroup(button.closest('[data-osm-content-surface-panel]'), button.dataset.osmContentGroupTab));
               });
 
               Array.from(contentEditor.querySelectorAll('[data-osm-content-lang-tab]')).forEach((button) => {

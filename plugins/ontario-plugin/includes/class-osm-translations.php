@@ -40,13 +40,34 @@ final class OSM_Translations
         ],
         'footer' => [
             'label' => 'Footer',
-            'surface' => 'main',
+            'surface' => 'shared',
             'keys' => [
                 'footer.description',
                 'footer.security',
                 'footer.copyright',
                 'footer.terms',
                 'footer.privacy',
+            ],
+        ],
+        'shared_form' => [
+            'label' => 'Forms',
+            'surface' => 'shared',
+            'keys' => [
+                'hero.form_title', 'hero.form_copy', 'hero.form_submit',
+                'form.quick_name', 'form.quick_name_placeholder', 'form.phone', 'form.phone_placeholder_ca',
+                'form.email', 'form.quick_email_placeholder', 'form.quick_message', 'form.quick_message_placeholder',
+                'form.contact_consent',
+            ],
+        ],
+        'shared_testimonials' => [
+            'label' => 'Testimonials',
+            'surface' => 'shared',
+            'keys' => [
+                'testimonials.quote_1', 'testimonials.name_1', 'testimonials.case_1',
+                'testimonials.quote_2', 'testimonials.name_2', 'testimonials.case_2',
+                'testimonials.quote_3', 'testimonials.name_3', 'testimonials.case_3',
+                'testimonials.quote_4', 'testimonials.name_4', 'testimonials.case_4',
+                'testimonials.quote_5', 'testimonials.name_5', 'testimonials.case_5',
             ],
         ],
         'newsite_hero' => [
@@ -57,7 +78,7 @@ final class OSM_Translations
         'newsite_conversion' => [
             'label' => 'Forms and testimonials',
             'surface' => 'newsite',
-            'keys' => ['hero.form_title', 'hero.form_copy', 'hero.form_submit', 'torontorefund.newsite.form_title', 'torontorefund.newsite.form_copy', 'form.quick_name', 'form.quick_name_placeholder', 'form.phone', 'form.phone_placeholder_ca', 'form.email', 'form.quick_email_placeholder', 'form.quick_message', 'form.quick_message_placeholder', 'testimonials.quote_1', 'testimonials.name_1', 'testimonials.case_1', 'testimonials.quote_2', 'testimonials.name_2', 'testimonials.case_2', 'testimonials.quote_3', 'testimonials.name_3', 'testimonials.case_3', 'testimonials.quote_4', 'testimonials.name_4', 'testimonials.case_4', 'testimonials.quote_5', 'testimonials.name_5', 'testimonials.case_5'],
+            'keys' => ['torontorefund.newsite.form_title', 'torontorefund.newsite.form_copy'],
         ],
         'newsite_assistance' => [
             'label' => 'Professional assistance',
@@ -163,7 +184,12 @@ final class OSM_Translations
 
     public function content_groups(): array
     {
-        return self::CONTENT_GROUPS;
+        $groups = [];
+        foreach (self::CONTENT_GROUPS as $id => $group) {
+            $groups[] = ['id' => $id] + $group;
+        }
+
+        return $groups;
     }
 
     public function editable_content_keys(): array
