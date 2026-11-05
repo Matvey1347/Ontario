@@ -9,6 +9,16 @@ final class OSM_Translations
 {
     private const SETTINGS_OPTION = 'osm_localization_settings';
     private const QUERY_ARG = 'ontario_lang';
+    private const HIDDEN_FORM_CONTENT_KEYS = [
+        'form.quick_name',
+        'form.quick_name_placeholder',
+        'form.phone',
+        'form.phone_placeholder_ca',
+        'form.email',
+        'form.quick_email_placeholder',
+        'form.quick_message',
+        'form.quick_message_placeholder',
+    ];
     private const CONTENT_GROUPS = [
         'full_hero' => [
             'label' => 'Full Hero',
@@ -54,8 +64,6 @@ final class OSM_Translations
             'surface' => 'shared',
             'keys' => [
                 'hero.form_title', 'hero.form_copy', 'hero.form_submit',
-                'form.quick_name', 'form.quick_name_placeholder', 'form.phone', 'form.phone_placeholder_ca',
-                'form.email', 'form.quick_email_placeholder', 'form.quick_message', 'form.quick_message_placeholder',
                 'form.contact_consent',
             ],
         ],
@@ -202,7 +210,7 @@ final class OSM_Translations
             }
         }
 
-        return array_values(array_unique($keys));
+        return array_values(array_unique(array_merge($keys, self::HIDDEN_FORM_CONTENT_KEYS)));
     }
 
     public function is_editable_content_key(string $key): bool
