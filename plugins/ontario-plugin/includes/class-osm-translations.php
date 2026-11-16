@@ -346,6 +346,17 @@ final class OSM_Translations
         return $value;
     }
 
+    public function translate_site_override_or_key(string $key, string $fallback_key, array $replacements = [], string $fallback = ''): string
+    {
+        $resolved = $this->resolve_value($key, $this->current_language(), $this->current_site->get_site());
+
+        if (in_array($resolved['source'], ['site_override', 'global_override'], true)) {
+            return $this->translate($key, $replacements, $fallback);
+        }
+
+        return $this->translate($fallback_key, $replacements, $fallback);
+    }
+
     public function language_switch_url(string $language): string
     {
         $site = $this->current_site->get_site();

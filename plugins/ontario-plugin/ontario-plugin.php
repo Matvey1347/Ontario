@@ -179,3 +179,15 @@ if (! function_exists('ontario_t')) {
         return OSM_Plugin::instance()->translations()->translate($key, $replacements, $fallback);
     }
 }
+
+if (! function_exists('ontario_t_site_override_or')) {
+    function ontario_t_site_override_or(string $key, string $fallback_key, array $replacements = [], string $fallback = ''): string
+    {
+        $replacements = array_merge(
+            ['brand_name' => ontario_site_brand_name()],
+            $replacements
+        );
+
+        return OSM_Plugin::instance()->translations()->translate_site_override_or_key($key, $fallback_key, $replacements, $fallback);
+    }
+}

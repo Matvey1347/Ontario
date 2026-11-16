@@ -8,6 +8,9 @@ $dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynami
 $current_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
 $is_refundassist_site = $current_host === 'refundassist.info' || $current_host === 'www.refundassist.info';
 $is_torontorefund_site = $current_host === 'torontorefund.com' || $current_host === 'www.torontorefund.com';
+$hero_copy = $is_torontorefund_site
+    ? ontario_t_site_override_or('newsite.hero.copy', 'torontorefund.newsite.hero.copy', ['brand_name' => $brand_name], 'We review transaction paths, wallet activity, and the records available to you, then prepare clear findings that help explain practical next steps.')
+    : $t('newsite.hero.copy', 'Lost money to an online scam, fraudulent investment platform, or cryptocurrency fraud? {brand_name} helps you review your case, trace transactions, organize evidence, and understand possible next steps.');
 get_header();
 ?>
 <main id="top" class="newsite-page<?php echo $is_torontorefund_site ? ' torontorefund-newsite' : ''; ?>">
@@ -17,7 +20,7 @@ get_header();
     <?php if (! $is_refundassist_site) : ?>
       <h2 class="newsite-hero__supporting"><?php echo esc_html($is_torontorefund_site ? ontario_t('torontorefund.newsite.hero.supporting', [], 'Independent analysis for online fraud and digital asset cases') : $t('newsite.hero.supporting', 'Professional Assistance for Victims of Online Financial Fraud')); ?></h2>
     <?php endif; ?>
-    <p class="newsite-hero__lead"><?php echo esc_html($is_refundassist_site ? ontario_t('refundassist.newsite.hero.copy', [], 'Lost money to an online scam, investment fraud, or crypto scam? Refund Assist helps trace transactions, organize evidence, and understand your options.') : ($is_torontorefund_site ? ontario_t('torontorefund.newsite.hero.copy', [], 'We review transaction paths, wallet activity, and the records available to you, then prepare clear findings that help explain practical next steps.') : $t('newsite.hero.copy', 'Lost money to an online scam, fraudulent investment platform, or cryptocurrency fraud? {brand_name} helps you review your case, trace transactions, organize evidence, and explore available options for recovering lost funds.'))); ?></p>
+    <p class="newsite-hero__lead"><?php echo esc_html($hero_copy); ?></p>
     <div class="newsite-actions"><a class="btn btn-primary" href="#newsiteQuickForm"><?php echo esc_html($is_torontorefund_site ? ontario_t('torontorefund.newsite.hero.cta', [], 'Request a case review') : ontario_t('hero.cta_primary', [], 'Get A Free Consultation')); ?></a><a class="btn btn-secondary" href="#report"><?php echo esc_html(ontario_t('hero.cta_secondary', [], 'View Report Preview')); ?></a></div>
     <?php if ($is_torontorefund_site) : ?>
       <div class="torontorefund-trace-card" aria-label="<?php echo esc_attr(ontario_t('report.header_title', [], 'Sample Tracing Report')); ?>">
