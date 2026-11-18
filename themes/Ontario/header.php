@@ -53,6 +53,7 @@ $current_language = ontario_current_language();
 $is_newsite_page = ontario_uses_newsite_design();
 $header_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
 $is_refundassist_site = $header_host === 'refundassist.info' || $header_host === 'www.refundassist.info';
+$is_phone_cta_site = in_array($header_host, ['refundassist.info', 'www.refundassist.info', 'primeadvisorycanada.info', 'www.primeadvisorycanada.info'], true);
 $header_cta_href = is_front_page()
     ? '#' . ontario_primary_form_anchor()
     : home_url('/#' . ontario_primary_form_anchor());
@@ -109,10 +110,15 @@ $header_cta_href = is_front_page()
         <?php if ($phone_href !== '' && $phone_number !== '') : ?>
           <a class="phone" href="tel:<?php echo esc_attr($phone_href); ?>"><?php echo esc_html($phone_number); ?></a>
         <?php endif; ?>
-        <a class="btn btn-primary" href="<?php echo esc_url($header_cta_href); ?>" aria-label="<?php echo esc_attr(ontario_t('nav.free_consultation', [], 'Request a Case Review')); ?>">
+        <?php if ($is_phone_cta_site && $phone_href !== '' && $phone_number !== '') : ?>
+        <a class="btn btn-primary phone-cta-pulse" href="tel:<?php echo esc_attr($phone_href); ?>" aria-label="<?php echo esc_attr(ontario_t('phone.call', ['phone' => $phone_number], 'Call {phone}')); ?>">
+          <span aria-hidden="true">☎</span><span><?php echo esc_html($phone_number); ?></span>
+        </a>
+        <?php else : ?><a class="btn btn-primary" href="<?php echo esc_url($header_cta_href); ?>" aria-label="<?php echo esc_attr(ontario_t('nav.free_consultation', [], 'Request a Case Review')); ?>">
           <span class="refundassist-header-label"><?php echo esc_html(ontario_t('nav.free_consultation', [], 'Request a Case Review')); ?></span>
           <?php if ($is_refundassist_site) : ?><span class="refundassist-mobile-label"><?php echo esc_html(ontario_t('refundassist.mobile_case_review', [], 'Case Review')); ?></span><?php endif; ?>
         </a>
+        <?php endif; ?>
         <button class="mobile-menu-btn" type="button" aria-label="<?php echo esc_attr(ontario_t('site.open_menu', [], 'Open menu')); ?>" aria-expanded="false" id="menuBtn">☰</button>
       </div>
     </nav>

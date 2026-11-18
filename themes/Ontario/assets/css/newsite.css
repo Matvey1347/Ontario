@@ -224,6 +224,34 @@ body.ontario-design-green .newsite-hero-form .phone-input input {
 body.ontario-design-green .newsite-hero-form .phone-prefix { color:#edf1e7; }
 body.ontario-design-green .newsite-hero-form .phone-country-select { border-color:rgba(194,226,171,.18); }
 
+body.ontario-sticky-contact-site .site-header { position:relative; top:auto; }
+body.ontario-sticky-contact-site .nav-actions > .phone { display:none; }
+html.is-ios-webkit body.ontario-sticky-contact-site,
+html.is-telegram-webview body.ontario-sticky-contact-site { padding-top:0; }
+html.is-ios-webkit body.ontario-sticky-contact-site .site-header,
+html.is-telegram-webview body.ontario-sticky-contact-site .site-header { position:relative; top:auto; }
+body.ontario-sticky-contact-site .newsite-hero-form { scroll-margin-top:24px; }
+body.ontario-sticky-contact-site .newsite-call-prompt { margin:13px 0 0; color:#b8c4b9; text-align:center; font-size:.92rem; }
+body.ontario-sticky-contact-site .newsite-call-prompt a { color:#c4ed73; font-weight:800; text-decoration:underline; text-underline-offset:3px; }
+body.ontario-sticky-contact-site .newsite-proof-under-testimonials { display:grid; gap:12px; }
+body.ontario-sticky-contact-site .newsite-proof-under-testimonials .newsite-trust-badges { margin-top:0; }
+body.ontario-sticky-contact-site .newsite-proof-under-testimonials .newsite-benefits { margin:0; }
+body.ontario-sticky-contact-site .phone-cta-pulse { animation: phoneCtaPulse 2.8s ease-in-out infinite; }
+@keyframes phoneCtaPulse { 0%, 78%, 100% { transform:scale(1); } 84% { transform:scale(1.045); } 90% { transform:scale(.99); } }
+@media (prefers-reduced-motion:reduce) { body.ontario-sticky-contact-site .phone-cta-pulse { animation:none; } }
+body.ontario-sticky-contact-site .sticky-contact-bar { position:fixed; z-index:180; inset:auto 0 0; display:flex; gap:12px; align-items:center; justify-content:center; padding:12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left)); border-top:1px solid rgba(194,226,171,.24); background:rgba(248,250,255,.97); box-shadow:0 -8px 28px rgba(0,0,0,.2); }
+body.ontario-sticky-contact-site .sticky-contact-call,
+body.ontario-sticky-contact-site .sticky-contact-cta { min-height:54px; display:flex; align-items:center; justify-content:center; border:2px solid #2824ba; border-radius:13px; color:#2824ba; font-size:1.1rem; font-weight:800; text-decoration:none; }
+body.ontario-sticky-contact-site .sticky-contact-call { width:84px; flex:0 0 84px; font-size:1.55rem; }
+body.ontario-sticky-contact-site .sticky-contact-cta { flex:1; max-width:560px; padding:0 22px; color:#fff; background:#2824ba; }
+body.ontario-sticky-contact-site { padding-bottom:calc(86px + env(safe-area-inset-bottom, 0px)); }
+html { scroll-behavior:smooth; }
+@media (max-width:640px) {
+ body.ontario-sticky-contact-site .sticky-contact-bar { gap:10px; padding-inline:16px; }
+ body.ontario-sticky-contact-site .sticky-contact-call { width:72px; flex-basis:72px; }
+ body.ontario-sticky-contact-site .sticky-contact-cta { min-width:0; padding-inline:12px; font-size:1rem; }
+}
+
 
 /* Green design continuation for legal and confirmation pages. */
 body.ontario-design-green .legal-shell {

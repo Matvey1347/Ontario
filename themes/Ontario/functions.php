@@ -498,6 +498,9 @@ add_filter('body_class', static function (array $classes): array {
     if ($site_host === 'refundassist.info' || $site_host === 'www.refundassist.info') {
         $classes[] = 'refundassist-site';
     }
+    if (in_array($site_host, ['refundassist.info', 'www.refundassist.info', 'primeadvisorycanada.info', 'www.primeadvisorycanada.info'], true)) {
+        $classes[] = 'ontario-sticky-contact-site';
+    }
 
     return $classes;
 });
