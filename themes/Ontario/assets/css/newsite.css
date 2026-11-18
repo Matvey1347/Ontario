@@ -239,11 +239,11 @@ body.ontario-sticky-contact-site .newsite-proof-under-testimonials .newsite-bene
 body.ontario-sticky-contact-site .phone-cta-pulse { animation: phoneCtaPulse 2.8s ease-in-out infinite; }
 @keyframes phoneCtaPulse { 0%, 78%, 100% { transform:scale(1); } 84% { transform:scale(1.045); } 90% { transform:scale(.99); } }
 @media (prefers-reduced-motion:reduce) { body.ontario-sticky-contact-site .phone-cta-pulse { animation:none; } }
-body.ontario-sticky-contact-site .sticky-contact-bar { position:fixed; z-index:180; inset:auto 0 0; display:flex; gap:12px; align-items:center; justify-content:center; padding:12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left)); border-top:1px solid rgba(194,226,171,.24); background:rgba(248,250,255,.97); box-shadow:0 -8px 28px rgba(0,0,0,.2); }
+body.ontario-sticky-contact-site .sticky-contact-bar { position:fixed; z-index:180; inset:auto 0 0; display:flex; gap:12px; align-items:center; justify-content:center; padding:12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left)); border-top:1px solid rgba(194,226,171,.2); background:#0a1714; box-shadow:0 -8px 28px rgba(0,0,0,.35); }
 body.ontario-sticky-contact-site .sticky-contact-call,
-body.ontario-sticky-contact-site .sticky-contact-cta { min-height:54px; display:flex; align-items:center; justify-content:center; border:2px solid #2824ba; border-radius:13px; color:#2824ba; font-size:1.1rem; font-weight:800; text-decoration:none; }
-body.ontario-sticky-contact-site .sticky-contact-call { width:84px; flex:0 0 84px; font-size:1.55rem; }
-body.ontario-sticky-contact-site .sticky-contact-cta { flex:1; max-width:560px; padding:0 22px; color:#fff; background:#2824ba; }
+body.ontario-sticky-contact-site .sticky-contact-cta { min-height:54px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(194,226,171,.42); border-radius:13px; color:#c4ed73; font-size:1.1rem; font-weight:800; text-decoration:none; }
+body.ontario-sticky-contact-site .sticky-contact-call { width:84px; flex:0 0 84px; font-size:1.55rem; background:#10211c; }
+body.ontario-sticky-contact-site .sticky-contact-cta { flex:1; max-width:560px; padding:0 22px; border-color:#c4ed73; color:#142019; background:#c4ed73; }
 body.ontario-sticky-contact-site { padding-bottom:calc(86px + env(safe-area-inset-bottom, 0px)); }
 html { scroll-behavior:smooth; }
 @media (max-width:640px) {
