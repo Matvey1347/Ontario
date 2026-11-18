@@ -243,7 +243,7 @@ body.ontario-sticky-contact-site .sticky-contact-bar { position:fixed; z-index:1
 body.ontario-sticky-contact-site .sticky-contact-call,
 body.ontario-sticky-contact-site .sticky-contact-cta { min-height:54px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(194,226,171,.42); border-radius:13px; color:#c4ed73; font-size:1.1rem; font-weight:800; text-decoration:none; }
 body.ontario-sticky-contact-site .sticky-contact-call { width:84px; flex:0 0 84px; font-size:1.55rem; background:#10211c; }
-body.ontario-sticky-contact-site .sticky-contact-cta { flex:1; max-width:560px; padding:0 22px; border-color:#c4ed73; color:#142019; background:#c4ed73; }
+body.ontario-sticky-contact-site .sticky-contact-cta { flex:1; max-width:560px; padding:0 22px; border-color:#c4ed73; color:#142019; background:#c4ed73; text-align:center; }
 body.ontario-sticky-contact-site { padding-bottom:calc(86px + env(safe-area-inset-bottom, 0px)); }
 html { scroll-behavior:smooth; }
 @media (max-width:640px) {
