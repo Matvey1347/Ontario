@@ -15,7 +15,8 @@ $public_email = ontario_site_field('public_email');
 $is_newsite_page = function_exists('ontario_uses_newsite_design') && ontario_uses_newsite_design();
 $current_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
 $is_refundassist_site = $current_host === 'refundassist.info' || $current_host === 'www.refundassist.info';
-$is_sticky_contact_site = in_array($current_host, ['refundassist.info', 'www.refundassist.info', 'primeadvisorycanada.info', 'www.primeadvisorycanada.info'], true);
+$is_primeadvisory_site = in_array($current_host, ['primeadvisorycanada.info', 'www.primeadvisorycanada.info'], true);
+$is_sticky_contact_site = $is_refundassist_site || $is_primeadvisory_site;
 $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== '' && $phone_number !== '') || $working_hours !== '' || $public_email !== '';
 ?>
 <footer class="site-footer">
@@ -71,7 +72,7 @@ $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== ''
 </footer>
 
 <?php if ($is_sticky_contact_site && $phone_href !== '' && $phone_number !== '') : ?>
-<div class="sticky-contact-bar"><a class="sticky-contact-call" href="tel:<?php echo esc_attr($phone_href); ?>" aria-label="<?php echo esc_attr(ontario_t('phone.call', ['phone' => $phone_number], 'Call {phone}')); ?>">☎</a><a class="sticky-contact-cta" href="<?php echo esc_url(home_url('/#' . ontario_primary_form_anchor())); ?>"><?php echo esc_html(ontario_t('hero.sticky_consultation', [], 'Get A Free Consultation')); ?></a></div>
+<div class="sticky-contact-bar"><a class="sticky-contact-call" href="tel:<?php echo esc_attr($phone_href); ?>" aria-label="<?php echo esc_attr(ontario_t('phone.call', ['phone' => $phone_number], 'Call {phone}')); ?>">☎</a><a class="sticky-contact-cta" href="<?php echo esc_url(home_url('/#' . ontario_primary_form_anchor())); ?>"><?php echo esc_html(ontario_t($is_primeadvisory_site ? 'hero.request_free_case_review' : 'hero.sticky_consultation', [], $is_primeadvisory_site ? 'Request Free Case Review' : 'Get A Free Consultation')); ?></a></div>
 <?php else : ?><a class="sticky-case-review" href="<?php echo esc_url(home_url('/#' . ontario_primary_form_anchor())); ?>" data-sticky-case-review aria-hidden="true" tabindex="-1">
   <span><?php echo esc_html(ontario_t('nav.free_consultation', [], 'Request a Case Review')); ?></span>
   <svg aria-hidden="true" viewBox="0 0 20 20" focusable="false"><path d="M10 3.5v12m-5-5 5 5 5-5" /></svg>

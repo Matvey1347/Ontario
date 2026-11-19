@@ -5,6 +5,22 @@ body.ontario-newsite::after { animation:none; }
 .ontario-newsite .site-header .brand { color:#f1f7ff; }
 .ontario-newsite .nav-links, .ontario-newsite .phone { color:#93a8bd; }
 .ontario-newsite .site-header .btn-primary { min-height:46px; padding-inline:22px; }
+@media (max-width:1240px) {
+  body.ontario-newsite .site-header .nav { flex-wrap:nowrap; gap:8px; }
+  body.ontario-newsite .site-header .brand { flex:0 1 auto; min-width:0; }
+  body.ontario-newsite .site-header .brand img { width:clamp(118px,38vw,178px); }
+  body.ontario-newsite .site-header .nav-actions { flex:0 0 auto; gap:7px; }
+  body.ontario-newsite .site-header .phone-cta-pulse { min-height:38px; padding:6px 9px; gap:4px; font-size:11px; white-space:nowrap; }
+  body.ontario-newsite .site-header .phone-cta-pulse span[aria-hidden="true"] { font-size:12px; }
+}
+@media (max-width:380px) {
+  body.ontario-newsite .site-header .brand img { width:92px; }
+  body.ontario-newsite .site-header .nav-actions { gap:4px; }
+  body.ontario-newsite .site-header .phone-cta-pulse { min-height:34px; padding:4px 5px; gap:2px; font-size:9px; }
+  body.ontario-newsite .site-header .phone-cta-pulse span[aria-hidden="true"] { font-size:10px; }
+  body.ontario-newsite .site-header .language-switcher__button { width:34px; height:34px; padding:0; }
+  body.ontario-newsite .site-header .mobile-menu-btn { width:38px; height:38px; }
+}
 .newsite-page { overflow: hidden; background: radial-gradient(circle at 83% 5%, rgba(57,124,255,.2), transparent 28%), radial-gradient(circle at 12% 55%, rgba(77,227,255,.09), transparent 32%), #050914; }.newsite-hero { position:relative; isolation:isolate; padding:56px 0 96px; overflow:hidden; background:linear-gradient(105deg,rgba(8,37,64,.98),rgba(10,32,66,.96) 52%,rgba(5,18,38,.98)); border-bottom:1px solid rgba(126,221,255,.16); }.newsite-hero::before { position:absolute; z-index:-1; inset:0; content:''; opacity:.72; background:linear-gradient(rgba(104,187,255,.11) 1px,transparent 1px),linear-gradient(90deg,rgba(104,187,255,.11) 1px,transparent 1px),radial-gradient(circle at 13% 17%,rgba(74,224,255,.3),transparent 24%),radial-gradient(circle at 82% 42%,rgba(69,139,255,.2),transparent 28%); background-size:76px 76px,76px 76px,auto,auto; }
 .newsite-page > section:not(.newsite-hero) { content-visibility:auto; contain-intrinsic-size:auto 760px; }
 .newsite-page #services, .newsite-page #report, .newsite-page #scanner, .newsite-page #faq { scroll-margin-top:118px; }
