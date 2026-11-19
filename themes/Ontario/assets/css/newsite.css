@@ -251,14 +251,25 @@ body.ontario-sticky-contact-site .newsite-call-prompt { margin:13px 0 0; color:#
 body.ontario-sticky-contact-site .newsite-call-prompt a { color:#c4ed73; font-weight:800; text-decoration:underline; text-underline-offset:3px; }
 body.ontario-sticky-contact-site .newsite-proof-under-testimonials { display:grid; gap:12px; }
 body.ontario-sticky-contact-site .newsite-proof-under-testimonials .newsite-trust-badges { margin-top:0; }
-body.ontario-sticky-contact-site .newsite-hero__intro { display:flex; flex-direction:column; }
-body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-kicker { order:1; }
-body.ontario-sticky-contact-site .newsite-hero__intro > h1 { order:2; }
-body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero__supporting { order:3; }
-body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero__lead { order:4; }
-body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-actions { order:5; }
-body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero-benefits { order:6; }
-body.ontario-sticky-contact-site .newsite-proof-under-testimonials .newsite-trust-badges { margin:0; }
+body.ontario-sticky-contact-site .newsite-hero__intro,
+body.refundassist-site .newsite-hero__intro { display:flex; flex-direction:column; }
+body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-kicker,
+body.refundassist-site .newsite-hero__intro > .newsite-kicker { order:1; }
+body.ontario-sticky-contact-site .newsite-hero__intro > h1,
+body.refundassist-site .newsite-hero__intro > h1 { order:2; }
+body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero__supporting,
+body.refundassist-site .newsite-hero__intro > .newsite-hero__supporting { order:3; }
+body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero__lead,
+body.refundassist-site .newsite-hero__intro > .newsite-hero__lead { order:4; }
+body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-actions,
+body.refundassist-site .newsite-hero__intro > .newsite-actions { order:5; }
+body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero-benefits,
+body.refundassist-site .newsite-hero__intro > .newsite-hero-benefits { order:6; }
+body.ontario-sticky-contact-site .newsite-hero__intro > .torontorefund-trace-card,
+body.refundassist-site .newsite-hero__intro > .torontorefund-trace-card { order:7; }
+body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero-testimonials,
+body.refundassist-site .newsite-hero__intro > .newsite-hero-testimonials { order:7; margin-top:22px; }
+body.ontario-sticky-contact-site .newsite-proof-under-form .newsite-trust-badges { margin:0; }
 body.ontario-sticky-contact-site .newsite-hero-benefits { grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px 16px; margin:22px 0 0; font-size:.82rem; }
 body.ontario-sticky-contact-site .newsite-hero-benefits li { gap:7px; }
 body.ontario-sticky-contact-site .phone-cta-pulse { animation: phoneCtaPulse 2.8s ease-in-out infinite; }
@@ -277,8 +288,14 @@ body.ontario-sticky-contact-site { padding-bottom:calc(86px + env(safe-area-inse
  body.ontario-sticky-contact-site { padding-bottom:0; }
 }
 @media (max-width:900px) {
- body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero-benefits { order:5; }
- body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-actions { order:6; }
+ body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero-benefits,
+ body.refundassist-site .newsite-hero__intro > .newsite-hero-benefits { order:5; }
+ body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-actions,
+ body.refundassist-site .newsite-hero__intro > .newsite-actions { order:6; }
+ body.ontario-sticky-contact-site .newsite-hero__intro > .torontorefund-trace-card,
+ body.refundassist-site .newsite-hero__intro > .torontorefund-trace-card { order:7; }
+ body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero-testimonials,
+ body.refundassist-site .newsite-hero__intro > .newsite-hero-testimonials { order:8; }
  body.ontario-sticky-contact-site .newsite-hero-benefits { grid-template-columns:1fr; gap:10px; margin:22px 0 0; font-size:1rem; }
 }
 html { scroll-behavior:smooth; }
