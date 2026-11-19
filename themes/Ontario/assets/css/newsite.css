@@ -251,7 +251,16 @@ body.ontario-sticky-contact-site .newsite-call-prompt { margin:13px 0 0; color:#
 body.ontario-sticky-contact-site .newsite-call-prompt a { color:#c4ed73; font-weight:800; text-decoration:underline; text-underline-offset:3px; }
 body.ontario-sticky-contact-site .newsite-proof-under-testimonials { display:grid; gap:12px; }
 body.ontario-sticky-contact-site .newsite-proof-under-testimonials .newsite-trust-badges { margin-top:0; }
-body.ontario-sticky-contact-site .newsite-proof-under-testimonials .newsite-benefits { margin:0; }
+body.ontario-sticky-contact-site .newsite-hero__intro { display:flex; flex-direction:column; }
+body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-kicker { order:1; }
+body.ontario-sticky-contact-site .newsite-hero__intro > h1 { order:2; }
+body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero__supporting { order:3; }
+body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero__lead { order:4; }
+body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-actions { order:5; }
+body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero-benefits { order:6; }
+body.ontario-sticky-contact-site .newsite-proof-under-testimonials .newsite-trust-badges { margin:0; }
+body.ontario-sticky-contact-site .newsite-hero-benefits { grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px 16px; margin:22px 0 0; font-size:.82rem; }
+body.ontario-sticky-contact-site .newsite-hero-benefits li { gap:7px; }
 body.ontario-sticky-contact-site .phone-cta-pulse { animation: phoneCtaPulse 2.8s ease-in-out infinite; }
 @keyframes phoneCtaPulse { 0%, 78%, 100% { transform:scale(1); } 84% { transform:scale(1.045); } 90% { transform:scale(.99); } }
 @media (prefers-reduced-motion:reduce) { body.ontario-sticky-contact-site .phone-cta-pulse { animation:none; } }
@@ -261,6 +270,17 @@ body.ontario-sticky-contact-site .sticky-contact-cta { min-height:54px; display:
 body.ontario-sticky-contact-site .sticky-contact-call { width:84px; flex:0 0 84px; font-size:1.55rem; background:#10211c; }
 body.ontario-sticky-contact-site .sticky-contact-cta { flex:1; max-width:560px; padding:0 22px; border-color:#c4ed73; color:#142019; background:#c4ed73; text-align:center; }
 body.ontario-sticky-contact-site { padding-bottom:calc(86px + env(safe-area-inset-bottom, 0px)); }
+@media (min-width:901px) {
+ body.ontario-sticky-contact-site .site-header { position:sticky; top:0; }
+ body.admin-bar.ontario-sticky-contact-site .site-header { top:32px; }
+ body.ontario-sticky-contact-site .sticky-contact-bar { display:none; }
+ body.ontario-sticky-contact-site { padding-bottom:0; }
+}
+@media (max-width:900px) {
+ body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero-benefits { order:5; }
+ body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-actions { order:6; }
+ body.ontario-sticky-contact-site .newsite-hero-benefits { grid-template-columns:1fr; gap:10px; margin:22px 0 0; font-size:1rem; }
+}
 html { scroll-behavior:smooth; }
 @media (max-width:640px) {
  body.ontario-sticky-contact-site .sticky-contact-bar { gap:10px; padding-inline:16px; }

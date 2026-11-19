@@ -112,7 +112,7 @@ $header_cta_href = is_front_page()
         <?php endif; ?>
         <?php if ($is_phone_cta_site && $phone_href !== '' && $phone_number !== '') : ?>
         <a class="btn btn-primary phone-cta-pulse" href="tel:<?php echo esc_attr($phone_href); ?>" aria-label="<?php echo esc_attr(ontario_t('phone.call', ['phone' => $phone_number], 'Call {phone}')); ?>">
-          <span aria-hidden="true">☎</span><span><?php echo esc_html($phone_number); ?></span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.35 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.08 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.57 2.8.69A2 2 0 0 1 22 16.92z"/></svg><span><?php echo esc_html($phone_number); ?></span>
         </a>
         <?php else : ?><a class="btn btn-primary" href="<?php echo esc_url($header_cta_href); ?>" aria-label="<?php echo esc_attr(ontario_t('nav.free_consultation', [], 'Request a Case Review')); ?>">
           <span class="refundassist-header-label"><?php echo esc_html(ontario_t('nav.free_consultation', [], 'Request a Case Review')); ?></span>

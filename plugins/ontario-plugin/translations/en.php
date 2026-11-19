@@ -119,6 +119,7 @@ return [
         'footer.copyright' => '© {year} {brand_name}. All Rights Reserved.',
         'footer.terms' => 'Terms & Conditions',
         'footer.privacy' => 'Privacy Policy',
+        'footer.cookie_settings' => 'Cookie Settings',
         'footer.change_display_mode' => 'Change display mode',
 
         'display.badge' => 'Display options',
