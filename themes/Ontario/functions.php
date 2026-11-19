@@ -495,10 +495,11 @@ add_filter('body_class', static function (array $classes): array {
     }
 
     $site_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
+    $is_ontarioclaims_site = str_contains($site_host, 'ontarioclaims');
     if ($site_host === 'refundassist.info' || $site_host === 'www.refundassist.info') {
         $classes[] = 'refundassist-site';
     }
-    if (in_array($site_host, ['refundassist.info', 'www.refundassist.info', 'primeadvisorycanada.info', 'www.primeadvisorycanada.info'], true)) {
+    if ($is_ontarioclaims_site || in_array($site_host, ['refundassist.info', 'www.refundassist.info', 'primeadvisorycanada.info', 'www.primeadvisorycanada.info'], true)) {
         $classes[] = 'ontario-sticky-contact-site';
     }
 

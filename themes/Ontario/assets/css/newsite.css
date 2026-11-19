@@ -10,13 +10,15 @@ body.ontario-newsite::after { animation:none; }
   body.ontario-newsite .site-header .brand { flex:0 1 auto; min-width:0; }
   body.ontario-newsite .site-header .brand img { width:clamp(118px,38vw,178px); }
   body.ontario-newsite .site-header .nav-actions { flex:0 0 auto; gap:7px; }
-  body.ontario-newsite .site-header .phone-cta-pulse { min-height:38px; padding:6px 9px; gap:4px; font-size:11px; white-space:nowrap; }
+  body.ontario-sticky-contact-site .site-header .phone-cta-pulse,
+  body.refundassist-site .site-header .phone-cta-pulse { display:inline-flex; min-height:38px; padding:6px 9px; gap:4px; font-size:11px; white-space:nowrap; }
   body.ontario-newsite .site-header .phone-cta-pulse span[aria-hidden="true"] { font-size:12px; }
 }
 @media (max-width:380px) {
   body.ontario-newsite .site-header .brand img { width:92px; }
   body.ontario-newsite .site-header .nav-actions { gap:4px; }
-  body.ontario-newsite .site-header .phone-cta-pulse { min-height:34px; padding:4px 5px; gap:2px; font-size:9px; }
+  body.ontario-sticky-contact-site .site-header .phone-cta-pulse,
+  body.refundassist-site .site-header .phone-cta-pulse { display:inline-flex; min-height:34px; padding:4px 5px; gap:2px; font-size:9px; }
   body.ontario-newsite .site-header .phone-cta-pulse span[aria-hidden="true"] { font-size:10px; }
   body.ontario-newsite .site-header .language-switcher__button { width:34px; height:34px; padding:0; }
   body.ontario-newsite .site-header .mobile-menu-btn { width:38px; height:38px; }
@@ -249,8 +251,6 @@ html.is-telegram-webview body.ontario-sticky-contact-site .site-header { positio
 body.ontario-sticky-contact-site .newsite-hero-form { scroll-margin-top:24px; }
 body.ontario-sticky-contact-site .newsite-call-prompt { margin:13px 0 0; color:#b8c4b9; text-align:center; font-size:.92rem; }
 body.ontario-sticky-contact-site .newsite-call-prompt a { color:#c4ed73; font-weight:800; text-decoration:underline; text-underline-offset:3px; }
-body.ontario-sticky-contact-site .newsite-proof-under-testimonials { display:grid; gap:12px; }
-body.ontario-sticky-contact-site .newsite-proof-under-testimonials .newsite-trust-badges { margin-top:0; }
 body.ontario-sticky-contact-site .newsite-hero__intro,
 body.refundassist-site .newsite-hero__intro { display:flex; flex-direction:column; }
 body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-kicker,
@@ -267,11 +267,11 @@ body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero-benefits,
 body.refundassist-site .newsite-hero__intro > .newsite-hero-benefits { order:6; }
 body.ontario-sticky-contact-site .newsite-hero__intro > .torontorefund-trace-card,
 body.refundassist-site .newsite-hero__intro > .torontorefund-trace-card { order:7; }
-body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero-testimonials,
-body.refundassist-site .newsite-hero__intro > .newsite-hero-testimonials { order:7; margin-top:22px; }
-body.ontario-sticky-contact-site .newsite-proof-under-form .newsite-trust-badges { margin:0; }
+body.ontario-sticky-contact-site .newsite-proof-under-form .newsite-trust-badges,
+body.refundassist-site .newsite-proof-under-form .newsite-trust-badges { margin:0; }
 body.ontario-sticky-contact-site .newsite-hero-benefits { grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px 16px; margin:22px 0 0; font-size:.82rem; }
-body.ontario-sticky-contact-site .newsite-hero-benefits li { gap:7px; }
+body.ontario-sticky-contact-site .newsite-hero-benefits li,
+body.refundassist-site .newsite-hero-benefits li { display:grid; grid-template-columns:14px minmax(0,1fr); gap:7px; align-content:start; }
 body.ontario-sticky-contact-site .phone-cta-pulse { animation: phoneCtaPulse 2.8s ease-in-out infinite; }
 @keyframes phoneCtaPulse { 0%, 78%, 100% { transform:scale(1); } 84% { transform:scale(1.045); } 90% { transform:scale(.99); } }
 @media (prefers-reduced-motion:reduce) { body.ontario-sticky-contact-site .phone-cta-pulse { animation:none; } }
@@ -294,8 +294,6 @@ body.ontario-sticky-contact-site { padding-bottom:calc(86px + env(safe-area-inse
  body.refundassist-site .newsite-hero__intro > .newsite-actions { order:6; }
  body.ontario-sticky-contact-site .newsite-hero__intro > .torontorefund-trace-card,
  body.refundassist-site .newsite-hero__intro > .torontorefund-trace-card { order:7; }
- body.ontario-sticky-contact-site .newsite-hero__intro > .newsite-hero-testimonials,
- body.refundassist-site .newsite-hero__intro > .newsite-hero-testimonials { order:8; }
  body.ontario-sticky-contact-site .newsite-hero-benefits { grid-template-columns:1fr; gap:10px; margin:22px 0 0; font-size:1rem; }
 }
 html { scroll-behavior:smooth; }

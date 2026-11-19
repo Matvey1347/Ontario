@@ -8,7 +8,8 @@ $dynamic_headline = function_exists('ontario_dynamic_headline') ? ontario_dynami
 $current_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
 $is_refundassist_site = $current_host === 'refundassist.info' || $current_host === 'www.refundassist.info';
 $is_torontorefund_site = $current_host === 'torontorefund.com' || $current_host === 'www.torontorefund.com';
-$is_requested_site = in_array($current_host, ['refundassist.info', 'www.refundassist.info', 'primeadvisorycanada.info', 'www.primeadvisorycanada.info'], true);
+$is_requested_site = in_array($current_host, ['refundassist.info', 'www.refundassist.info', 'primeadvisorycanada.info', 'www.primeadvisorycanada.info'], true)
+    || str_contains($current_host, 'ontarioclaims');
 $contact_phone = ontario_site_field('phone_number');
 $contact_phone_href = ontario_site_field('phone_href');
 $hero_copy = $is_torontorefund_site
@@ -32,12 +33,6 @@ get_header();
         <p><?php echo esc_html(ontario_t('report.value_path', [], 'Victim wallet → intermediary wallets → mixer exposure → exchange deposit cluster')); ?></p>
       </div>
     <?php endif; ?>
-    <?php if (! $is_torontorefund_site) : ?>
-      <section class="newsite-hero-testimonials testimonial-carousel" data-testimonial-carousel aria-label="<?php echo esc_attr(ontario_t('testimonials.aria_label', [], 'Client testimonials')); ?>">
-        <div class="testimonial-carousel__viewport"><div class="testimonial-carousel__track" data-testimonial-track><?php for ($testimonial_index = 1; $testimonial_index <= 5; $testimonial_index++) : ?><article class="testimonial-carousel__slide<?php echo $testimonial_index === 1 ? ' is-active' : ''; ?>" data-testimonial-slide aria-hidden="<?php echo $testimonial_index === 1 ? 'false' : 'true'; ?>"><blockquote><p><?php echo esc_html(ontario_t('testimonials.quote_open', [], '“')); ?><?php echo esc_html(ontario_t('testimonials.quote_' . $testimonial_index, [], '')); ?><?php echo esc_html(ontario_t('testimonials.quote_close', [], '”')); ?></p><div class="testimonial-carousel__rating" aria-label="<?php echo esc_attr(ontario_t('testimonials.rating', [], 'Five stars')); ?>"><?php echo esc_html(ontario_t('testimonials.stars', [], '⭐⭐⭐⭐⭐')); ?></div><footer><cite><em><?php echo esc_html(ontario_t('testimonials.name_prefix', [], '—')); ?> <?php echo esc_html(ontario_t('testimonials.name_' . $testimonial_index, [], '')); ?></em></cite><span><?php echo esc_html(ontario_t('testimonials.case_' . $testimonial_index, [], '')); ?></span></footer></blockquote></article><?php endfor; ?></div></div>
-        <div class="testimonial-carousel__controls"><button type="button" class="testimonial-carousel__button" data-testimonial-previous aria-label="<?php echo esc_attr(ontario_t('testimonials.previous', [], 'Show previous testimonial')); ?>">←</button><div class="testimonial-carousel__dots" aria-hidden="true"><?php for ($testimonial_index = 1; $testimonial_index <= 5; $testimonial_index++) : ?><span class="testimonial-carousel__dot<?php echo $testimonial_index === 1 ? ' is-active' : ''; ?>" data-testimonial-dot></span><?php endfor; ?></div><button type="button" class="testimonial-carousel__button" data-testimonial-next aria-label="<?php echo esc_attr(ontario_t('testimonials.next', [], 'Show next testimonial')); ?>">→</button></div>
-      </section>
-    <?php endif; ?>
   </div><div class="newsite-hero__conversion">
     <form class="newsite-hero-form" id="newsiteQuickForm" data-quick-form novalidate>
       <input type="hidden" name="formType" value="quickForm" />
@@ -59,7 +54,14 @@ get_header();
       <?php if ($is_requested_site && $contact_phone !== '' && $contact_phone_href !== '') : ?><p class="newsite-call-prompt"><?php echo esc_html(ontario_t('phone.tap_to_call_prefix', [], 'or tap to call')); ?> <a href="tel:<?php echo esc_attr($contact_phone_href); ?>"><?php echo esc_html($contact_phone); ?></a></p><?php endif; ?>
     </form>
     <?php if (! $is_torontorefund_site) : ?><div class="newsite-proof-under-form"><ul class="newsite-trust-badges"><?php for ($trust_badge_index = 1; $trust_badge_index <= 4; $trust_badge_index++) : ?><li><?php echo esc_html(ontario_t('newsite.hero.trust_' . $trust_badge_index, [], '')); ?></li><?php endfor; ?></ul></div><?php endif; ?>
-  </div></div>
+  </div>
+  <?php if (! $is_torontorefund_site) : ?>
+    <section class="newsite-hero-testimonials testimonial-carousel" data-testimonial-carousel aria-label="<?php echo esc_attr(ontario_t('testimonials.aria_label', [], 'Client testimonials')); ?>">
+      <div class="testimonial-carousel__viewport"><div class="testimonial-carousel__track" data-testimonial-track><?php for ($testimonial_index = 1; $testimonial_index <= 5; $testimonial_index++) : ?><article class="testimonial-carousel__slide<?php echo $testimonial_index === 1 ? ' is-active' : ''; ?>" data-testimonial-slide aria-hidden="<?php echo $testimonial_index === 1 ? 'false' : 'true'; ?>"><blockquote><p><?php echo esc_html(ontario_t('testimonials.quote_open', [], '“')); ?><?php echo esc_html(ontario_t('testimonials.quote_' . $testimonial_index, [], '')); ?><?php echo esc_html(ontario_t('testimonials.quote_close', [], '”')); ?></p><div class="testimonial-carousel__rating" aria-label="<?php echo esc_attr(ontario_t('testimonials.rating', [], 'Five stars')); ?>"><?php echo esc_html(ontario_t('testimonials.stars', [], '⭐⭐⭐⭐⭐')); ?></div><footer><cite><em><?php echo esc_html(ontario_t('testimonials.name_prefix', [], '—')); ?> <?php echo esc_html(ontario_t('testimonials.name_' . $testimonial_index, [], '')); ?></em></cite><span><?php echo esc_html(ontario_t('testimonials.case_' . $testimonial_index, [], '')); ?></span></footer></blockquote></article><?php endfor; ?></div></div>
+      <div class="testimonial-carousel__controls"><button type="button" class="testimonial-carousel__button" data-testimonial-previous aria-label="<?php echo esc_attr(ontario_t('testimonials.previous', [], 'Show previous testimonial')); ?>">←</button><div class="testimonial-carousel__dots" aria-hidden="true"><?php for ($testimonial_index = 1; $testimonial_index <= 5; $testimonial_index++) : ?><span class="testimonial-carousel__dot<?php echo $testimonial_index === 1 ? ' is-active' : ''; ?>" data-testimonial-dot></span><?php endfor; ?></div><button type="button" class="testimonial-carousel__button" data-testimonial-next aria-label="<?php echo esc_attr(ontario_t('testimonials.next', [], 'Show next testimonial')); ?>">→</button></div>
+    </section>
+  <?php endif; ?>
+  </div>
   <?php if ($is_torontorefund_site) : ?>
     <div class="container torontorefund-proofbar">
       <ul class="newsite-trust-badges"><?php for ($trust_badge_index = 1; $trust_badge_index <= 4; $trust_badge_index++) : ?><li><?php echo esc_html(ontario_t('newsite.hero.trust_' . $trust_badge_index, [], '')); ?></li><?php endfor; ?></ul>

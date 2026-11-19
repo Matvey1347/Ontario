@@ -16,7 +16,8 @@ $is_newsite_page = function_exists('ontario_uses_newsite_design') && ontario_use
 $current_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
 $is_refundassist_site = $current_host === 'refundassist.info' || $current_host === 'www.refundassist.info';
 $is_primeadvisory_site = in_array($current_host, ['primeadvisorycanada.info', 'www.primeadvisorycanada.info'], true);
-$is_sticky_contact_site = $is_refundassist_site || $is_primeadvisory_site;
+$is_ontarioclaims_site = str_contains($current_host, 'ontarioclaims');
+$is_sticky_contact_site = $is_refundassist_site || $is_primeadvisory_site || $is_ontarioclaims_site;
 $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== '' && $phone_number !== '') || $working_hours !== '' || $public_email !== '';
 ?>
 <footer class="site-footer">
@@ -73,7 +74,7 @@ $has_contact_info = $brand_name !== '' || $address !== '' || ($phone_href !== ''
 </footer>
 
 <?php if ($is_sticky_contact_site && $phone_href !== '' && $phone_number !== '') : ?>
-<div class="sticky-contact-bar"><a class="sticky-contact-call" href="tel:<?php echo esc_attr($phone_href); ?>" aria-label="<?php echo esc_attr(ontario_t('phone.call', ['phone' => $phone_number], 'Call {phone}')); ?>"><svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.35 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.08 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.57 2.8.69A2 2 0 0 1 22 16.92z"/></svg></a><a class="sticky-contact-cta" href="<?php echo esc_url(home_url('/#' . ontario_primary_form_anchor())); ?>"><?php echo esc_html(ontario_t($is_primeadvisory_site ? 'hero.request_free_case_review' : 'hero.sticky_consultation', [], $is_primeadvisory_site ? 'Request Free Case Review' : 'Get A Free Consultation')); ?></a></div>
+<div class="sticky-contact-bar"><a class="sticky-contact-call" href="tel:<?php echo esc_attr($phone_href); ?>" aria-label="<?php echo esc_attr(ontario_t('phone.call', ['phone' => $phone_number], 'Call {phone}')); ?>"><svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.35 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.08 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.57 2.8.69A2 2 0 0 1 22 16.92z"/></svg></a><a class="sticky-contact-cta" href="<?php echo esc_url(home_url('/#' . ontario_primary_form_anchor())); ?>"><?php echo esc_html(ontario_t(($is_primeadvisory_site || $is_ontarioclaims_site) ? 'hero.request_free_case_review' : 'hero.sticky_consultation', [], ($is_primeadvisory_site || $is_ontarioclaims_site) ? 'Request Free Case Review' : 'Get A Free Consultation')); ?></a></div>
 <?php else : ?><a class="sticky-case-review" href="<?php echo esc_url(home_url('/#' . ontario_primary_form_anchor())); ?>" data-sticky-case-review aria-hidden="true" tabindex="-1">
   <span><?php echo esc_html(ontario_t('nav.free_consultation', [], 'Request a Case Review')); ?></span>
   <svg aria-hidden="true" viewBox="0 0 20 20" focusable="false"><path d="M10 3.5v12m-5-5 5 5 5-5" /></svg>

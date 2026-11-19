@@ -2664,6 +2664,17 @@ textarea.is-invalid,
     display: none;
   }
 
+  body.ontario-sticky-contact-site .nav-actions .phone-cta-pulse,
+  body.refundassist-site .nav-actions .phone-cta-pulse {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 38px;
+    padding: 6px 9px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
   .mobile-menu-btn {
     width: 44px;
     height: 44px;
@@ -2774,6 +2785,19 @@ textarea.is-invalid,
 
   .nav-actions {
     gap: 6px;
+  }
+
+  body.ontario-sticky-contact-site .brand img,
+  body.refundassist-site .brand img {
+    width: 92px;
+  }
+
+  body.ontario-sticky-contact-site .nav-actions .phone-cta-pulse,
+  body.refundassist-site .nav-actions .phone-cta-pulse {
+    min-height: 34px;
+    gap: 2px;
+    padding: 4px 5px;
+    font-size: 9px;
   }
 
   .language-switcher__button,
@@ -3082,4 +3106,45 @@ body.refundassist-site #newsiteQuickForm {
     padding-inline: 8px;
     font-size: 11px;
   }
+}
+
+body.ontario-sticky-contact-site .sticky-contact-bar {
+  position:fixed;
+  z-index:180;
+  inset:auto 0 0;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+  padding:12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left));
+  border-top:1px solid rgba(194,226,171,.2);
+  background:#0a1714;
+  box-shadow:0 -8px 28px rgba(0,0,0,.35);
+}
+body.ontario-sticky-contact-site .sticky-contact-call,
+body.ontario-sticky-contact-site .sticky-contact-cta {
+  min-height:54px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(194,226,171,.42);
+  border-radius:13px;
+  color:#c4ed73;
+  font-size:1.1rem;
+  font-weight:800;
+  text-decoration:none;
+}
+body.ontario-sticky-contact-site .sticky-contact-call { width:84px; flex:0 0 84px; background:#10211c; }
+body.ontario-sticky-contact-site .sticky-contact-cta { flex:1; max-width:560px; padding:0 22px; border-color:#c4ed73; color:#142019; background:#c4ed73; text-align:center; }
+body.ontario-sticky-contact-site { padding-bottom:calc(86px + env(safe-area-inset-bottom, 0px)); }
+@media (min-width:901px) {
+  body.ontario-sticky-contact-site .site-header { position:sticky; top:0; }
+  body.admin-bar.ontario-sticky-contact-site .site-header { top:32px; }
+  body.ontario-sticky-contact-site .sticky-contact-bar { display:none; }
+  body.ontario-sticky-contact-site { padding-bottom:0; }
+}
+@media (max-width:640px) {
+  body.ontario-sticky-contact-site .sticky-contact-bar { gap:10px; padding-inline:16px; }
+  body.ontario-sticky-contact-site .sticky-contact-call { width:72px; flex-basis:72px; }
+  body.ontario-sticky-contact-site .sticky-contact-cta { min-width:0; padding-inline:12px; font-size:1rem; }
 }
