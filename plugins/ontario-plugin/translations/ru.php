@@ -86,6 +86,7 @@ return [
         'hero.cta_primary' => 'Запросить рассмотрение дела',
         'hero.request_free_case_review' => 'Запросить бесплатную оценку дела',
         'hero.sticky_consultation' => 'Получить бесплатную консультацию',
+        'footer.free_consultation' => 'Получить бесплатную консультацию',
         'phone.tap_to_call_prefix' => 'или нажмите, чтобы позвонить',
         'phone.call' => 'Позвонить: {phone}',
         'hero.cta_secondary' => 'Посмотреть пример отчета',

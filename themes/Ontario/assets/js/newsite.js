@@ -11,6 +11,34 @@
 
   const t = (key, fallback) => (typeof i18n[key] === 'string' && i18n[key]) || fallback;
 
+  // Use the rendered language and font to decide whether all three labels fit.
+  function initHeroBenefits() {
+    const lists = [...document.querySelectorAll('body.ontario-sticky-contact-site .newsite-hero-benefits')];
+    if (!lists.length) return;
+    const context = document.createElement('canvas').getContext('2d');
+    if (!context) return;
+    const updateLayout = () => lists.forEach((list) => {
+      const styles = getComputedStyle(list);
+      const columnWidth = (list.clientWidth - 2 * parseFloat(styles.columnGap)) / 3;
+      const fits = [...list.children].every((item) => {
+        const style = getComputedStyle(item);
+        context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        const text = item.textContent.trim();
+        const spacing = parseFloat(style.letterSpacing) || 0;
+        return context.measureText(text).width + spacing * text.length + 14 + parseFloat(style.columnGap) + 2 <= columnWidth;
+      });
+      list.classList.toggle('is-inline', window.innerWidth > 900 && fits);
+    });
+    if ('ResizeObserver' in window) {
+      const observer = new ResizeObserver(updateLayout);
+      lists.forEach((list) => observer.observe(list));
+    } else {
+      window.addEventListener('resize', updateLayout);
+    }
+    document.fonts?.ready.then(updateLayout);
+    updateLayout();
+  }
+
   function preserveAttribution(target) {
     if (!target) return;
     const fields = ['gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
@@ -228,5 +256,5 @@
     submit();
   });
   previous?.addEventListener('click', () => { if (step) { step -= 1; update(); } });
-  preserveAttribution(form); initQuickForm(); initTestimonialCarousels(); initMenu(); initLanguageSwitcher(); update();
+  initHeroBenefits(); preserveAttribution(form); initQuickForm(); initTestimonialCarousels(); initMenu(); initLanguageSwitcher(); update();
 })();

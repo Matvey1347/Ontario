@@ -93,6 +93,7 @@ return [
         'hero.cta_primary' => 'Poproś o przegląd sprawy',
         'hero.request_free_case_review' => 'Poproś o bezpłatną ocenę sprawy',
         'hero.sticky_consultation' => 'Uzyskaj bezpłatną konsultację',
+        'footer.free_consultation' => 'Uzyskaj bezpłatną konsultację',
         'phone.tap_to_call_prefix' => 'lub dotknij, aby zadzwonić',
         'phone.call' => 'Zadzwoń: {phone}',
         'hero.cta_secondary' => 'Zobacz podgląd raportu',

@@ -328,3 +328,17 @@ body.ontario-design-green .success-page-card p { color:#edf1e7; }
 body.ontario-design-green .success-eyebrow { color:#c4ed73; }
 body.ontario-design-green .success-icon { background:rgba(196,237,115,.1); box-shadow:none; }
 body.ontario-design-green .success-icon span { border-color:rgba(196,237,115,.72); color:#c4ed73; background:#0d1b19; }
+
+/* Keep testimonials directly below the introduction, independently of form height. */
+@media (min-width:901px) {
+  .newsite-hero__grid,
+  body.ontario-design-green .newsite-hero__grid { grid-template-rows:min-content 1fr; row-gap:28px; align-items:start; }
+  .newsite-hero__intro { grid-column:1; grid-row:1; min-width:0; }
+  .newsite-hero__conversion { grid-column:2; grid-row:1 / span 2; min-width:0; }
+  .newsite-hero-testimonials { grid-column:1; grid-row:2; align-self:start; }
+}
+/* Start stacked; JS enables a row only when every label fits without wrapping. */
+body.ontario-sticky-contact-site .newsite-hero-benefits { grid-template-columns:1fr; }
+@media (min-width:901px) {
+  body.ontario-sticky-contact-site .newsite-hero-benefits.is-inline { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}

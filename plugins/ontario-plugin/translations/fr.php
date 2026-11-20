@@ -93,6 +93,7 @@ return [
         'hero.cta_primary' => 'Demander l’examen du dossier',
         'hero.request_free_case_review' => 'Demander une évaluation gratuite du dossier',
         'hero.sticky_consultation' => 'Obtenir une consultation gratuite',
+        'footer.free_consultation' => 'Obtenir une consultation gratuite',
         'phone.tap_to_call_prefix' => 'ou appuyez pour appeler',
         'phone.call' => 'Appeler le {phone}',
         'hero.cta_secondary' => 'Voir l\'aperçu du rapport',

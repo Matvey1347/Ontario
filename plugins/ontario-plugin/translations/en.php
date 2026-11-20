@@ -156,6 +156,7 @@ return [
         'hero.cta_primary' => 'Request a Case Review',
         'hero.request_free_case_review' => 'Request Free Case Review',
         'hero.sticky_consultation' => 'Get A Free Consultation',
+        'footer.free_consultation' => 'Get A Free Consultation',
         'phone.tap_to_call_prefix' => 'or tap to call',
         'phone.call' => 'Call {phone}',
         'hero.cta_secondary' => 'View Report Preview',
