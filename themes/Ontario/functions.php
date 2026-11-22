@@ -491,7 +491,8 @@ add_filter('body_class', static function (array $classes): array {
 
     if (ontario_uses_newsite_design()) {
         $classes[] = 'ontario-newsite';
-        $classes[] = 'ontario-design-green';
+        $palette = function_exists('ontario_newsite_palette') ? ontario_newsite_palette() : 'green';
+        $classes[] = 'ontario-design-' . $palette;
     }
 
     $site_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?: ''));
@@ -521,6 +522,20 @@ add_action('template_redirect', static function (): void {
         $request_path = '';
     }
 
+    if (in_array($request_path, ['newsite2', 'newsite3', 'newsite4'], true) && ontario_uses_newsite_design()) {
+        global $wp_query;
+
+        if ($wp_query instanceof WP_Query) {
+            $wp_query->is_404 = false;
+            $wp_query->is_home = false;
+            $wp_query->is_front_page = true;
+        }
+
+        status_header(200);
+        include get_template_directory() . '/page-newsite.php';
+        exit;
+    }
+
     if ($request_path !== 'success') {
         return;
     }
@@ -543,6 +558,25 @@ add_action('template_redirect', static function (): void {
     include get_template_directory() . '/page-success.php';
     exit;
 });
+
+if (! function_exists('ontario_newsite_palette')) {
+    function ontario_newsite_palette(): string
+    {
+        $request_uri = isset($_SERVER['REQUEST_URI']) ? (string) wp_parse_url(wp_unslash((string) $_SERVER['REQUEST_URI']), PHP_URL_PATH) : '';
+        $request_path = trim($request_uri, '/');
+        $home_path = trim((string) wp_parse_url(home_url('/'), PHP_URL_PATH), '/');
+        if ($home_path !== '' && str_starts_with($request_path, $home_path . '/')) {
+            $request_path = substr($request_path, strlen($home_path) + 1);
+        }
+
+        return match ($request_path) {
+            'newsite2' => 'blue',
+            'newsite3' => 'navy',
+            'newsite4' => 'warm',
+            default => 'green',
+        };
+    }
+}
 
 add_filter('document_title_parts', static function (array $parts): array {
     if (is_front_page() && ontario_uses_newsite_design()) {
@@ -612,6 +646,14 @@ add_action('wp_enqueue_scripts', static function (): void {
                 $theme_uri . '/assets/css/newsite.css',
                 ['ontario-theme'],
                 is_readable($newsite_css_path) ? (string) filemtime($newsite_css_path) : $version
+            );
+
+            $palette_css_path = $theme_dir . '/assets/css/newsite-palettes.css';
+            wp_enqueue_style(
+                'ontario-newsite-palettes',
+                $theme_uri . '/assets/css/newsite-palettes.css',
+                ['ontario-newsite'],
+                is_readable($palette_css_path) ? (string) filemtime($palette_css_path) : $version
             );
         } else {
             wp_register_style('ontario-theme', false, [], $version);

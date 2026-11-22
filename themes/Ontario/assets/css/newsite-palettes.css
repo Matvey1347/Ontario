@@ -1,0 +1,394 @@
+/* Alternate colorways for the Green design preview routes. */
+body.ontario-design-blue {
+  --bg:#f5f9ff; --bg-soft:#edf4fc; --panel:#fff; --panel-solid:#fff; --text:#14253b;
+  --muted:#52657b; --line:rgba(31,91,157,.18); --blue:#1479d1;
+  background:#f5f9ff; color:#17283d;
+}
+body.ontario-design-blue .top-notice { color:#314e6b; border-color:#d7e6f5; background:#edf5fc; }
+body.ontario-design-blue .site-header { background:rgba(255,255,255,.97); border-color:#d9e6f2; }
+body.ontario-design-blue .site-header .brand,
+body.ontario-design-blue .newsite-hero h1,
+body.ontario-design-blue .newsite-heading h2,
+body.ontario-design-blue .newsite-copy-block h2,
+body.ontario-design-blue .newsite-actions-layout h2,
+body.ontario-design-blue .newsite-contact h2 { color:#142b46; }
+body.ontario-design-blue .nav-links, body.ontario-design-blue .phone { color:#435a73; }
+body.ontario-design-blue .site-header .btn-primary,
+body.ontario-design-blue .newsite-actions .btn-primary,
+body.ontario-design-blue .newsite-hero-form .btn-primary { border-color:#1479d1; background:#1479d1; color:#fff; }
+body.ontario-design-blue .newsite-page { background:linear-gradient(180deg,#fff,#f4f8fd 45%,#fff); }
+body.ontario-design-blue .newsite-hero { background:radial-gradient(ellipse at 8% 12%,rgba(82,165,231,.14),transparent 38%),linear-gradient(115deg,#fff,#f2f7fc 65%,#eaf3fb); border-color:#d7e5f2; }
+body.ontario-design-blue .newsite-hero::before { opacity:.42; background:radial-gradient(ellipse at 75% 62%,transparent 0 20%,rgba(29,126,201,.09) 20.1% 20.25%,transparent 20.35% 29%,rgba(29,126,201,.07) 29.1% 29.25%,transparent 29.35% 38%,rgba(29,126,201,.05) 38.1% 38.25%,transparent 38.35%); }
+body.ontario-design-blue .newsite-hero .newsite-kicker { border-color:#c9dff1; color:#176baa; background:#f3f8fd; }
+body.ontario-design-blue .newsite-hero .newsite-kicker::before,
+body.ontario-design-blue .newsite-trust-badges li::before { background:#36a9e8; box-shadow:none; }
+body.ontario-design-blue .newsite-hero__supporting,
+body.ontario-design-blue .newsite-contact .newsite-kicker,
+body.ontario-design-blue .newsite-report .newsite-kicker { color:#2876b3; }
+body.ontario-design-blue .newsite-hero__lead,
+body.ontario-design-blue .newsite-copy-block p,
+body.ontario-design-blue .newsite-actions-layout p { color:#52657b; }
+body.ontario-design-blue .newsite-benefits { color:#304960; }
+body.ontario-design-blue .newsite-benefits li::before,
+body.ontario-design-blue .newsite-hero-testimonials footer span,
+body.ontario-design-blue .newsite-text-link,
+body.ontario-design-blue .newsite-process-cards span,
+body.ontario-design-blue .newsite-checklist li::before { color:#1479d1; }
+body.ontario-design-blue .newsite-trust-badges li { border-color:#d6e5f2; color:#405a72; background:#fff; }
+body.ontario-design-blue .newsite-hero-form,
+body.ontario-design-blue .newsite-hero-testimonials,
+body.ontario-design-blue .newsite-card,
+body.ontario-design-blue .newsite-type-grid article,
+body.ontario-design-blue .newsite-process-cards li,
+body.ontario-design-blue .newsite-why-grid article,
+body.ontario-design-blue .newsite-strip__card,
+body.ontario-design-blue .newsite-report .card,
+body.ontario-design-blue .newsite-report .report,
+body.ontario-design-blue .newsite-faq details { border-color:#d8e5f1; border-radius:8px; background:#fff; color:#263f58; box-shadow:0 10px 28px rgba(31,67,103,.06); }
+body.ontario-design-blue .newsite-hero-form__heading strong,
+body.ontario-design-blue .newsite-hero-testimonials blockquote p,
+body.ontario-design-blue .newsite-hero-testimonials cite,
+body.ontario-design-blue .newsite-type-grid h3,
+body.ontario-design-blue .newsite-process-cards h3,
+body.ontario-design-blue .newsite-why-grid h3,
+body.ontario-design-blue .newsite-strip__card h2,
+body.ontario-design-blue .newsite-report .card h3,
+body.ontario-design-blue .newsite-report .report-header span,
+body.ontario-design-blue .newsite-report .hash,
+body.ontario-design-blue .newsite-faq summary { color:#193651; }
+body.ontario-design-blue .newsite-hero-form__heading span,
+body.ontario-design-blue .newsite-type-grid p,
+body.ontario-design-blue .newsite-process-cards p,
+body.ontario-design-blue .newsite-why-grid p,
+body.ontario-design-blue .newsite-strip__card p,
+body.ontario-design-blue .newsite-report .card p,
+body.ontario-design-blue .newsite-report .report-row small,
+body.ontario-design-blue .newsite-faq p { color:#596d82; }
+body.ontario-design-blue .newsite-hero-form label { color:#334e68; }
+body.ontario-design-blue .newsite-hero-form input:not([type="checkbox"], [type="tel"]),
+body.ontario-design-blue .newsite-hero-form textarea,
+body.ontario-design-blue .newsite-hero-form .phone-input { border-color:#cfdeec; background:#f8fbfe; color:#17283d; }
+body.ontario-design-blue .newsite-hero-form input:focus,
+body.ontario-design-blue .newsite-hero-form textarea:focus { outline-color:#1479d1; }
+body.ontario-design-blue .newsite-hero-form .phone-prefix { color:#263f58; }
+body.ontario-design-blue .newsite-section--soft,
+body.ontario-design-blue .newsite-actions-section { background:#f0f6fc; border-color:#dce8f3; }
+body.ontario-design-blue .newsite-checklist li { border:1px solid #d9e6f1; background:#fff; color:#344d66; }
+body.ontario-design-blue .newsite-contact { background:linear-gradient(120deg,#e8f3fb,#f5f9fd); border-color:#d7e5f1; }
+body.ontario-design-blue .newsite-contact p:not(.newsite-kicker),
+body.ontario-design-blue .newsite-contact__info .check-list li { color:#425b73; }
+body.ontario-design-blue .newsite-contact__form .form-card { border-color:#d7e4ef; background:#fff; color:#243d56; box-shadow:0 10px 28px rgba(31,67,103,.06); }
+body.ontario-design-blue .newsite-strip { border-color:#dce8f3; background:#f8fbfe; }
+body.ontario-design-blue .newsite-strip::before { opacity:.12; }
+body.ontario-design-blue .newsite-faq details[open] { border-color:#9fc7e8; box-shadow:inset 3px 0 #1479d1; }
+body.ontario-design-blue .newsite-report .report-header,
+body.ontario-design-blue .newsite-report .report-row { border-color:#e1eaf2; }
+
+/* White and vivid blue alternate: a brighter, higher contrast option. */
+body.ontario-design-navy {
+  --bg:#f7f9fd; --bg-soft:#edf1f8; --panel:#fff; --panel-solid:#fff; --text:#142039;
+  --muted:#52617a; --line:rgba(46,69,131,.2); --blue:#293e83;
+  background:#f7f9fd; color:#17233d;
+}
+body.ontario-design-navy .top-notice { color:#334466; border-color:#dce2ef; background:#edf1f8; }
+body.ontario-design-navy .site-header { background:rgba(255,255,255,.98); border-color:#dce2ef; }
+body.ontario-design-navy .site-header .brand,
+body.ontario-design-navy .newsite-hero h1,
+body.ontario-design-navy .newsite-heading h2,
+body.ontario-design-navy .newsite-copy-block h2,
+body.ontario-design-navy .newsite-actions-layout h2,
+body.ontario-design-navy .newsite-contact h2 { color:#16213d; }
+body.ontario-design-navy .nav-links, body.ontario-design-navy .phone { color:#485775; }
+body.ontario-design-navy .site-header .btn-primary,
+body.ontario-design-navy .newsite-actions .btn-primary,
+body.ontario-design-navy .newsite-hero-form .btn-primary { border-color:#293e83; background:#293e83; color:#fff; }
+body.ontario-design-navy .newsite-page { background:linear-gradient(180deg,#fff,#f5f6fb 48%,#fff); }
+body.ontario-design-navy .newsite-hero { background:radial-gradient(ellipse at 8% 12%,rgba(110,130,196,.16),transparent 38%),linear-gradient(115deg,#fff,#f0f2fa 65%,#e9edf7); border-color:#dce2ef; }
+body.ontario-design-navy .newsite-hero::before { opacity:.4; background:radial-gradient(ellipse at 75% 62%,transparent 0 20%,rgba(57,77,145,.1) 20.1% 20.25%,transparent 20.35% 29%,rgba(57,77,145,.07) 29.1% 29.25%,transparent 29.35% 38%,rgba(57,77,145,.05) 38.1% 38.25%,transparent 38.35%); }
+body.ontario-design-navy .newsite-hero .newsite-kicker { border-color:#d1d8eb; color:#344b90; background:#f4f5fa; }
+body.ontario-design-navy .newsite-hero .newsite-kicker::before,
+body.ontario-design-navy .newsite-trust-badges li::before { background:#526bb3; box-shadow:none; }
+body.ontario-design-navy .newsite-hero__supporting,
+body.ontario-design-navy .newsite-contact .newsite-kicker,
+body.ontario-design-navy .newsite-report .newsite-kicker { color:#455a9b; }
+body.ontario-design-navy .newsite-hero__lead,
+body.ontario-design-navy .newsite-copy-block p,
+body.ontario-design-navy .newsite-actions-layout p { color:#53617a; }
+body.ontario-design-navy .newsite-benefits { color:#30415f; }
+body.ontario-design-navy .newsite-benefits li::before,
+body.ontario-design-navy .newsite-hero-testimonials footer span,
+body.ontario-design-navy .newsite-text-link,
+body.ontario-design-navy .newsite-process-cards span,
+body.ontario-design-navy .newsite-checklist li::before { color:#344b90; }
+body.ontario-design-navy .newsite-trust-badges li { border-color:#dce2ef; color:#405170; background:#fff; }
+body.ontario-design-navy .newsite-hero-form,
+body.ontario-design-navy .newsite-hero-testimonials,
+body.ontario-design-navy .newsite-card,
+body.ontario-design-navy .newsite-type-grid article,
+body.ontario-design-navy .newsite-process-cards li,
+body.ontario-design-navy .newsite-why-grid article,
+body.ontario-design-navy .newsite-strip__card,
+body.ontario-design-navy .newsite-report .card,
+body.ontario-design-navy .newsite-report .report,
+body.ontario-design-navy .newsite-faq details { border-color:#dce2ef; border-radius:8px; background:#fff; color:#263653; box-shadow:0 10px 28px rgba(35,48,84,.06); }
+body.ontario-design-navy .newsite-hero-form__heading strong,
+body.ontario-design-navy .newsite-hero-testimonials blockquote p,
+body.ontario-design-navy .newsite-hero-testimonials cite,
+body.ontario-design-navy .newsite-type-grid h3,
+body.ontario-design-navy .newsite-process-cards h3,
+body.ontario-design-navy .newsite-why-grid h3,
+body.ontario-design-navy .newsite-strip__card h2,
+body.ontario-design-navy .newsite-report .card h3,
+body.ontario-design-navy .newsite-report .report-header span,
+body.ontario-design-navy .newsite-report .hash,
+body.ontario-design-navy .newsite-faq summary { color:#1e2e54; }
+body.ontario-design-navy .newsite-hero-form__heading span,
+body.ontario-design-navy .newsite-type-grid p,
+body.ontario-design-navy .newsite-process-cards p,
+body.ontario-design-navy .newsite-why-grid p,
+body.ontario-design-navy .newsite-strip__card p,
+body.ontario-design-navy .newsite-report .card p,
+body.ontario-design-navy .newsite-report .report-row small,
+body.ontario-design-navy .newsite-faq p { color:#596780; }
+body.ontario-design-navy .newsite-hero-form label { color:#354565; }
+body.ontario-design-navy .newsite-hero-form input:not([type="checkbox"], [type="tel"]),
+body.ontario-design-navy .newsite-hero-form textarea,
+body.ontario-design-navy .newsite-hero-form .phone-input { border-color:#d6ddec; background:#fafbfe; color:#17233d; }
+body.ontario-design-navy .newsite-hero-form input:focus,
+body.ontario-design-navy .newsite-hero-form textarea:focus { outline-color:#526bb3; }
+body.ontario-design-navy .newsite-hero-form .phone-prefix { color:#263653; }
+body.ontario-design-navy .newsite-section--soft,
+body.ontario-design-navy .newsite-actions-section { background:#f0f2f8; border-color:#e0e4ef; }
+body.ontario-design-navy .newsite-checklist li { border:1px solid #dce2ef; background:#fff; color:#34445f; }
+body.ontario-design-navy .newsite-contact { background:linear-gradient(120deg,#eceffa,#f6f7fb); border-color:#dce2ef; }
+body.ontario-design-navy .newsite-contact p:not(.newsite-kicker),
+body.ontario-design-navy .newsite-contact__info .check-list li { color:#465571; }
+body.ontario-design-navy .newsite-contact__form .form-card { border-color:#dce2ef; background:#fff; color:#263653; box-shadow:0 10px 28px rgba(35,48,84,.06); }
+body.ontario-design-navy .newsite-strip { border-color:#e0e4ef; background:#fafbfe; }
+body.ontario-design-navy .newsite-strip::before { opacity:.1; }
+body.ontario-design-navy .newsite-faq details[open] { border-color:#aab6d8; box-shadow:inset 3px 0 #344b90; }
+body.ontario-design-navy .newsite-report .report-header,
+body.ontario-design-navy .newsite-report .report-row { border-color:#e4e7f0; }
+
+/* Optional third palette: warm ivory with restrained plum and copper accents. */
+body.ontario-design-warm {
+  --bg:#faf7f3; --bg-soft:#f2ece6; --panel:#fffdfa; --panel-solid:#fffdfa; --text:#332822;
+  --muted:#74645b; --line:rgba(135,91,72,.2); --blue:#895d51;
+  background:#faf7f3; color:#352a25;
+}
+body.ontario-design-warm .top-notice { color:#69564c; border-color:#e8d9ce; background:#f4ece5; }
+body.ontario-design-warm .site-header { background:rgba(255,253,250,.98); border-color:#e9ddd4; }
+body.ontario-design-warm .site-header .brand,
+body.ontario-design-warm .newsite-hero h1,
+body.ontario-design-warm .newsite-heading h2,
+body.ontario-design-warm .newsite-copy-block h2,
+body.ontario-design-warm .newsite-actions-layout h2,
+body.ontario-design-warm .newsite-contact h2 { color:#34261f; }
+body.ontario-design-warm .nav-links, body.ontario-design-warm .phone { color:#6b574c; }
+body.ontario-design-warm .site-header .btn-primary,
+body.ontario-design-warm .newsite-actions .btn-primary,
+body.ontario-design-warm .newsite-hero-form .btn-primary { border-color:#895d51; background:#895d51; color:#fffaf5; }
+body.ontario-design-warm .newsite-page { background:linear-gradient(180deg,#fffdfa,#f8f2ec 48%,#fffdfa); }
+body.ontario-design-warm .newsite-hero { background:radial-gradient(ellipse at 8% 12%,rgba(185,135,95,.15),transparent 38%),linear-gradient(115deg,#fffdfa,#f8f1e9 65%,#f1e6db); border-color:#e8d9ce; }
+body.ontario-design-warm .newsite-hero::before { opacity:.38; background:radial-gradient(ellipse at 75% 62%,transparent 0 20%,rgba(137,93,81,.1) 20.1% 20.25%,transparent 20.35% 29%,rgba(137,93,81,.07) 29.1% 29.25%,transparent 29.35% 38%,rgba(137,93,81,.05) 38.1% 38.25%,transparent 38.35%); }
+body.ontario-design-warm .newsite-hero .newsite-kicker { border-color:#e5d2c3; color:#80523f; background:#fbf5ef; }
+body.ontario-design-warm .newsite-hero .newsite-kicker::before,
+body.ontario-design-warm .newsite-trust-badges li::before { background:#bc8059; box-shadow:none; }
+body.ontario-design-warm .newsite-hero__supporting,
+body.ontario-design-warm .newsite-contact .newsite-kicker,
+body.ontario-design-warm .newsite-report .newsite-kicker { color:#895d51; }
+body.ontario-design-warm .newsite-hero__lead,
+body.ontario-design-warm .newsite-copy-block p,
+body.ontario-design-warm .newsite-actions-layout p { color:#74645b; }
+body.ontario-design-warm .newsite-benefits { color:#59473e; }
+body.ontario-design-warm .newsite-benefits li::before,
+body.ontario-design-warm .newsite-hero-testimonials footer span,
+body.ontario-design-warm .newsite-text-link,
+body.ontario-design-warm .newsite-process-cards span,
+body.ontario-design-warm .newsite-checklist li::before { color:#895d51; }
+body.ontario-design-warm .newsite-trust-badges li { border-color:#eadbd0; color:#665349; background:#fffdfa; }
+body.ontario-design-warm .newsite-hero-form,
+body.ontario-design-warm .newsite-hero-testimonials,
+body.ontario-design-warm .newsite-card,
+body.ontario-design-warm .newsite-type-grid article,
+body.ontario-design-warm .newsite-process-cards li,
+body.ontario-design-warm .newsite-why-grid article,
+body.ontario-design-warm .newsite-strip__card,
+body.ontario-design-warm .newsite-report .card,
+body.ontario-design-warm .newsite-report .report,
+body.ontario-design-warm .newsite-faq details { border-color:#e8dcd2; border-radius:8px; background:#fffdfa; color:#493a32; box-shadow:0 10px 28px rgba(74,49,35,.06); }
+body.ontario-design-warm .newsite-hero-form__heading strong,
+body.ontario-design-warm .newsite-hero-testimonials blockquote p,
+body.ontario-design-warm .newsite-hero-testimonials cite,
+body.ontario-design-warm .newsite-type-grid h3,
+body.ontario-design-warm .newsite-process-cards h3,
+body.ontario-design-warm .newsite-why-grid h3,
+body.ontario-design-warm .newsite-strip__card h2,
+body.ontario-design-warm .newsite-report .card h3,
+body.ontario-design-warm .newsite-report .report-header span,
+body.ontario-design-warm .newsite-report .hash,
+body.ontario-design-warm .newsite-faq summary { color:#49352b; }
+body.ontario-design-warm .newsite-hero-form__heading span,
+body.ontario-design-warm .newsite-type-grid p,
+body.ontario-design-warm .newsite-process-cards p,
+body.ontario-design-warm .newsite-why-grid p,
+body.ontario-design-warm .newsite-strip__card p,
+body.ontario-design-warm .newsite-report .card p,
+body.ontario-design-warm .newsite-report .report-row small,
+body.ontario-design-warm .newsite-faq p { color:#75645b; }
+body.ontario-design-warm .newsite-hero-form label { color:#604d43; }
+body.ontario-design-warm .newsite-hero-form input:not([type="checkbox"], [type="tel"]),
+body.ontario-design-warm .newsite-hero-form textarea,
+body.ontario-design-warm .newsite-hero-form .phone-input { border-color:#e3d6cc; background:#fffdfa; color:#352a25; }
+body.ontario-design-warm .newsite-hero-form input:focus,
+body.ontario-design-warm .newsite-hero-form textarea:focus { outline-color:#895d51; }
+body.ontario-design-warm .newsite-hero-form .phone-prefix { color:#493a32; }
+body.ontario-design-warm .newsite-section--soft,
+body.ontario-design-warm .newsite-actions-section { background:#f4eee8; border-color:#e9ddd4; }
+body.ontario-design-warm .newsite-checklist li { border:1px solid #e8dcd2; background:#fffdfa; color:#59473e; }
+body.ontario-design-warm .newsite-contact { background:linear-gradient(120deg,#f0e5dc,#f9f3ed); border-color:#e8d9ce; }
+body.ontario-design-warm .newsite-contact p:not(.newsite-kicker),
+body.ontario-design-warm .newsite-contact__info .check-list li { color:#69564c; }
+body.ontario-design-warm .newsite-contact__form .form-card { border-color:#e8dcd2; background:#fffdfa; color:#493a32; box-shadow:0 10px 28px rgba(74,49,35,.06); }
+body.ontario-design-warm .newsite-strip { border-color:#e9ddd4; background:#fcf9f5; }
+body.ontario-design-warm .newsite-strip::before { opacity:.1; }
+body.ontario-design-warm .newsite-faq details[open] { border-color:#cfa88e; box-shadow:inset 3px 0 #895d51; }
+body.ontario-design-warm .newsite-report .report-header,
+body.ontario-design-warm .newsite-report .report-row { border-color:#eee4dc; }
+
+/* Shared polish for the preview palettes: visible brand, calls to action,
+   report title, legal notice and footer, including the compact sticky bar. */
+body.ontario-design-blue .site-header,
+body.ontario-design-navy .site-header,
+body.ontario-design-warm .site-header { background:#176fba; border-color:#176fba; }
+body.ontario-design-blue .site-header .brand,
+body.ontario-design-navy .site-header .brand,
+body.ontario-design-warm .site-header .brand { color:#fff; }
+body.ontario-design-blue .nav-links,
+body.ontario-design-blue .phone,
+body.ontario-design-navy .nav-links,
+body.ontario-design-navy .phone,
+body.ontario-design-warm .nav-links,
+body.ontario-design-warm .phone { color:#fff; }
+body.ontario-design-blue .site-header .phone-cta-pulse,
+body.ontario-design-blue .sticky-contact-call,
+body.ontario-design-blue .sticky-contact-cta { background:#1479d1; color:#fff; border-color:#1479d1; }
+body.ontario-design-navy .site-header { background:#293e83; border-color:#293e83; }
+body.ontario-design-navy .site-header .phone-cta-pulse,
+body.ontario-design-navy .sticky-contact-call,
+body.ontario-design-navy .sticky-contact-cta { background:#344b90; color:#fff; border-color:#344b90; }
+body.ontario-design-warm .site-header { background:#895d51; border-color:#895d51; }
+body.ontario-design-warm .site-header .phone-cta-pulse,
+body.ontario-design-warm .sticky-contact-call,
+body.ontario-design-warm .sticky-contact-cta { background:#895d51; color:#fff; border-color:#895d51; }
+body.ontario-design-blue .newsite-hero-form .phone-input:focus-within { border-color:#1479d1; box-shadow:0 0 0 2px rgba(20,121,209,.12); }
+body.ontario-design-navy .newsite-hero-form .phone-input:focus-within { border-color:#526bb3; box-shadow:0 0 0 2px rgba(82,107,179,.14); }
+body.ontario-design-warm .newsite-hero-form .phone-input:focus-within { border-color:#895d51; box-shadow:0 0 0 2px rgba(137,93,81,.12); }
+body.ontario-design-blue .newsite-call-prompt,
+body.ontario-design-blue .newsite-call-prompt a { color:#315b7e; }
+body.ontario-design-blue .newsite-call-prompt a { color:#1479d1; }
+body.ontario-design-navy .newsite-call-prompt,
+body.ontario-design-navy .newsite-call-prompt a { color:#3e4e75; }
+body.ontario-design-navy .newsite-call-prompt a { color:#344b90; }
+body.ontario-design-warm .newsite-call-prompt,
+body.ontario-design-warm .newsite-call-prompt a { color:#614b3e; }
+body.ontario-design-warm .newsite-call-prompt a { color:#895d51; }
+body.ontario-design-blue .newsite-official-note,
+body.ontario-design-navy .newsite-official-note,
+body.ontario-design-warm .newsite-official-note { border-left-width:4px; border-radius:0 7px 7px 0; }
+body.ontario-design-blue .newsite-official-note { border-left-color:#1479d1; background:#e5f1fb; color:#234a6e; }
+body.ontario-design-navy .newsite-official-note { border-left-color:#526bb3; background:#e9edf7; color:#303f68; }
+body.ontario-design-warm .newsite-official-note { border-left-color:#a76c4d; background:#f2e8df; color:#60483a; }
+body.ontario-design-blue .newsite-report .section-title,
+body.ontario-design-blue .newsite-report h2,
+body.ontario-design-blue .newsite-report .section-copy-wide,
+body.ontario-design-navy .newsite-report .section-title,
+body.ontario-design-navy .newsite-report h2,
+body.ontario-design-navy .newsite-report .section-copy-wide,
+body.ontario-design-warm .newsite-report .section-title,
+body.ontario-design-warm .newsite-report h2,
+body.ontario-design-warm .newsite-report .section-copy-wide { color:#1d3853; }
+body.ontario-design-blue .newsite-report .section-title,
+body.ontario-design-blue .newsite-report h2 { color:#17395a; }
+body.ontario-design-navy .newsite-report .section-title,
+body.ontario-design-navy .newsite-report h2 { color:#202f58; }
+body.ontario-design-warm .newsite-report .section-title,
+body.ontario-design-warm .newsite-report h2 { color:#49352b; }
+body.ontario-design-blue .newsite-contact { background:linear-gradient(125deg,#145f9d,#0d477e); border-color:#0d477e; }
+body.ontario-design-navy .newsite-contact { background:linear-gradient(125deg,#273c7d,#1a285c); border-color:#1a285c; }
+body.ontario-design-warm .newsite-contact { background:linear-gradient(125deg,#744d45,#523a36); border-color:#523a36; }
+body.ontario-design-blue .newsite-contact h2,
+body.ontario-design-blue .newsite-contact p:not(.newsite-kicker),
+body.ontario-design-blue .newsite-contact__info .check-list li,
+body.ontario-design-blue .newsite-contact .newsite-kicker,
+body.ontario-design-navy .newsite-contact h2,
+body.ontario-design-navy .newsite-contact p:not(.newsite-kicker),
+body.ontario-design-navy .newsite-contact__info .check-list li,
+body.ontario-design-navy .newsite-contact .newsite-kicker,
+body.ontario-design-warm .newsite-contact h2,
+body.ontario-design-warm .newsite-contact p:not(.newsite-kicker),
+body.ontario-design-warm .newsite-contact__info .check-list li,
+body.ontario-design-warm .newsite-contact .newsite-kicker { color:#fff; }
+body.ontario-design-blue .newsite-contact__form .form-card,
+body.ontario-design-navy .newsite-contact__form .form-card,
+body.ontario-design-warm .newsite-contact__form .form-card { border-color:rgba(255,255,255,.42); background:#fff; color:#243d56; }
+body.ontario-design-blue .newsite-contact__form .form-top strong,
+body.ontario-design-navy .newsite-contact__form .form-top strong,
+body.ontario-design-warm .newsite-contact__form .form-top strong { color:#183b5b; }
+body.ontario-design-blue .newsite-contact__form .form-note,
+body.ontario-design-navy .newsite-contact__form .form-note,
+body.ontario-design-warm .newsite-contact__form .form-note { color:#52657b; }
+body.ontario-design-blue .newsite-contact__form .short-submit,
+body.ontario-design-blue .newsite-contact__form .form-actions .btn-primary { background:#1479d1; border-color:#1479d1; color:#fff; }
+body.ontario-design-navy .newsite-contact__form .short-submit,
+body.ontario-design-navy .newsite-contact__form .form-actions .btn-primary { background:#344b90; border-color:#344b90; color:#fff; }
+body.ontario-design-warm .newsite-contact__form .short-submit,
+body.ontario-design-warm .newsite-contact__form .form-actions .btn-primary { background:#895d51; border-color:#895d51; color:#fff; }
+body.ontario-design-blue .site-footer { color:#d9e6f4; border-color:#184f7b; background:linear-gradient(145deg,#123b60,#0d2b48); }
+body.ontario-design-navy .site-footer { color:#e0e5f5; border-color:#1e2c5d; background:linear-gradient(145deg,#1a2854,#111a3b); }
+body.ontario-design-warm .site-footer { color:#f0e5dc; border-color:#523a36; background:linear-gradient(145deg,#49342e,#30231f); }
+body.ontario-design-blue .site-footer p,
+body.ontario-design-blue .site-footer span,
+body.ontario-design-blue .footer-bottom,
+body.ontario-design-navy .site-footer p,
+body.ontario-design-navy .site-footer span,
+body.ontario-design-navy .footer-bottom,
+body.ontario-design-warm .site-footer p,
+body.ontario-design-warm .site-footer span,
+body.ontario-design-warm .footer-bottom { color:inherit; }
+body.ontario-design-blue .site-footer a { color:#a9d8ff; }
+body.ontario-design-navy .site-footer a { color:#c3ceff; }
+body.ontario-design-warm .site-footer a { color:#f0bd91; }
+body.ontario-design-blue .refundassist-disclosure { border-color:rgba(169,216,255,.26); color:#c5d9eb; }
+body.ontario-design-navy .refundassist-disclosure { border-color:rgba(195,206,255,.26); color:#cbd2e8; }
+body.ontario-design-warm .refundassist-disclosure { border-color:rgba(240,189,145,.26); color:#e5d3c7; }
+body.ontario-design-blue .sticky-contact-bar,
+body.ontario-design-navy .sticky-contact-bar,
+body.ontario-design-warm .sticky-contact-bar { background:#fff; border-color:#d8e5f1; }
+body.ontario-design-blue .sticky-contact-cta { background:#1479d1; border-color:#1479d1; color:#fff; }
+body.ontario-design-navy .sticky-contact-cta { background:#344b90; border-color:#344b90; color:#fff; }
+body.ontario-design-warm .sticky-contact-cta { background:#895d51; border-color:#895d51; color:#fff; }
+body.ontario-design-blue.ontario-sticky-contact-site .sticky-contact-cta { background:#1479d1; border-color:#1479d1; color:#fff; }
+body.ontario-design-navy.ontario-sticky-contact-site .sticky-contact-cta { background:#344b90; border-color:#344b90; color:#fff; }
+body.ontario-design-warm.ontario-sticky-contact-site .sticky-contact-cta { background:#895d51; border-color:#895d51; color:#fff; }
+
+/* Keep the mobile menu control distinct from every preview header palette. */
+body.ontario-newsite .site-header .mobile-menu-btn,
+body[class*="ontario-design-"] .site-header .mobile-menu-btn {
+  flex:0 0 auto;
+  border:1px solid rgba(255,255,255,.58);
+  background:#12395f;
+  color:#fff;
+  box-shadow:0 2px 8px rgba(10,30,50,.22);
+  font-size:18px;
+  font-weight:800;
+  line-height:1;
+}
+body.ontario-newsite .site-header .mobile-menu-btn:hover,
+body.ontario-newsite .site-header .mobile-menu-btn:focus-visible,
+body[class*="ontario-design-"] .site-header .mobile-menu-btn:hover,
+body[class*="ontario-design-"] .site-header .mobile-menu-btn:focus-visible {
+  background:#092744;
+  outline:2px solid #fff;
+  outline-offset:2px;
+}
