@@ -571,8 +571,8 @@ if (! function_exists('ontario_newsite_palette')) {
 
         return match ($request_path) {
             'newsite2' => 'blue',
-            'newsite3' => 'navy',
-            'newsite4' => 'warm',
+            'newsite3' => 'greenlight',
+            'newsite4' => 'navy',
             default => 'green',
         };
     }
