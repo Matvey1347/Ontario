@@ -16,13 +16,14 @@ const ONTARIO_BOOTSTRAP_VERSION = '1.1.1';
  * A small full-page cache for public landing pages.
  *
  * This runs while must-use plugins are loaded, before regular plugins and
- * their remote anti-fraud checks.  It is deliberately limited to the root
- * landing page and anonymous visitors: previews, logged-in users, display
+ * their remote anti-fraud checks. It is limited to the public landing
+ * routes and anonymous visitors: admin previews, logged-in users, display
  * preferences and functional query strings always use WordPress normally.
  * Attribution parameters are not rendered server-side, so they can share the
  * canonical cached document; the form reads them from location.search.
  */
 const ONTARIO_PAGE_CACHE_TTL = 300;
+const ONTARIO_PAGE_CACHE_VERSION = '2';
 
 function ontario_page_cache_directory(): string
 {
@@ -73,7 +74,7 @@ function ontario_page_cache_request_key(): string
     // of its normal utility functions.
     $path = (string) parse_url($request_uri, PHP_URL_PATH);
 
-    if ($path !== '' && $path !== '/') {
+    if (! in_array($path, ['', '/', '/newsite2', '/newsite2/', '/newsite3', '/newsite3/', '/newsite4', '/newsite4/'], true)) {
         return '';
     }
 
@@ -115,10 +116,10 @@ function ontario_page_cache_request_key(): string
         return '';
     }
 
-    // The scheme and bootstrap version are part of the key. Without them an
+    // The scheme and cache version are part of the key. Without the scheme an
     // HTTP-rendered document can be served to HTTPS visitors and make its
     // scripts and styles fail as mixed content.
-    return hash('sha256', ONTARIO_BOOTSTRAP_VERSION . '|' . ontario_page_cache_request_scheme() . '|' . $host . '|/|' . $language);
+    return hash('sha256', ONTARIO_PAGE_CACHE_VERSION . '|' . ontario_page_cache_request_scheme() . '|' . $host . '|' . ($path ?: '/') . '|' . $language);
 }
 
 function ontario_page_cache_file(string $key): string

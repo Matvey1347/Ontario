@@ -70,6 +70,8 @@ get_header();
   <?php endif; ?>
   </section>
 
+  <?php
+  $strip = static function () use ($address): void { ?>
   <section class="newsite-strip" aria-label="<?php echo esc_attr(ontario_t('site.trust_signals', [], 'Trust signals')); ?>">
     <div class="container newsite-strip__grid">
       <article class="newsite-strip__card">
@@ -92,16 +94,31 @@ get_header();
       <?php endif; ?>
     </div>
   </section>
+  <?php };
 
+  $services = static function () use ($is_refundassist_site, $t): void { ?>
   <?php if ($is_refundassist_site) : ?>
     <section id="services" class="newsite-section"><div class="container newsite-copy-block"><p class="newsite-kicker"><?php echo esc_html(ontario_t('refundassist.services.kicker', [], 'Case review and transaction tracing')); ?></p><h2><?php echo esc_html(ontario_t('refundassist.services.title', [], 'Case Review, Transaction Tracing & Evidence')); ?></h2><p><?php echo esc_html(ontario_t('refundassist.services.copy_1', [], 'Refund Assist reviews the details and records you provide, analyzes relevant payment and transaction activity, and helps organize evidence for discussions with financial institutions or other relevant organizations.')); ?></p><p><?php echo esc_html(ontario_t('refundassist.services.copy_2', [], 'For cryptocurrency cases, blockchain analysis may provide additional information about recorded transfers and wallet activity.')); ?></p><p class="newsite-disclosure"><?php echo esc_html(ontario_t('refundassist.services.notice', [], 'Analysis cannot guarantee that funds will be identified or recovered.')); ?></p></div></section>
   <?php else : ?>
     <section id="services" class="newsite-section"><div class="container newsite-copy-block"><p class="newsite-kicker"><?php echo esc_html($t('newsite.assistance.kicker', 'Professional assistance')); ?></p><h2><?php echo esc_html($t('newsite.assistance.title', 'Professional Support After Online Financial Fraud')); ?></h2><p><?php echo esc_html($t('newsite.assistance.copy_1', "Whether you've been affected by an investment scam, a fraudulent trading platform, a cryptocurrency scam, or another form of online financial deception, understanding your next steps is essential.")); ?></p><p><?php echo esc_html($t('newsite.assistance.copy_2', 'Our team assists with financial transaction analysis, evidence preparation, and organizing documentation for relevant institutions.')); ?></p></div></section>
   <?php endif; ?>
+  <?php };
 
+  $fraudTypes = static function () use ($t): void { ?>
   <section id="fraud-types" class="newsite-section newsite-section--soft"><div class="container"><div class="newsite-heading"><h2><?php echo esc_html($t('newsite.types.title', 'Types of Online Financial Fraud We Assist With')); ?></h2></div><div class="newsite-type-grid"><?php for ($index = 1; $index <= 4; $index++) : ?><article><h3><?php echo esc_html($t('newsite.types.title_' . $index, '')); ?></h3><p><?php echo esc_html($t('newsite.types.copy_' . $index, '')); ?></p></article><?php endfor; ?></div></div></section>
+  <?php };
 
+  $process = static function () use ($t): void { ?>
   <section id="process" class="newsite-section"><div class="container"><div class="newsite-heading"><p class="newsite-kicker"><?php echo esc_html($t('newsite.process.kicker', 'Four-step process')); ?></p><h2><?php echo esc_html($t('newsite.process.title', 'How We Assist With Your Case')); ?></h2></div><ol class="newsite-process-cards"><?php for ($index = 1; $index <= 4; $index++) : ?><li><span aria-hidden="true">0<?php echo esc_html((string) $index); ?></span><h3><?php echo esc_html($t('newsite.process.title_' . $index, '')); ?></h3><p><?php echo esc_html($t('newsite.process.copy_' . $index, '')); ?></p></li><?php endfor; ?></ol></div></section>
+  <?php };
+
+  $sections = ontario_newsite_palette() === 'greenlight'
+      ? [$fraudTypes, $process, $services, $strip]
+      : [$strip, $services, $fraudTypes, $process];
+  foreach ($sections as $render_section) {
+      $render_section();
+  }
+  ?>
 
   <section id="after-scam" class="newsite-section newsite-actions-section"><div class="container newsite-actions-layout"><div><p class="newsite-kicker"><?php echo esc_html($t('newsite.after.kicker', 'Reporting and next steps')); ?></p><h2><?php echo esc_html($t('newsite.after.title', "What to Do If You've Been Scammed Online")); ?></h2><p><?php echo esc_html($t('newsite.after.copy', "If you've been scammed out of money, act promptly. Taking the right steps early may help protect your accounts and preserve important evidence.")); ?></p></div><ol class="newsite-checklist"><?php for ($index = 1; $index <= 5; $index++) : ?><li><?php echo esc_html($t('newsite.after.step_' . $index, '')); ?></li><?php endfor; ?></ol></div><div class="container"><p class="newsite-official-note"><?php echo esc_html($t('newsite.after.notice', 'Contacting {brand_name} is not the same as filing an official police or government report.')); ?></p></div></section>
 

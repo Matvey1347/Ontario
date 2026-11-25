@@ -55,7 +55,7 @@ $header_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?:
 $is_refundassist_site = $header_host === 'refundassist.info' || $header_host === 'www.refundassist.info';
 $is_phone_cta_site = in_array($header_host, ['refundassist.info', 'www.refundassist.info', 'primeadvisorycanada.info', 'www.primeadvisorycanada.info'], true)
     || str_contains($header_host, 'ontarioclaims');
-$header_cta_href = is_front_page()
+$header_cta_href = (is_front_page() || in_array(ontario_requested_site_path(), ['newsite2', 'newsite3', 'newsite4'], true))
     ? '#' . ontario_primary_form_anchor()
     : home_url('/#' . ontario_primary_form_anchor());
 ?>

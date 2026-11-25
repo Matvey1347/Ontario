@@ -342,3 +342,24 @@ body.ontario-sticky-contact-site .newsite-hero-benefits { grid-template-columns:
 @media (min-width:901px) {
   body.ontario-sticky-contact-site .newsite-hero-benefits.is-inline { grid-template-columns:repeat(3,minmax(0,1fr)); }
 }
+
+/* Keep the mobile menu control distinct from every preview header palette. */
+body.ontario-newsite .site-header .mobile-menu-btn,
+body[class*="ontario-design-"] .site-header .mobile-menu-btn {
+  flex:0 0 auto;
+  border:1px solid rgba(255,255,255,.58);
+  background:#12395f;
+  color:#fff;
+  box-shadow:0 2px 8px rgba(10,30,50,.22);
+  font-size:18px;
+  font-weight:800;
+  line-height:1;
+}
+body.ontario-newsite .site-header .mobile-menu-btn:hover,
+body.ontario-newsite .site-header .mobile-menu-btn:focus-visible,
+body[class*="ontario-design-"] .site-header .mobile-menu-btn:hover,
+body[class*="ontario-design-"] .site-header .mobile-menu-btn:focus-visible {
+  background:#092744;
+  outline:2px solid #fff;
+  outline-offset:2px;
+}
