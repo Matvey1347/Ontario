@@ -72,6 +72,24 @@ body.ontario-design-greenlight .newsite-hero-form .phone-input { border-color:#d
 body.ontario-design-greenlight .newsite-hero-form input:focus,
 body.ontario-design-greenlight .newsite-hero-form textarea:focus { outline-color:#4f965e; }
 body.ontario-design-greenlight .newsite-hero-form .phone-prefix { color:#2b4031; }
+body.ontario-design-greenlight .newsite-hero-form .phone-number-input {
+  min-height:0;
+  padding:0;
+  border:0;
+  background:transparent;
+}
+body.ontario-design-greenlight .newsite-hero-form .phone-input input[type="tel"] {
+  margin:0;
+  padding:0;
+  min-height:48px;
+  color:#000;
+  -webkit-text-fill-color:currentColor;
+}
+body.ontario-design-greenlight .newsite-hero-form input:is([type="text"], [type="email"], [type="tel"])::placeholder {
+  color:rgba(29,48,37,.65);
+  -webkit-text-fill-color:currentColor;
+  opacity:1;
+}
 body.ontario-design-greenlight .newsite-section--soft,
 body.ontario-design-greenlight .newsite-actions-section { background:#eff5ee; border-color:#dce8dc; }
 body.ontario-design-greenlight .newsite-checklist li { border:1px solid #d9e7da; background:#fff; color:#405b47; }
