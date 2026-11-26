@@ -219,3 +219,32 @@ body.ontario-design-greenlight .sticky-contact-cta {
   background:#4f965e;
   color:#fff;
 }
+
+body.ontario-design-greenlight .success-page::before {
+  background:radial-gradient(ellipse at top, #e1eee1, transparent 72%);
+}
+
+body.ontario-design-greenlight :is(.legal-shell, .success-page-card) {
+  padding:clamp(20px, 5vw, 48px);
+  border-color:#d9e7da;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 10px 28px rgba(38,75,43,.08);
+  overflow-wrap:anywhere;
+}
+
+body.ontario-design-greenlight .success-page-card::before { background:#d9e7da; }
+body.ontario-design-greenlight .success-icon { background:#e8f2e7; box-shadow:none; }
+body.ontario-design-greenlight .success-icon span { border-color:#397c4a; background:#fff; color:#397c4a; }
+body.ontario-design-greenlight .success-eyebrow { color:#2e6940; }
+body.ontario-design-greenlight .success-page-card p,
+body.ontario-design-greenlight .legal-content { color:#405b47; }
+body.ontario-design-greenlight .legal-content strong { color:var(--text); }
+body.ontario-design-greenlight .legal-content a { color:#2e6940; text-decoration:underline; }
+body.ontario-design-greenlight .success-page .success-close {
+  border-color:#347344;
+  background:#347344;
+  color:#fff;
+  box-shadow:none;
+}
+body.ontario-design-greenlight .success-page .success-close:hover { background:#2b6038; }

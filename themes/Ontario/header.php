@@ -55,7 +55,9 @@ $header_host = strtolower((string) (wp_parse_url(home_url('/'), PHP_URL_HOST) ?:
 $is_refundassist_site = $header_host === 'refundassist.info' || $header_host === 'www.refundassist.info';
 $is_phone_cta_site = in_array($header_host, ['refundassist.info', 'www.refundassist.info', 'primeadvisorycanada.info', 'www.primeadvisorycanada.info'], true)
     || str_contains($header_host, 'ontarioclaims');
-$header_cta_href = (is_front_page() || in_array(ontario_requested_site_path(), ['newsite2', 'newsite3', 'newsite4'], true))
+$has_local_sections = in_array(ontario_requested_site_path(), ['', 'newsite2', 'newsite3', 'newsite4'], true);
+$section_href = static fn (string $id): string => $has_local_sections ? '#' . $id : home_url('/#' . $id);
+$header_cta_href = $has_local_sections
     ? '#' . ontario_primary_form_anchor()
     : home_url('/#' . ontario_primary_form_anchor());
 ?>
@@ -79,10 +81,10 @@ $header_cta_href = (is_front_page() || in_array(ontario_requested_site_path(), [
       </a>
 
       <div class="nav-links" aria-label="<?php echo esc_attr(ontario_t('site.primary_navigation', [], 'Primary navigation')); ?>">
-        <a href="<?php echo esc_url('#services'); ?>"><?php echo esc_html(ontario_t('nav.services', [], 'Services')); ?></a>
-        <a href="<?php echo esc_url('#scanner'); ?>"><?php echo esc_html(ontario_t('nav.case_review', [], 'Case Review')); ?></a>
-        <a href="#report"><?php echo esc_html(ontario_t('nav.report_preview', [], 'Report Preview')); ?></a>
-        <a href="#faq"><?php echo esc_html(ontario_t('nav.faq', [], 'FAQ')); ?></a>
+        <a href="<?php echo esc_url($section_href('services')); ?>"><?php echo esc_html(ontario_t('nav.services', [], 'Services')); ?></a>
+        <a href="<?php echo esc_url($section_href('scanner')); ?>"><?php echo esc_html(ontario_t('nav.case_review', [], 'Case Review')); ?></a>
+        <a href="<?php echo esc_url($section_href('report')); ?>"><?php echo esc_html(ontario_t('nav.report_preview', [], 'Report Preview')); ?></a>
+        <a href="<?php echo esc_url($section_href('faq')); ?>"><?php echo esc_html(ontario_t('nav.faq', [], 'FAQ')); ?></a>
       </div>
 
       <div class="nav-actions">

@@ -152,7 +152,8 @@ if (! function_exists('ontario_uses_newsite_design')) {
             return false;
         }
 
-        return in_array(ontario_requested_site_path(), ['', 'newsite2', 'newsite4'], true)
+        return ontario_uses_light_green_palette()
+            || in_array(ontario_requested_site_path(), ['newsite2', 'newsite4'], true)
             || ontario_site_field('homepage_design', '') === 'newsite';
     }
 }
@@ -527,6 +528,12 @@ function ontario_requested_site_path(): string
     return $request_path;
 }
 
+function ontario_uses_light_green_palette(): bool
+{
+    return in_array(ontario_requested_site_path(), ['', 'success'], true)
+        || ontario_legal_page_key() !== '';
+}
+
 add_action('template_redirect', static function (): void {
     if (is_admin()) {
         return;
@@ -574,8 +581,11 @@ add_action('template_redirect', static function (): void {
 if (! function_exists('ontario_newsite_palette')) {
     function ontario_newsite_palette(): string
     {
+        if (ontario_uses_light_green_palette()) {
+            return 'greenlight';
+        }
+
         return match (ontario_requested_site_path()) {
-            '' => 'greenlight',
             'newsite2' => 'blue',
             'newsite4' => 'navy',
             default => 'green',
