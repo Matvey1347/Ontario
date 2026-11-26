@@ -66,6 +66,15 @@ body.ontario-design-greenlight .newsite-strip__card p,
 body.ontario-design-greenlight .newsite-faq p,
 body.ontario-design-greenlight .newsite-contact__form .form-note { color:#617366; }
 body.ontario-design-greenlight .newsite-hero-form label { color:#405b47; }
+body.ontario-design-greenlight .newsite-hero-form .checkbox-field input:not(:checked) {
+  border-color:#64836a;
+  background:#f1f7ef;
+}
+body.ontario-design-greenlight .newsite-hero-form .checkbox-field input:focus-visible {
+  outline:2px solid #397c4a;
+  outline-offset:2px;
+}
+body.ontario-design-greenlight .newsite-hero-form .field-error { color:#ad304d; }
 body.ontario-design-greenlight .newsite-hero-form input:not([type="checkbox"], [type="tel"]),
 body.ontario-design-greenlight .newsite-hero-form textarea,
 body.ontario-design-greenlight .newsite-hero-form .phone-input { border-color:#d1e0d2; background:#f9fcf8; color:#203329; }

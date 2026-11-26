@@ -114,15 +114,15 @@ body.ontario-design-green .newsite-hero-testimonials {
   box-shadow:0 22px 60px rgba(0,0,0,.22);
 }
 body.ontario-design-green .newsite-hero-form { padding:clamp(20px,2.3vw,30px); }
-body.ontario-design-green .newsite-hero-form .checkbox-field {
+.newsite-hero-form .checkbox-field {
   display:grid;
   grid-template-columns:20px minmax(0,1fr);
   align-items:center;
   column-gap:9px;
   row-gap:4px;
 }
-body.ontario-design-green .newsite-hero-form .checkbox-field input { margin:0; }
-body.ontario-design-green .newsite-hero-form .checkbox-field .field-error {
+.newsite-hero-form .checkbox-field input { margin:0; }
+.newsite-hero-form .checkbox-field .field-error {
   grid-column:1 / -1;
   grid-row:2;
 }

@@ -112,7 +112,12 @@
     field.classList.add('is-invalid');
     field.setAttribute('aria-invalid', 'true');
     let error = container.querySelector('.field-error');
-    if (!error) { error = document.createElement('div'); error.className = 'field-error'; error.setAttribute('role', 'alert'); container.append(error); }
+    if (!error) {
+      error = document.createElement(container.matches('label') ? 'span' : 'div');
+      error.className = 'field-error';
+      error.setAttribute('role', 'alert');
+      container.append(error);
+    }
     error.textContent = message;
   }
   function fieldError(field) {
